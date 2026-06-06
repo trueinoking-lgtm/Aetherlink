@@ -1,0 +1,26 @@
+{
+  "name": "@aetherlink/wa-bot",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@aetherlink/core": "workspace:*",
+    "@supabase/supabase-js": "^2.95.3",
+    "@whiskeysockets/baileys": "^6.7.16",
+    "dotenv": "^16.6.1",
+    "nodemailer": "^6.10.1",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "@types/nodemailer": "^6.4.17",
+    "tsx": "^4.19.3",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@aetherlink/webapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port=3002",
+    "typecheck": "tsc --noEmit",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "prettier": "npx prettier --check \"src/**/*.{ts,tsx}\""
+  },
+  "dependencies": {
+    "@aetherlink/core": "workspace:*",
+    "@aetherlink/ui": "workspace:*",
+    "@react-pdf/renderer": "^4.3.0",
+    "idb-keyval": "^6.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
+  }
+}
