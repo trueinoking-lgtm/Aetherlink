@@ -5,3 +5,4 @@ dockerfilePath = "apps/waBot/Dockerfile"
 [deploy]
 startCommand = "pnpm start"
 restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
