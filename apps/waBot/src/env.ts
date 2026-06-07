@@ -16,4 +16,5 @@ export const env = {
   alertSmtpUser: process.env.ALERT_SMTP_USER || '',
   alertSmtpPassword: process.env.ALERT_SMTP_APP_PASSWORD || '',
   webappBaseUrl: process.env.WEBAPP_BASE_URL || 'https://aetherlink.app',
+  botPhoneNumber: requireEnv('BOT_PHONE_NUMBER'),
 };

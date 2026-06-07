@@ -50,10 +50,19 @@ export async function startBot(): Promise<void> {
 
   const sock = makeWASocket({
     auth: state,
-    printQRInTerminal: true,
+    printQRInTerminal: false,
   });
 
   sock.ev.on('creds.update', saveCreds);
+
+  if (!sock.authState.creds.registered) {
+    await sock.waitForConnectionUpdate((u) => !!u.qr);
+    const phoneNumber = env.botPhoneNumber.replace(/[^0-9]/g, '');
+    const code = await sock.requestPairingCode(phoneNumber);
+    console.log(`=============================`);
+    console.log(`PAIRING CODE: ${code}`);
+    console.log(`=============================`);
+  }
 
   sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
     if (connection === 'open') {
