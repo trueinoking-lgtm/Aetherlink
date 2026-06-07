@@ -1,8 +1,6 @@
-import makeWASocket, {
-  DisconnectReason,
-  useMultiFileAuthState,
-  type WASocket,
-} from '@whiskeysockets/baileys';
+import pkg from '@whiskeysockets/baileys';
+const { default: makeWASocket, DisconnectReason, useMultiFileAuthState } = pkg as any;
+import type { WASocket } from '@whiskeysockets/baileys';
 import { env } from './env.js';
 import { sendSessionTerminatedAlert } from './alerts.js';
 import { processMessage } from './pipeline.js';
