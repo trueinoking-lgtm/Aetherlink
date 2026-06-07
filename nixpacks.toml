@@ -2,7 +2,11 @@
 cmds = ["npm install -g pnpm@9 && export PATH=$PATH:$(npm root -g)/.bin && pnpm install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm --filter @aetherlink/webapp build"]
+cmds = [
+  "pnpm --filter @aetherlink/core build",
+  "pnpm --filter @aetherlink/ui build",
+  "pnpm --filter @aetherlink/webapp build"
+]
 
 [start]
 cmd = "pnpm --filter @aetherlink/webapp start"
