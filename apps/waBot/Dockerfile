@@ -13,6 +13,8 @@ RUN corepack enable && pnpm install --frozen-lockfile --filter @aetherlink/wa-bo
 COPY libraries/core libraries/core
 COPY apps/waBot apps/waBot
 
+RUN cd /app && pnpm --filter @aetherlink/core build
+
 WORKDIR /app/apps/waBot
 
 ENV SESSION_PATH=/data/session
