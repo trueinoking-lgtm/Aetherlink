@@ -2,6 +2,8 @@ import { DbSchema } from '@aetherlink/core';
 import { type CookieMethodsServer, createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+import { getSupabaseAnonKey, getSupabaseUrl } from './env';
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -19,7 +21,7 @@ export async function createClient() {
     },
   };
 
-  return createServerClient<DbSchema>(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+  return createServerClient<DbSchema>(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: cookieMethods,
   });
 }

@@ -21,10 +21,20 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
 
       - name: Build all projects
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_ANON_KEY: ci-placeholder-anon-key
         run: |
           pnpm build
