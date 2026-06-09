@@ -1,5 +1,4 @@
-import pkg from '@whiskeysockets/baileys';
-const { default: makeWASocket, DisconnectReason, useMultiFileAuthState } = pkg as any;
+import makeWASocket, { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, Browsers } from '@whiskeysockets/baileys';
 import type { WASocket } from '@whiskeysockets/baileys';
 import { env } from './env.js';
 import { sendSessionTerminatedAlert } from './alerts.js';
@@ -17,6 +16,20 @@ function extractText(msg: unknown): string {
   const ext = body.extendedTextMessage;
   if (ext && typeof ext === 'object' && typeof (ext as { text?: string }).text === 'string') {
     return (ext as { text: string }).text;
+  }
+  // channel/newsletter messages
+  const newslet = body.newsletterAdminInviteMessage;
+  if (newslet && typeof newslet === 'object' && typeof (newslet as { caption?: string }).caption === 'string') {
+    return (newslet as { caption: string }).caption;
+  }
+  // image/video captions from channels
+  const img = body.imageMessage;
+  if (img && typeof img === 'object' && typeof (img as { caption?: string }).caption === 'string') {
+    return (img as { caption: string }).caption;
+  }
+  const vid = body.videoMessage;
+  if (vid && typeof vid === 'object' && typeof (vid as { caption?: string }).caption === 'string') {
+    return (vid as { caption: string }).caption;
   }
   return '';
 }
@@ -47,10 +60,13 @@ async function handleDirectJobsQuery(sock: WASocket, jid: string) {
 
 export async function startBot(): Promise<void> {
   const { state, saveCreds } = await useMultiFileAuthState(env.sessionPath);
+  const { version } = await fetchLatestBaileysVersion();
 
   const sock = makeWASocket({
     auth: state,
     printQRInTerminal: false,
+    version,
+    browser: Browsers.macOS('Safari'),
   });
 
   sock.ev.on('creds.update', saveCreds);
@@ -98,18 +114,26 @@ export async function startBot(): Promise<void> {
     for (const msg of messages) {
       if (!msg.message || msg.key.fromMe) continue;
 
-      const text = extractText(msg);
       const jid = msg.key.remoteJid || '';
       const isDirect = jid.endsWith('@s.whatsapp.net');
+      const isGroup = jid.endsWith('@g.us');
+      const isChannel = jid.endsWith('@newsletter');
 
-      if (text) {
-        const normalized = text.toLowerCase().trim();
-        if (isDirect && (normalized === 'jobs' || normalized === 'find jobs')) {
-          await handleDirectJobsQuery(sock, jid);
-          continue;
-        }
-        await processMessage(text, jid, isDirect);
+      // skip anything that isn't a direct message, group, or channel
+      if (!isDirect && !isGroup && !isChannel) continue;
+
+      const text = extractText(msg);
+      if (!text) continue;
+
+      console.log(`[${isChannel ? 'CHANNEL' : isGroup ? 'GROUP' : 'DM'}] ${jid}: ${text.slice(0, 80)}`);
+
+      const normalized = text.toLowerCase().trim();
+      if (isDirect && (normalized === 'jobs' || normalized === 'find jobs')) {
+        await handleDirectJobsQuery(sock, jid);
+        continue;
       }
+
+      await processMessage(text, jid, isDirect);
     }
   });
 }

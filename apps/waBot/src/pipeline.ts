@@ -21,6 +21,15 @@ const JOB_KEYWORDS = [
 
 export function isJobPost(text: string): boolean {
   const lower = text.toLowerCase();
+
+  if (text.length < 20) {
+    return false;
+  }
+
+  if (text.includes('whatsapp.com/channel/') && !lower.includes('vacancy') && !lower.includes('hiring')) {
+    return false;
+  }
+
   return JOB_KEYWORDS.some((kw) => lower.includes(kw));
 }
 
@@ -62,16 +71,51 @@ type StructuredJob = {
   hr_email: string | null;
   requirements: string[];
   deadline: string | null;
+  location: string | null;
+  salary: string | null;
+  salary_mentioned: boolean;
 };
 
 export async function structureJobPost(compressed: string): Promise<StructuredJob | null> {
   process.env.FIREWORKS_API_KEY = process.env.FIREWORKS_API_KEY || env.fireworksApiKey;
 
+  const prompt = `You are a job posting extractor for Zimbabwe. Extract structured data from the raw message below.
+
+## RULES:
+- If the message is NOT a job posting (e.g., "Jobs" alone, "Hi", "Thanks", WhatsApp channel invite), return null for all fields.
+- Extract explicitly mentioned fields. If missing, use null for strings, false for salary_mentioned.
+
+## FIELDS to extract:
+- title: Job title (e.g., "Patrol Assistant", "Security Guard")
+- company: Hiring organization (if not stated, use null)
+- hr_email: Email address to apply (if present, else null)
+- requirements: Array of strings (e.g., ["Valid driver's license", "5 years experience"]). If none, empty array.
+- deadline: Application deadline in YYYY-MM-DD format (e.g., "2026-06-14"). If "ASAP" or not stated, null.
+- location: City/town in Zimbabwe (e.g., "Harare", "Masvingo", "Shamva"). If multiple, take primary. If not mentioned, null.
+- salary: Annual or monthly figure as string (e.g., "US$77,084.20", "$500/month"). Include currency. If not mentioned, null.
+- salary_mentioned: true if salary appears anywhere (even partial), false otherwise.
+
+## OUTPUT FORMAT:
+Return ONLY valid JSON. No markdown, no extra text.
+Example:
+{
+  "title": "Patrol Assistant",
+  "company": "SecureCo",
+  "hr_email": "hr@secureco.co.zw",
+  "requirements": ["Valid driver's license", "Clean record"],
+  "deadline": "2026-07-01",
+  "location": "Harare",
+  "salary": "US$350/month",
+  "salary_mentioned": true
+}
+
+--- RAW MESSAGE START ---
+${compressed}
+--- RAW MESSAGE END ---`;
+
   const { text } = await executeAITask(
     'job_structure',
-    `Extract job details. Return ONLY valid JSON, no markdown, no preamble.
-Schema: {"title": string, "company": string|null, "hr_email": string|null, "requirements": string[], "deadline": string|null}
-Text: ${compressed}`,
+    prompt,
     { responseFormat: 'json', maxTokens: 512 },
   );
 
@@ -104,6 +148,7 @@ export async function processMessage(text: string, groupId: string, isDirect = f
 
   const compressed = compressText(text);
   const structured = await structureJobPost(compressed);
+
   if (!structured?.title) {
     if (archiveId) {
       await updateArchiveExtraction(archiveId, {
@@ -129,6 +174,9 @@ export async function processMessage(text: string, groupId: string, isDirect = f
       hr_email: structured.hr_email,
       requirements: structured.requirements ?? [],
       deadline: structured.deadline,
+      location: structured.location,
+      salary: structured.salary,
+      salary_mentioned: structured.salary_mentioned,
       raw_text: text,
       description: text,
       post_hash: hash,

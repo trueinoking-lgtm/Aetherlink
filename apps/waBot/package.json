@@ -12,7 +12,7 @@
   "dependencies": {
     "@aetherlink/core": "workspace:*",
     "@supabase/supabase-js": "^2.95.3",
-    "@whiskeysockets/baileys": "^6.7.16",
+    "@whiskeysockets/baileys": "7.0.0-rc13",
     "dotenv": "^16.6.1",
     "nodemailer": "^6.10.1",
     "pino": "^9.6.0"
