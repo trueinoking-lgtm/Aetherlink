@@ -25,7 +25,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           return;
         }
         const prof = await sdk.getAetherLinkProfile();
-        setProfile(prof ?? null);
+        if (!prof?.full_name) {
+          // New user — redirect to onboarding
+          router.push('/onboarding');
+          return;
+        }
+        setProfile(prof);
       } catch {
         router.push('/');
       } finally {
