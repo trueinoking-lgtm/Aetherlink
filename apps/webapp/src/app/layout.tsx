@@ -1,25 +1,17 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Sans, JetBrains_Mono, Syne } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 
 import { ThemeProvider } from './components/themeProvider';
 import './globals.css';
 
-const syne = Syne({
-  variable: '--font-display',
+const geistSans = Geist({
+  variable: '--font-geist-sans',
   subsets: ['latin'],
-  weight: ['700', '800'],
 });
 
-const ibmPlex = IBM_Plex_Sans({
-  variable: '--font-body',
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
   subsets: ['latin'],
-  weight: ['400', '500'],
-});
-
-const jetbrains = JetBrains_Mono({
-  variable: '--font-mono',
-  subsets: ['latin'],
-  weight: ['400'],
 });
 
 export const metadata: Metadata = {
@@ -33,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#F5A623',
+  themeColor: '#FFD700',
 };
 
 export default function RootLayout({
@@ -44,8 +36,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${syne.variable} ${ibmPlex.variable} ${jetbrains.variable} min-h-screen antialiased`}
-        style={{ fontFamily: 'var(--font-body), sans-serif' }}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
+        style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}
       >
         <ThemeProvider>{children}</ThemeProvider>
         {process.env.NODE_ENV === 'production' && <script src="/register-sw.js" defer />}

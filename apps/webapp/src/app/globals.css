@@ -8,8 +8,9 @@
   --bg-base: #0a0a0a;
   --bg-surface: #111111;
   --bg-raised: #1a1a1a;
-  --accent: #f5a623;
-  --accent-dim: #a36e10;
+  --accent: #FFD700;
+  --accent-dim: #B8860B;
+  --accent-glow: 0 0 20px rgba(255, 215, 0, 0.15);
   --text-primary: #f0f0f0;
   --text-secondary: #888888;
   --text-muted: #444444;
@@ -17,9 +18,12 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --border: #2a2a2a;
-  --font-display: var(--font-display), 'Syne', sans-serif;
-  --font-body: var(--font-body), 'IBM Plex Sans', sans-serif;
-  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+  --match-high: #22c55e;
+  --match-mid: #f59e0b;
+  --match-low: #6b7280;
+  --font-display: var(--font-geist-sans), 'Geist', sans-serif;
+  --font-body: var(--font-geist-sans), 'Geist', sans-serif;
+  --font-mono: var(--font-geist-mono), 'Geist Mono', monospace;
 }
 
 .font-display {
@@ -28,6 +32,32 @@
 
 .font-mono {
   font-family: var(--font-mono);
+}
+
+/* Glass card utility */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+}
+
+/* Gold glow on active elements */
+.gold-glow {
+  box-shadow: var(--accent-glow);
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-raised) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
 }
 
 /* shadcn/ui design tokens — matches desktopProbe theme */
