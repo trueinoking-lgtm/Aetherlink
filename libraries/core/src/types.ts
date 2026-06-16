@@ -186,6 +186,11 @@ export type Profile = {
   is_trial: boolean;
   full_name?: string;
   headline?: string;
+  location?: string;
+  preferred_job_types?: string[];
+  salary_floor?: number;
+  auto_apply_enabled?: boolean;
+  auto_apply_threshold?: number;
   skills?: string[];
   certifications?: string[];
   gmail_email?: string;
@@ -201,6 +206,11 @@ export type AetherLinkProfileUpdate = Partial<
     Profile,
     | 'full_name'
     | 'headline'
+    | 'location'
+    | 'preferred_job_types'
+    | 'salary_floor'
+    | 'auto_apply_enabled'
+    | 'auto_apply_threshold'
     | 'skills'
     | 'certifications'
     | 'gmail_email'
@@ -311,6 +321,11 @@ export type DbSchema = {
             | 'is_trial'
             | 'full_name'
             | 'headline'
+            | 'location'
+            | 'preferred_job_types'
+            | 'salary_floor'
+            | 'auto_apply_enabled'
+            | 'auto_apply_threshold'
             | 'skills'
             | 'certifications'
             | 'gmail_email'

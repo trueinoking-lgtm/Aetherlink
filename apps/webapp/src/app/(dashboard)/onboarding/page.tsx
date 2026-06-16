@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useSdk } from '@aetherlink/ui/hooks/useSdk';
 import { AetherLinkSupabaseApi } from '@aetherlink/ui/lib/supabaseApi';
 import type { Profile } from '@aetherlink/core';
+import {
+  readOnboardingPreferences,
+  writeOnboardingPreferences,
+} from '@/lib/onboardingPreferences';
 import { createClient } from '@/lib/supabase/client';
 
 const JOB_TYPES = ['Tech', 'Finance', 'NGO', 'Construction', 'Healthcare', 'Other'];
@@ -68,16 +72,63 @@ export default function OnboardingPage() {
   useEffect(() => {
     void (async () => {
       try {
+        const storedPrefs = readOnboardingPreferences();
         const { user } = await sdk.getUser();
-        if (!user) { router.push('/'); return; }
-        const prof = await sdk.getAetherLinkProfile();
-        if (prof?.full_name) {
-          setStep1((prev) => ({ ...prev, fullName: prof.full_name ?? '' }));
+        if (!user) {
+          router.push('/');
+          return;
         }
-      } catch { /* ignore */ }
+
+        const [prof, advancedMatchingResult] = await Promise.all([
+          sdk.getAetherLinkProfile(),
+          supabase
+            .from('advanced_matching')
+            .select('blacklisted_companies')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+        ]);
+
+        const persistedBlacklist =
+          advancedMatchingResult.data?.blacklisted_companies ?? storedPrefs.blacklistedCompanies;
+
+        if (prof) {
+          setStep1({
+            fullName: prof.full_name ?? '',
+            location: prof.location ?? storedPrefs.location,
+            jobTypes: prof.preferred_job_types ?? storedPrefs.preferredJobTypes,
+          });
+          setStep2((prev) => ({
+            ...prev,
+            currentRole: prof.headline ?? '',
+            skills: prof.skills ?? [],
+          }));
+          setStep3({
+            salaryFloor: prof.salary_floor ?? storedPrefs.salaryFloor,
+            jobTypes: prof.preferred_job_types ?? storedPrefs.preferredJobTypes,
+            blacklist: persistedBlacklist,
+            autoApplyEnabled: prof.auto_apply_enabled ?? storedPrefs.autoApplyEnabled,
+            autoApplyThreshold: prof.auto_apply_threshold ?? storedPrefs.autoApplyThreshold,
+          });
+        } else {
+          setStep1((prev) => ({
+            ...prev,
+            location: storedPrefs.location,
+            jobTypes: storedPrefs.preferredJobTypes,
+          }));
+          setStep3({
+            salaryFloor: storedPrefs.salaryFloor,
+            jobTypes: storedPrefs.preferredJobTypes,
+            blacklist: persistedBlacklist,
+            autoApplyEnabled: storedPrefs.autoApplyEnabled,
+            autoApplyThreshold: storedPrefs.autoApplyThreshold,
+          });
+        }
+      } catch {
+        // ignore
+      }
       setLoading(false);
     })();
-  }, [sdk, router]);
+  }, [sdk, supabase, router]);
 
   const isStepValid = (): boolean => {
     if (step === 0) return step1.fullName.trim().length > 0 && step1.location.trim().length > 0;
@@ -95,24 +146,53 @@ export default function OnboardingPage() {
   async function handleFinish() {
     setLoading(true);
     try {
-      // Save profile data to Supabase
+      const prefsPayload = {
+        location: step1.location,
+        preferred_job_types: step3.jobTypes,
+        salary_floor: step3.salaryFloor,
+        auto_apply_enabled: step3.autoApplyEnabled,
+        auto_apply_threshold: step3.autoApplyThreshold,
+      };
+
       await sdk.updateAetherLinkProfile({
         full_name: step1.fullName,
         headline: step2.currentRole,
         skills: step2.skills,
       });
 
-      // Save onboarding preferences to the profiles table (using raw supabase)
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user) {
-        await supabase.from('profiles').update({
-          location: step1.location,
-          preferred_job_types: step3.jobTypes,
-          salary_floor: step3.salaryFloor,
-          auto_apply_enabled: step3.autoApplyEnabled,
-          auto_apply_threshold: step3.autoApplyThreshold,
-        } as Record<string, unknown>).eq('user_id', user.id);
+        const [matchingResult, profileFallbackResult] = await Promise.all([
+          supabase.from('advanced_matching').upsert(
+            {
+              blacklisted_companies: step3.blacklist,
+              chatgpt_prompt: '',
+            },
+            { onConflict: 'user_id' },
+          ),
+          supabase.from('profiles').update(prefsPayload).eq('user_id', user.id),
+        ]);
+
+        if (matchingResult.error) {
+          throw matchingResult.error;
+        }
+
+        if (profileFallbackResult.error && profileFallbackResult.error.code !== '42703') {
+          throw profileFallbackResult.error;
+        }
       }
+
+      writeOnboardingPreferences({
+        location: step1.location,
+        preferredJobTypes: step3.jobTypes,
+        salaryFloor: step3.salaryFloor,
+        autoApplyEnabled: step3.autoApplyEnabled,
+        autoApplyThreshold: step3.autoApplyThreshold,
+        blacklistedCompanies: step3.blacklist,
+      });
 
       router.push('/dashboard');
     } catch (e) {
