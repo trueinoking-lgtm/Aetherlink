@@ -50,7 +50,7 @@ export default function FeedPage() {
         if (isDebug) {
           // Use SDK mock data in debug mode
           [feed, prof] = await Promise.all([
-            sdk.listFeedJobs({ limit: 50 }),
+            sdk.listFeedJobs({ limit: 200 }),
             sdk.getAetherLinkProfile(),
           ]);
         } else {
@@ -60,7 +60,7 @@ export default function FeedPage() {
             return;
           }
           [feed, prof] = await Promise.all([
-            sdk.listFeedJobs({ limit: 50 }),
+            sdk.listFeedJobs({ limit: 200 }),
             sdk.getAetherLinkProfile(),
           ]);
         }
