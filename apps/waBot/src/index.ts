@@ -72,7 +72,7 @@ export async function startBot(): Promise<void> {
   sock.ev.on('creds.update', saveCreds);
 
   if (!sock.authState.creds.registered) {
-    await sock.waitForConnectionUpdate((u) => !!u.qr);
+    await sock.waitForConnectionUpdate(async (u) => !!u.qr);
     const phoneNumber = env.botPhoneNumber.replace(/[^0-9]/g, '');
     const code = await sock.requestPairingCode(phoneNumber);
     console.log(`=============================`);
