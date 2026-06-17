@@ -46,7 +46,10 @@ export default function FeedPage() {
     void (async () => {
       try {
         const { data } = await supabase.auth.getUser();
-        if (!data?.user) return;
+        if (!data?.user) {
+          setLoading(false);
+          return;
+        }
 
         const [feed, prof] = await Promise.all([
           sdk.listFeedJobs({ limit: 50 }),
