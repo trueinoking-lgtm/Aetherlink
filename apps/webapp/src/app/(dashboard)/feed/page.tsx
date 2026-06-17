@@ -140,7 +140,7 @@ export default function FeedPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">
           Jobs
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
@@ -213,7 +213,7 @@ export default function FeedPage() {
           </select>
 
           {/* Suited for me toggle */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:border-[var(--accent-dim)]">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:border-[var(--border-accent)] mobile-touch">
             <input
               type="checkbox"
               checked={suitedForMe}
@@ -255,7 +255,7 @@ export default function FeedPage() {
               <Link
                 key={job.id}
                 href={`/feed/${job.id}`}
-                className="glass-card relative overflow-hidden p-5 transition hover:border-[var(--accent-dim)]"
+                className="glass-card relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
               >
                 {/* Match score badge */}
                 {score !== null && (
@@ -284,7 +284,7 @@ export default function FeedPage() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {job.salary && (
-                    <span className="rounded-full bg-[var(--accent)]/20 px-2.5 py-0.5 text-xs font-medium text-[var(--accent)]">
+                    <span className="badge badge-high">
                       {job.salary}
                     </span>
                   )}

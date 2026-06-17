@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
       {/* Recent activity */}
       <div>
-        <h2 className="font-display mb-4 text-xl font-bold text-[var(--text-primary)]">Recent activity</h2>
+        <h2 className="section-heading">Recent activity</h2>
         {jobs.length === 0 ? (
           <div className="glass-card p-8 text-center">
             <p className="text-[var(--text-secondary)]">No jobs matching your profile yet.</p>

@@ -379,11 +379,11 @@ export default function CVPage() {
           <div className="space-y-3">
             <div className="flex flex-wrap gap-1.5">
               {skills.map((s) => (
-                <span key={s} className="rounded-full bg-[var(--accent)]/20 px-3 py-1 text-xs text-[var(--accent)]">
+                <span key={s} className="skill-tag">
                   {s}
                   <button
                     type="button"
-                    className="ml-1.5 text-[var(--accent-dim)] hover:text-[var(--accent)]"
+                    className="skill-tag-remove"
                     onClick={() => setSkills((prev) => prev.filter((x) => x !== s))}
                   >
                     &times;
@@ -402,7 +402,7 @@ export default function CVPage() {
               <button
                 type="button"
                 onClick={addSkill}
-                className="rounded-lg bg-[var(--accent)] px-4 text-sm font-medium text-black hover:brightness-110"
+                className="premium-btn premium-btn-primary"
               >
                 Add
               </button>
@@ -453,7 +453,7 @@ export default function CVPage() {
         type="button"
         onClick={handleSave}
         disabled={saving}
-        className="rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-medium text-black transition hover:brightness-110 disabled:opacity-40"
+        className="premium-btn premium-btn-primary disabled:opacity-40"
       >
         {saving ? 'Saving\u2026' : 'Save Changes'}
       </button>

@@ -20,7 +20,7 @@ function ScoreCircle({ score }: { score: number }) {
           cy="50"
           r={radius}
           fill="none"
-          stroke="#FFD700"
+          stroke="var(--accent)"
           strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -216,7 +216,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             {job.hr_email ? (
               <button
                 type="button"
-                className="w-full rounded-lg bg-[var(--accent)] py-3 font-display text-sm font-bold text-black transition hover:brightness-110"
+                className="premium-btn premium-btn-primary w-full py-3 text-base"
               >
                 Apply Now
               </button>
