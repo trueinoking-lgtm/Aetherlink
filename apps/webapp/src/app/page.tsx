@@ -29,14 +29,15 @@ export default function LoginPage() {
     <main className="login-page relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)] px-4">
       {/* Background gradient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/5 blur-3xl" />
-        <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/3 blur-3xl" />
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/8 blur-3xl" />
+        <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/5 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--accent)]/3 blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo / Brand */}
         <div className="mb-10 text-center">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
             Aether<span className="text-[var(--accent)]">Link</span>
           </h1>
           <p className="mt-3 text-base text-[var(--text-secondary)]">
@@ -48,7 +49,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="glass-card p-8">
+        <div className="login-card glass-card p-8">
           {/* Feature highlights */}
           <div className="mb-8 space-y-4">
             <div className="flex items-start gap-3">
@@ -153,11 +154,11 @@ export default function LoginPage() {
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-[var(--text-faint)]">
           By signing in, you agree to our{' '}
-          <a href="/terms" className="text-[var(--text-secondary)] underline underline-offset-2 transition hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
+          <a href="/terms" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="/privacy" className="text-[var(--text-secondary)] underline underline-offset-2 transition hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
+          <a href="/privacy" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
             Privacy Policy
           </a>.
         </p>

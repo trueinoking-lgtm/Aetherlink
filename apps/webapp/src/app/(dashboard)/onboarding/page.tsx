@@ -48,17 +48,17 @@ function ProgressDots({ step }: { step: number }) {
       {[0, 1, 2].map((i) => (
         <div key={i} className="flex items-center gap-3">
           {i > 0 && (
-            <div className={`h-px w-8 ${i <= step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`} />
+            <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
           )}
-          <div
-            className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
-              i === step
-                ? 'bg-[var(--accent)] text-white scale-110'
-                : i < step
-                ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
-                : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
-            }`}
-          >
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
+                i === step
+                  ? 'bg-[var(--accent)] text-white scale-110 shadow-[var(--shadow-glow)]'
+                  : i < step
+                  ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                  : 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]'
+              }`}
+            >
             {i < step ? (
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
