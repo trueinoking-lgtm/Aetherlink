@@ -25,15 +25,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     void (async () => {
+      const isDebug = window.location.search.includes('debug=true');
       try {
-        const { user } = await sdk.getUser();
-        if (!user) { router.push('/'); return; }
-
-        const [prof, feed, apps] = await Promise.all([
-          sdk.getAetherLinkProfile(),
-          sdk.listFeedJobs({ limit: 10 }),
-          sdk.listApplications(),
-        ]);
+        let user, prof, feed, apps;
+        if (isDebug) {
+          [user, prof, feed, apps] = await Promise.all([
+            sdk.getUser(),
+            sdk.getAetherLinkProfile(),
+            sdk.listFeedJobs({ limit: 10 }),
+            sdk.listApplications(),
+          ]);
+        } else {
+          user = await sdk.getUser();
+          if (!user) { router.push('/'); return; }
+          [prof, feed, apps] = await Promise.all([
+            sdk.getAetherLinkProfile(),
+            sdk.listFeedJobs({ limit: 10 }),
+            sdk.listApplications(),
+          ]);
+        }
         setProfile(prof ?? null);
         setJobs(feed.jobs);
         setApplications(apps);

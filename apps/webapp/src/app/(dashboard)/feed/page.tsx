@@ -44,17 +44,26 @@ export default function FeedPage() {
 
   useEffect(() => {
     void (async () => {
+      const isDebug = window.location.search.includes('debug=true');
       try {
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) {
-          setLoading(false);
-          return;
+        let feed, prof;
+        if (isDebug) {
+          // Use SDK mock data in debug mode
+          [feed, prof] = await Promise.all([
+            sdk.listFeedJobs({ limit: 50 }),
+            sdk.getAetherLinkProfile(),
+          ]);
+        } else {
+          const { data } = await supabase.auth.getUser();
+          if (!data?.user) {
+            setLoading(false);
+            return;
+          }
+          [feed, prof] = await Promise.all([
+            sdk.listFeedJobs({ limit: 50 }),
+            sdk.getAetherLinkProfile(),
+          ]);
         }
-
-        const [feed, prof] = await Promise.all([
-          sdk.listFeedJobs({ limit: 50 }),
-          sdk.getAetherLinkProfile(),
-        ]);
         setJobs(feed.jobs);
         setFilteredJobs(feed.jobs);
         setProfile(prof ?? null);

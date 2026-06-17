@@ -186,14 +186,23 @@ export default function CVPage() {
 
   useEffect(() => {
     void (async () => {
+      const isDebug = window.location.search.includes('debug=true');
       try {
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) { router.push('/'); return; }
-
-        const [prof, feed] = await Promise.all([
-          sdk.getAetherLinkProfile(),
-          sdk.listFeedJobs({ limit: 50 }),
-        ]);
+        let prof, feed;
+        if (isDebug) {
+          // Use SDK mock data in debug mode
+          [prof, feed] = await Promise.all([
+            sdk.getAetherLinkProfile(),
+            sdk.listFeedJobs({ limit: 50 }),
+          ]);
+        } else {
+          const { data } = await supabase.auth.getUser();
+          if (!data?.user) { router.push('/'); return; }
+          [prof, feed] = await Promise.all([
+            sdk.getAetherLinkProfile(),
+            sdk.listFeedJobs({ limit: 50 }),
+          ]);
+        }
         setProfile(prof ?? null);
         setJobs(feed.jobs);
         if (prof) {
