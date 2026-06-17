@@ -260,36 +260,38 @@ export default function OnboardingPage() {
     );
   }
 
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--bg-base)] p-4">
-      <div className="w-full max-w-lg">
+return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--bg-base)] px-4 py-8">
+      <div className="w-full max-w-md">
         {/* Progress dots */}
-        <div className="mb-8 flex items-center justify-center gap-3">
+        <div className="mb-10 flex items-center justify-center gap-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-center gap-3">
+            <div key={i} className="flex items-center gap-2">
               <div
-                className={`h-3 w-3 rounded-full transition-colors ${
+                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
                   i === step
-                    ? 'bg-[var(--accent)] gold-glow'
+                    ? 'bg-[var(--accent)] w-8'
                     : i < step
                     ? 'bg-[var(--accent)]'
-                    : 'bg-[var(--text-muted)]'
+                    : 'bg-[var(--border)]'
                 }`}
               />
-              {i < 2 && <div className={`h-px w-8 ${i < step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`} />}
             </div>
           ))}
         </div>
 
         {/* Step 1: Tell us about you */}
         {step === 0 && (
-          <div className="glass-card p-6 space-y-5">
-            <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
+          <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
+            <div>
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">Let's start with the basics</p>
+            </div>
 
             <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Full name</label>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name</label>
               <input
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                className="premium-input"
                 placeholder="Your full name"
                 value={step1.fullName}
                 onChange={(e) => setStep1((prev) => ({ ...prev, fullName: e.target.value }))}
@@ -297,9 +299,9 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Location (City)</label>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City)</label>
               <input
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                className="premium-input"
                 placeholder="e.g. Harare"
                 list="zw-cities"
                 value={step1.location}
@@ -311,18 +313,14 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm text-[var(--text-secondary)]">Preferred job type</label>
+              <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
               <div className="flex flex-wrap gap-2">
                 {JOB_TYPES.map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => toggleJobType(type)}
-                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                      step1.jobTypes.includes(type)
-                        ? 'bg-[var(--accent)] text-black'
-                        : 'border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent-dim)]'
-                    }`}
+                    className={`pill ${step1.jobTypes.includes(type) ? 'active' : ''}`}
                   >
                     {type}
                   </button>
@@ -334,17 +332,20 @@ export default function OnboardingPage() {
 
         {/* Step 2: Your CV */}
         {step === 1 && (
-          <div className="glass-card p-6 space-y-5">
-            <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
+          <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
+            <div>
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">Build your profile or upload a PDF</p>
+            </div>
 
             {/* Mode toggle */}
-            <div className="flex gap-2 rounded-lg bg-[var(--bg-surface)] p-1">
+            <div className="flex gap-1 rounded-lg bg-[var(--bg-surface)] p-1">
               <button
                 type="button"
                 onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
-                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
                   step2.mode === 'build'
-                    ? 'bg-[var(--accent)] text-black'
+                    ? 'bg-[var(--accent)] text-white shadow-sm'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -353,9 +354,9 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
-                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
                   step2.mode === 'upload'
-                    ? 'bg-[var(--accent)] text-black'
+                    ? 'bg-[var(--accent)] text-white shadow-sm'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
@@ -364,13 +365,13 @@ export default function OnboardingPage() {
             </div>
 
             {/* CV strength indicator */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 rounded-lg bg-[var(--bg-surface)] p-3">
               <span className="text-sm text-[var(--text-secondary)]">CV Strength:</span>
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <svg
                     key={star}
-                    className={`h-4 w-4 ${star <= cvStars ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}
+                    className={`h-5 w-5 ${star <= cvStars ? 'text-[var(--accent)]' : 'text-[var(--border)]'}`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -387,7 +388,7 @@ export default function OnboardingPage() {
                 <div>
                   <label className="mb-1 block text-sm text-[var(--text-secondary)]">Current role</label>
                   <input
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                    className="premium-input"
                     placeholder="e.g. Software Engineer"
                     value={step2.currentRole}
                     onChange={(e) => setStep2((prev) => ({ ...prev, currentRole: e.target.value }))}
@@ -398,11 +399,11 @@ export default function OnboardingPage() {
                   <label className="mb-1 block text-sm text-[var(--text-secondary)]">Skills</label>
                   <div className="mb-2 flex flex-wrap gap-1.5">
                     {step2.skills.map((s) => (
-                      <span key={s} className="rounded-full bg-[var(--accent)]/20 px-3 py-1 text-xs text-[var(--accent)]">
+                      <span key={s} className="skill-tag">
                         {s}
                         <button
                           type="button"
-                          className="ml-1.5 text-[var(--accent-dim)] hover:text-[var(--accent)]"
+                          className="skill-tag-remove"
                           onClick={() => setStep2((prev) => ({ ...prev, skills: prev.skills.filter((x) => x !== s) }))}
                         >
                           ×
@@ -412,7 +413,7 @@ export default function OnboardingPage() {
                   </div>
                   <div className="flex gap-2">
                     <input
-                      className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                      className="premium-input flex-1"
                       placeholder="Add a skill"
                       value={skillInput}
                       onChange={(e) => setSkillInput(e.target.value)}
@@ -432,7 +433,7 @@ export default function OnboardingPage() {
                   <label className="mb-1 block text-sm text-[var(--text-secondary)]">Years of experience</label>
                   <input
                     type="number"
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                    className="premium-input"
                     placeholder="e.g. 3"
                     value={step2.experienceYears}
                     onChange={(e) => setStep2((prev) => ({ ...prev, experienceYears: e.target.value }))}
@@ -442,7 +443,7 @@ export default function OnboardingPage() {
                 <div>
                   <label className="mb-1 block text-sm text-[var(--text-secondary)]">Education</label>
                   <input
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                    className="premium-input"
                     placeholder="e.g. BSc Computer Science, UZ"
                     value={step2.education}
                     onChange={(e) => setStep2((prev) => ({ ...prev, education: e.target.value }))}
@@ -491,154 +492,153 @@ export default function OnboardingPage() {
         )}
 
         {/* Step 3: Auto-apply settings */}
-        {step === 2 && (
-          <div className="glass-card p-6 space-y-5">
-            <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
+                {step === 2 && (
+                  <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
+                    <div>
+                      <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
+                      <p className="mt-1 text-sm text-[var(--text-muted)]">Configure how AetherLink works for you</p>
+                    </div>
 
-            <div>
-              <label className="mb-2 block text-sm text-[var(--text-secondary)]">
-                Salary floor: <span className="text-[var(--accent)] font-medium">${step3.salaryFloor}</span> USD
-              </label>
-              <input
-                type="range"
-                min={0}
-                max={5000}
-                step={100}
-                value={step3.salaryFloor}
-                onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
-                className="w-full accent-[var(--accent)]"
-              />
-              <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                <span>$0</span>
-                <span>$5,000</span>
-              </div>
-            </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
+                        Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
+                      </label>
+                      <input
+                        type="range"
+                        min={0}
+                        max={5000}
+                        step={100}
+                        value={step3.salaryFloor}
+                        onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
+                        className="w-full accent-[var(--accent)]"
+                      />
+                      <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
+                        <span>$0</span>
+                        <span>$5,000</span>
+                      </div>
+                    </div>
 
-            <div>
-              <label className="mb-2 block text-sm text-[var(--text-secondary)]">Job types</label>
-              <div className="flex flex-wrap gap-2">
-                {JOB_TYPES.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => toggleStep3JobType(type)}
-                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                      step3.jobTypes.includes(type)
-                        ? 'bg-[var(--accent)] text-black'
-                        : 'border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent-dim)]'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
+                    <div>
+                      <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Job types</label>
+                      <div className="flex flex-wrap gap-2">
+                        {JOB_TYPES.map((type) => (
+                          <button
+                            key={type}
+                            type="button"
+                            onClick={() => toggleStep3JobType(type)}
+                            className={`pill ${step3.jobTypes.includes(type) ? 'active' : ''}`}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-            <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Blacklist companies</label>
-              <div className="mb-2 flex flex-wrap gap-1.5">
-                {step3.blacklist.map((c) => (
-                  <span key={c} className="rounded-full border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-1 text-xs text-[var(--danger)]">
-                    {c}
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Blacklist companies</label>
+                      <div className="mb-2 flex flex-wrap gap-1.5">
+                        {step3.blacklist.map((c) => (
+                          <span key={c} className="skill-tag">
+                            {c}
+                            <button
+                              type="button"
+                              className="skill-tag-remove"
+                              onClick={() => setStep3((prev) => ({ ...prev, blacklist: prev.blacklist.filter((x) => x !== c) }))}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          className="premium-input flex-1"
+                          placeholder="Company name"
+                          value={blacklistInput}
+                          onChange={(e) => setBlacklistInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBlacklist())}
+                        />
+                        <button
+                          type="button"
+                          onClick={addBlacklist}
+                          className="premium-btn premium-btn-primary"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between rounded-lg bg-[var(--bg-surface)] p-4">
+                      <div>
+                        <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score{'>'} X%</p>
+                        <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
+                      </div>
+                      <label className="relative inline-flex cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          checked={step3.autoApplyEnabled}
+                          onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
+                          className="peer sr-only"
+                        />
+                        <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)]" />
+                      </label>
+                    </div>
+
+                    {step3.autoApplyEnabled && (
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">Match threshold: {step3.autoApplyThreshold}%</label>
+                        <input
+                          type="range"
+                          min={50}
+                          max={100}
+                          step={5}
+                          value={step3.autoApplyThreshold}
+                          onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
+                          className="w-full accent-[var(--accent)]"
+                        />
+                        <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
+                          <span>50%</span>
+                          <span>100%</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Navigation buttons */}
+                <div className="mt-8 flex items-center justify-between gap-4">
+                  {step > 0 ? (
                     <button
                       type="button"
-                      className="ml-1.5 hover:text-[var(--danger)]"
-                      onClick={() => setStep3((prev) => ({ ...prev, blacklist: prev.blacklist.filter((x) => x !== c) }))}
+                      onClick={() => setStep((s) => s - 1)}
+                      className="premium-btn premium-btn-secondary mobile-touch"
                     >
-                      ×
+                      Back
                     </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
-                  placeholder="Company name"
-                  value={blacklistInput}
-                  onChange={(e) => setBlacklistInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBlacklist())}
-                />
-                <button
-                  type="button"
-                  onClick={addBlacklist}
-                  className="rounded-lg bg-[var(--accent)] px-4 text-sm font-medium text-black hover:brightness-110"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
+                  ) : (
+                    <div />
+                  )}
 
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score{'>'} X%</p>
-                <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
-              </div>
-              <label className="relative inline-flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  checked={step3.autoApplyEnabled}
-                  onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
-                  className="peer sr-only"
-                />
-                <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)]" />
-              </label>
-            </div>
-
-            {step3.autoApplyEnabled && (
-              <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Match threshold: {step3.autoApplyThreshold}%</label>
-                <input
-                  type="range"
-                  min={50}
-                  max={100}
-                  step={5}
-                  value={step3.autoApplyThreshold}
-                  onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                  className="w-full accent-[var(--accent)]"
-                />
-                <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                  <span>50%</span>
-                  <span>100%</span>
+                  {step < 2 ? (
+                    <button
+                      type="button"
+                      onClick={() => setStep((s) => s + 1)}
+                      disabled={!isStepValid()}
+                      className="premium-btn premium-btn-primary mobile-touch flex-1"
+                    >
+                      Continue
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleFinish}
+                      disabled={loading}
+                      className="premium-btn premium-btn-primary mobile-touch flex-1"
+                    >
+                      {loading ? 'Saving…' : 'Start applying'}
+                    </button>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Navigation buttons */}
-        <div className="mt-6 flex items-center justify-between">
-          {step > 0 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s - 1)}
-              className="rounded-lg border border-[var(--border)] px-6 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--accent-dim)] hover:text-[var(--text-primary)]"
-            >
-              Back
-            </button>
-          ) : (
-            <div />
-          )}
-
-          {step < 2 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s + 1)}
-              disabled={!isStepValid()}
-              className="rounded-lg bg-[var(--accent)] px-6 py-2.5 text-sm font-medium text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleFinish}
-              disabled={loading}
-              className="rounded-lg bg-[var(--accent)] px-6 py-2.5 text-sm font-medium text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {loading ? 'Saving…' : 'Start applying'}
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
