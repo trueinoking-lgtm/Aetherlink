@@ -82,6 +82,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Bottom nav: shown on mobile, hidden on md+ */}
       <BottomNav />
       <main
+        id="main-content"
         className={`transition-all duration-200 pb-20 md:pb-0 ${
           collapsed ? 'md:ml-16' : 'md:ml-60'
         }`}
