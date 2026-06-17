@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#FFD700',
+  themeColor: '#0a0a0b',
 };
 
 export default function RootLayout({
@@ -35,10 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
-        style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
         {process.env.NODE_ENV === 'production' && <script src="/register-sw.js" defer />}
       </body>

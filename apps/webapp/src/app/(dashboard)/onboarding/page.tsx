@@ -42,6 +42,37 @@ function computeCvStrength(step2: Step2Data): number {
   return Math.min(5, score);
 }
 
+function ProgressDots({ step }: { step: number }) {
+  return (
+    <div className="mb-10 flex items-center justify-center gap-3">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex items-center gap-3">
+          {i > 0 && (
+            <div className={`h-px w-8 ${i <= step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'}`} />
+          )}
+          <div
+            className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
+              i === step
+                ? 'bg-[var(--accent)] text-white scale-110'
+                : i < step
+                ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border)]'
+            }`}
+          >
+            {i < step ? (
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              i + 1
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const sdk = useSdk() as AetherLinkSupabaseApi;
@@ -82,7 +113,6 @@ export default function OnboardingPage() {
 
         const prof = await sdk.getAetherLinkProfile();
 
-        // Skip advanced matching fetch in debug mode
         let persistedBlacklist: string[];
         if (isDebug) {
           persistedBlacklist = storedPrefs.blacklistedCompanies;
@@ -158,7 +188,6 @@ export default function OnboardingPage() {
       };
 
       if (isDebug) {
-        // In debug mode, skip actual API calls
         writeOnboardingPreferences({
           location: step1.location,
           preferredJobTypes: step3.jobTypes,
@@ -255,76 +284,72 @@ export default function OnboardingPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--bg-base)]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+          <p className="text-sm text-[var(--text-muted)]">Setting up your onboarding…</p>
+        </div>
       </div>
     );
   }
 
-return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--bg-base)] px-4 py-8">
-      <div className="w-full max-w-md">
-        {/* Progress dots */}
-        <div className="mb-10 flex items-center justify-center gap-2">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div
-                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                  i === step
-                    ? 'bg-[var(--accent)] w-8'
-                    : i < step
-                    ? 'bg-[var(--accent)]'
-                    : 'bg-[var(--border)]'
-                }`}
-              />
-            </div>
-          ))}
-        </div>
+  return (
+    <div className="flex min-h-screen flex-col items-center bg-[var(--bg-base)] px-4 py-8">
+      {/* Background gradient orbs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/5 blur-3xl" />
+        <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/3 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        <ProgressDots step={step} />
 
         {/* Step 1: Tell us about you */}
         {step === 0 && (
-          <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
-            <div>
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Tell us about you</h1>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">Let's start with the basics</p>
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
+            <div className="mb-6">
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">Let&rsquo;s start with the basics</p>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name</label>
-              <input
-                className="premium-input"
-                placeholder="Your full name"
-                value={step1.fullName}
-                onChange={(e) => setStep1((prev) => ({ ...prev, fullName: e.target.value }))}
-              />
-            </div>
+            <div className="space-y-5">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name</label>
+                <input
+                  className="premium-input"
+                  placeholder="Your full name"
+                  value={step1.fullName}
+                  onChange={(e) => setStep1((prev) => ({ ...prev, fullName: e.target.value }))}
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City)</label>
-              <input
-                className="premium-input"
-                placeholder="e.g. Harare"
-                list="zw-cities"
-                value={step1.location}
-                onChange={(e) => setStep1((prev) => ({ ...prev, location: e.target.value }))}
-              />
-              <datalist id="zw-cities">
-                {ZW_CITIES.map((c) => (<option key={c} value={c} />))}
-              </datalist>
-            </div>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City)</label>
+                <input
+                  className="premium-input"
+                  placeholder="e.g. Harare"
+                  list="zw-cities"
+                  value={step1.location}
+                  onChange={(e) => setStep1((prev) => ({ ...prev, location: e.target.value }))}
+                />
+                <datalist id="zw-cities">
+                  {ZW_CITIES.map((c) => (<option key={c} value={c} />))}
+                </datalist>
+              </div>
 
-            <div>
-              <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
-              <div className="flex flex-wrap gap-2">
-                {JOB_TYPES.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => toggleJobType(type)}
-                    className={`pill ${step1.jobTypes.includes(type) ? 'active' : ''}`}
-                  >
-                    {type}
-                  </button>
-                ))}
+              <div>
+                <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
+                <div className="flex flex-wrap gap-2">
+                  {JOB_TYPES.map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => toggleJobType(type)}
+                      className={`pill ${step1.jobTypes.includes(type) ? 'active' : ''}`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -332,313 +357,317 @@ return (
 
         {/* Step 2: Your CV */}
         {step === 1 && (
-          <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
-            <div>
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Your CV</h1>
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
+            <div className="mb-6">
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
               <p className="mt-1 text-sm text-[var(--text-muted)]">Build your profile or upload a PDF</p>
             </div>
 
-            {/* Mode toggle */}
-            <div className="flex gap-1 rounded-lg bg-[var(--bg-surface)] p-1">
-              <button
-                type="button"
-                onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
-                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
-                  step2.mode === 'build'
-                    ? 'bg-[var(--accent)] text-white shadow-sm'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                Build it here
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
-                className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
-                  step2.mode === 'upload'
-                    ? 'bg-[var(--accent)] text-white shadow-sm'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                Upload PDF
-              </button>
-            </div>
-
-            {/* CV strength indicator */}
-            <div className="flex items-center gap-3 rounded-lg bg-[var(--bg-surface)] p-3">
-              <span className="text-sm text-[var(--text-secondary)]">CV Strength:</span>
-              <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    className={`h-5 w-5 ${star <= cvStars ? 'text-[var(--accent)]' : 'text-[var(--border)]'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
+            <div className="space-y-5">
+              {/* Mode toggle */}
+              <div className="flex gap-1 rounded-lg bg-[var(--bg-surface)] p-1">
+                <button
+                  type="button"
+                  onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
+                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
+                    step2.mode === 'build'
+                      ? 'bg-[var(--accent)] text-white shadow-sm'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  Build it here
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
+                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
+                    step2.mode === 'upload'
+                      ? 'bg-[var(--accent)] text-white shadow-sm'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  }`}
+                >
+                  Upload PDF
+                </button>
               </div>
-              <span className="text-xs text-[var(--text-muted)]">{cvStars}/5</span>
-            </div>
 
-            {/* Build mode */}
-            {step2.mode === 'build' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-sm text-[var(--text-secondary)]">Current role</label>
-                  <input
-                    className="premium-input"
-                    placeholder="e.g. Software Engineer"
-                    value={step2.currentRole}
-                    onChange={(e) => setStep2((prev) => ({ ...prev, currentRole: e.target.value }))}
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm text-[var(--text-secondary)]">Skills</label>
-                  <div className="mb-2 flex flex-wrap gap-1.5">
-                    {step2.skills.map((s) => (
-                      <span key={s} className="skill-tag">
-                        {s}
-                        <button
-                          type="button"
-                          className="skill-tag-remove"
-                          onClick={() => setStep2((prev) => ({ ...prev, skills: prev.skills.filter((x) => x !== s) }))}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      className="premium-input flex-1"
-                      placeholder="Add a skill"
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                    />
-                    <button
-                      type="button"
-                      onClick={addSkill}
-                      className="premium-btn premium-btn-primary"
+              {/* CV strength indicator */}
+              <div className="flex items-center gap-3 rounded-lg bg-[var(--bg-surface)] p-3">
+                <span className="text-sm text-[var(--text-secondary)]">CV Strength:</span>
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      className={`h-5 w-5 ${star <= cvStars ? 'text-[var(--accent)]' : 'text-[var(--border)]'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
                     >
-                      Add
-                    </button>
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-xs text-[var(--text-muted)]">{cvStars}/5</span>
+              </div>
+
+              {/* Build mode */}
+              {step2.mode === 'build' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Current role</label>
+                    <input
+                      className="premium-input"
+                      placeholder="e.g. Software Engineer"
+                      value={step2.currentRole}
+                      onChange={(e) => setStep2((prev) => ({ ...prev, currentRole: e.target.value }))}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Skills</label>
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      {step2.skills.map((s) => (
+                        <span key={s} className="skill-tag">
+                          {s}
+                          <button
+                            type="button"
+                            className="skill-tag-remove"
+                            onClick={() => setStep2((prev) => ({ ...prev, skills: prev.skills.filter((x) => x !== s) }))}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        className="premium-input flex-1"
+                        placeholder="Add a skill"
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addSkill}
+                        className="premium-btn premium-btn-primary"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Years of experience</label>
+                    <input
+                      type="number"
+                      className="premium-input"
+                      placeholder="e.g. 3"
+                      value={step2.experienceYears}
+                      onChange={(e) => setStep2((prev) => ({ ...prev, experienceYears: e.target.value }))}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Education</label>
+                    <input
+                      className="premium-input"
+                      placeholder="e.g. BSc Computer Science, UZ"
+                      value={step2.education}
+                      onChange={(e) => setStep2((prev) => ({ ...prev, education: e.target.value }))}
+                    />
                   </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="mb-1 block text-sm text-[var(--text-secondary)]">Years of experience</label>
-                  <input
-                    type="number"
-                    className="premium-input"
-                    placeholder="e.g. 3"
-                    value={step2.experienceYears}
-                    onChange={(e) => setStep2((prev) => ({ ...prev, experienceYears: e.target.value }))}
-                  />
+              {/* Upload mode */}
+              {step2.mode === 'upload' && (
+                <div
+                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--border-accent)]"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type === 'application/pdf') {
+                      setStep2((prev) => ({ ...prev, uploadedFileName: file.name }));
+                    }
+                  }}
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.pdf';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) setStep2((prev) => ({ ...prev, uploadedFileName: file.name }));
+                    };
+                    input.click();
+                  }}
+                >
+                  <svg className="mb-3 h-10 w-10 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                  {step2.uploadedFileName ? (
+                    <p className="text-sm text-[var(--accent)]">{step2.uploadedFileName}</p>
+                  ) : (
+                    <>
+                      <p className="text-sm text-[var(--text-secondary)]">Drop your PDF here or click to browse</p>
+                      <p className="mt-1 text-xs text-[var(--text-muted)]">Maximum file size: 10MB</p>
+                    </>
+                  )}
                 </div>
-
-                <div>
-                  <label className="mb-1 block text-sm text-[var(--text-secondary)]">Education</label>
-                  <input
-                    className="premium-input"
-                    placeholder="e.g. BSc Computer Science, UZ"
-                    value={step2.education}
-                    onChange={(e) => setStep2((prev) => ({ ...prev, education: e.target.value }))}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Upload mode */}
-            {step2.mode === 'upload' && (
-              <div
-                className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--accent-dim)]"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files[0];
-                  if (file && file.type === 'application/pdf') {
-                    setStep2((prev) => ({ ...prev, uploadedFileName: file.name }));
-                  }
-                }}
-                onClick={() => {
-                  const input = document.createElement('input');
-                  input.type = 'file';
-                  input.accept = '.pdf';
-                  input.onchange = (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) setStep2((prev) => ({ ...prev, uploadedFileName: file.name }));
-                  };
-                  input.click();
-                }}
-              >
-                <svg className="mb-3 h-10 w-10 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                {step2.uploadedFileName ? (
-                  <p className="text-sm text-[var(--accent)]">{step2.uploadedFileName}</p>
-                ) : (
-                  <>
-                    <p className="text-sm text-[var(--text-secondary)]">Drop your PDF here or click to browse</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">Maximum file size: 10MB</p>
-                  </>
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 
         {/* Step 3: Auto-apply settings */}
-                {step === 2 && (
-                  <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
-                    <div>
-                      <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Auto-apply settings</h1>
-                      <p className="mt-1 text-sm text-[var(--text-muted)]">Configure how AetherLink works for you</p>
-                    </div>
+        {step === 2 && (
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
+            <div className="mb-6">
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">Configure how AetherLink works for you</p>
+            </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
-                        Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
-                      </label>
-                      <input
-                        type="range"
-                        min={0}
-                        max={5000}
-                        step={100}
-                        value={step3.salaryFloor}
-                        onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
-                        className="w-full accent-[var(--accent)]"
-                      />
-                      <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                        <span>$0</span>
-                        <span>$5,000</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Job types</label>
-                      <div className="flex flex-wrap gap-2">
-                        {JOB_TYPES.map((type) => (
-                          <button
-                            key={type}
-                            type="button"
-                            onClick={() => toggleStep3JobType(type)}
-                            className={`pill ${step3.jobTypes.includes(type) ? 'active' : ''}`}
-                          >
-                            {type}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Blacklist companies</label>
-                      <div className="mb-2 flex flex-wrap gap-1.5">
-                        {step3.blacklist.map((c) => (
-                          <span key={c} className="skill-tag">
-                            {c}
-                            <button
-                              type="button"
-                              className="skill-tag-remove"
-                              onClick={() => setStep3((prev) => ({ ...prev, blacklist: prev.blacklist.filter((x) => x !== c) }))}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          className="premium-input flex-1"
-                          placeholder="Company name"
-                          value={blacklistInput}
-                          onChange={(e) => setBlacklistInput(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBlacklist())}
-                        />
-                        <button
-                          type="button"
-                          onClick={addBlacklist}
-                          className="premium-btn premium-btn-primary"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-lg bg-[var(--bg-surface)] p-4">
-                      <div>
-                        <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score{'>'} X%</p>
-                        <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
-                      </div>
-                      <label className="relative inline-flex cursor-pointer items-center">
-                        <input
-                          type="checkbox"
-                          checked={step3.autoApplyEnabled}
-                          onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
-                          className="peer sr-only"
-                        />
-                        <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)]" />
-                      </label>
-                    </div>
-
-                    {step3.autoApplyEnabled && (
-                      <div>
-                        <label className="mb-1 block text-sm font-medium text-[var(--text-secondary)]">Match threshold: {step3.autoApplyThreshold}%</label>
-                        <input
-                          type="range"
-                          min={50}
-                          max={100}
-                          step={5}
-                          value={step3.autoApplyThreshold}
-                          onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                          className="w-full accent-[var(--accent)]"
-                        />
-                        <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                          <span>50%</span>
-                          <span>100%</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Navigation buttons */}
-                <div className="mt-8 flex items-center justify-between gap-4">
-                  {step > 0 ? (
-                    <button
-                      type="button"
-                      onClick={() => setStep((s) => s - 1)}
-                      className="premium-btn premium-btn-secondary mobile-touch"
-                    >
-                      Back
-                    </button>
-                  ) : (
-                    <div />
-                  )}
-
-                  {step < 2 ? (
-                    <button
-                      type="button"
-                      onClick={() => setStep((s) => s + 1)}
-                      disabled={!isStepValid()}
-                      className="premium-btn premium-btn-primary mobile-touch flex-1"
-                    >
-                      Continue
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleFinish}
-                      disabled={loading}
-                      className="premium-btn premium-btn-primary mobile-touch flex-1"
-                    >
-                      {loading ? 'Saving…' : 'Start applying'}
-                    </button>
-                  )}
+            <div className="space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
+                  Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
+                </label>
+                <input
+                  type="range"
+                  min={0}
+                  max={5000}
+                  step={100}
+                  value={step3.salaryFloor}
+                  onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
+                  className="w-full accent-[var(--accent)]"
+                />
+                <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
+                  <span>$0</span>
+                  <span>$5,000</span>
                 </div>
+              </div>
+
+              <div>
+                <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Job types</label>
+                <div className="flex flex-wrap gap-2">
+                  {JOB_TYPES.map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => toggleStep3JobType(type)}
+                      className={`pill ${step3.jobTypes.includes(type) ? 'active' : ''}`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Blacklist companies</label>
+                <div className="mb-2 flex flex-wrap gap-1.5">
+                  {step3.blacklist.map((c) => (
+                    <span key={c} className="skill-tag">
+                      {c}
+                      <button
+                        type="button"
+                        className="skill-tag-remove"
+                        onClick={() => setStep3((prev) => ({ ...prev, blacklist: prev.blacklist.filter((x) => x !== c) }))}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    className="premium-input flex-1"
+                    placeholder="Company name"
+                    value={blacklistInput}
+                    onChange={(e) => setBlacklistInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addBlacklist())}
+                  />
+                  <button
+                    type="button"
+                    onClick={addBlacklist}
+                    className="premium-btn premium-btn-primary"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg bg-[var(--bg-surface)] p-4">
+                <div>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score &gt; X%</p>
+                  <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
+                </div>
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={step3.autoApplyEnabled}
+                    onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
+                    className="peer sr-only"
+                  />
+                  <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)]" />
+                </label>
+              </div>
+
+              {step3.autoApplyEnabled && (
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Match threshold: {step3.autoApplyThreshold}%</label>
+                  <input
+                    type="range"
+                    min={50}
+                    max={100}
+                    step={5}
+                    value={step3.autoApplyThreshold}
+                    onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
+                    className="w-full accent-[var(--accent)]"
+                  />
+                  <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
+                    <span>50%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Navigation buttons */}
+        <div className="mt-8 flex items-center justify-between gap-4">
+          {step > 0 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s - 1)}
+              className="premium-btn premium-btn-secondary mobile-touch"
+            >
+              Back
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {step < 2 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s + 1)}
+              disabled={!isStepValid()}
+              className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Continue
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleFinish}
+              disabled={loading}
+              className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40"
+            >
+              {loading ? 'Saving…' : 'Start applying'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

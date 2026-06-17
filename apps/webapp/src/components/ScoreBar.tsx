@@ -11,7 +11,7 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
     return () => cancelAnimationFrame(t);
   }, [result.score]);
 
-  const barColor =
+  const barColorVar =
     result.percentileColor === 'green'
       ? 'var(--success)'
       : result.percentileColor === 'amber'
@@ -19,17 +19,17 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
         : 'var(--danger)';
 
   return (
-    <div className="space-y-2">
+    <div className="score-bar space-y-2">
       <div className="flex items-end justify-between">
-        <span className="font-display text-3xl font-bold" style={{ color: barColor }}>
+        <span className="score-bar-value font-display text-3xl font-bold" style={{ color: barColorVar }}>
           {result.score}%
         </span>
         <span className="font-mono text-sm text-[var(--text-secondary)]">{result.percentileLabel}</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-[var(--bg-raised)]">
         <div
-          className="h-full rounded-full transition-all duration-[600ms] ease-out"
-          style={{ width: `${width}%`, backgroundColor: barColor }}
+          className="score-bar-fill h-full rounded-full transition-all duration-[600ms] ease-out"
+          style={{ width: `${width}%`, backgroundColor: barColorVar }}
         />
       </div>
       <p className="text-sm text-[var(--text-secondary)]">

@@ -62,7 +62,7 @@ function ExperienceForm({
   const [duration, setDuration] = useState('');
 
   return (
-    <div className="mt-3 space-y-3 rounded-lg border border-[var(--accent-dim)] bg-[var(--bg-surface)] p-4">
+    <div className="mt-3 space-y-3 rounded-lg border border-[var(--border-accent)] bg-[var(--bg-surface)] p-4">
       <input
         className="premium-input"
         placeholder="Role / title"
@@ -114,7 +114,7 @@ function EducationForm({
   const [year, setYear] = useState('');
 
   return (
-    <div className="mt-3 space-y-3 rounded-lg border border-[var(--accent-dim)] bg-[var(--bg-surface)] p-4">
+    <div className="mt-3 space-y-3 rounded-lg border border-[var(--border-accent)] bg-[var(--bg-surface)] p-4">
       <input
         className="premium-input"
         placeholder="Institution"
@@ -484,7 +484,7 @@ export default function CVPage() {
               <Link
                 key={j.id}
                 href={`/feed/${j.id}`}
-                className="glass-card flex items-center justify-between p-4 transition hover:border-[var(--accent-dim)]"
+                className="glass-card flex items-center justify-between p-4 transition hover:border-[var(--border-accent)]"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>

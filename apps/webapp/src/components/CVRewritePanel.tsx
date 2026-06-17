@@ -56,7 +56,7 @@ export function CVRewritePanel({
           type="button"
           disabled={loading}
           onClick={onApply}
-          className="mt-4 w-full rounded-lg bg-[var(--accent)] py-3 font-medium text-black disabled:opacity-50"
+          className="mt-4 w-full rounded-lg bg-[var(--accent)] py-3 font-medium text-white disabled:opacity-50"
         >
           {loading ? 'Applying…' : 'Apply with these changes'}
         </button>

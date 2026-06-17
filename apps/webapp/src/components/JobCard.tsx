@@ -33,7 +33,7 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
   return (
     <Link
       href={`/feed/${job.id}`}
-      className="block rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-4 transition hover:border-[var(--accent-dim)]"
+      className="block rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-4 transition hover:border-[var(--border-accent)]"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -56,12 +56,12 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {(job.repost_count ?? 0) > 1 && (
-          <span className="rounded bg-[var(--accent-dim)]/30 px-2 py-0.5 text-xs text-[var(--warning)]">
+          <span className="rounded bg-[var(--accent-glow)] px-2 py-0.5 text-xs text-[var(--warning)]">
             Reposted {job.repost_count}×
           </span>
         )}
         {windowLeft != null && windowLeft > 0 && (
-          <span className="rounded bg-[var(--accent-dim)]/20 px-2 py-0.5 text-xs text-[var(--accent)]">
+          <span className="rounded bg-[var(--accent-glow)] px-2 py-0.5 text-xs text-[var(--accent)]">
             ⚡ {windowLeft}h left
           </span>
         )}
