@@ -15,25 +15,27 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--bg-base)] md:hidden">
-      <div className="flex items-center justify-around py-2">
+      <div className="flex items-center justify-around py-2 px-1">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 text-xs font-medium transition-colors ${
+              className={`mobile-touch flex flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors rounded-lg ${
                 isActive
-                  ? 'text-[var(--accent)]'
+                  ? 'text-[var(--accent)] mobile-nav-indicator'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
               }`}
             >
               <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
+              <span className="mobile-text-lg">{item.label}</span>
             </Link>
           );
         })}
       </div>
+      {/* Safe area padding for iOS */}
+      <div className="h-safe-area-inset-bottom bg-[var(--bg-base)]" />
     </nav>
   );
 }

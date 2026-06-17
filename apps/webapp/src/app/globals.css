@@ -239,6 +239,56 @@
   margin-bottom: 1rem;
 }
 
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+  /* Larger touch targets for mobile */
+  .mobile-touch {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Compact spacing on mobile */
+  .page-wrapper {
+    padding: 1rem 0.75rem;
+  }
+  
+  /* Mobile-friendly card spacing */
+  .glass-card, .premium-card {
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Larger text for mobile readability */
+  .mobile-text-lg {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  
+  /* Safe area inset for iOS */
+.h-safe-area-inset-bottom {
+  height: env(safe-area-inset-bottom, 0);
+}
+  .mobile-job-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Premium mobile nav indicator */
+  .mobile-nav-indicator {
+    position: relative;
+  }
+  
+  .mobile-nav-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+}
+
 /* Skeleton shimmer — refined */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
