@@ -1,11 +1,17 @@
-const CACHE_SHELL = 'aetherlink-shell-v1';
-const SHELL_URLS = ['/feed', '/cv', '/tracker', '/manifest.json'];
+const CACHE_SHELL = 'aetherlink-shell-v2';
+const SHELL_URLS = ['/dashboard', '/cv', '/tracker', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_SHELL).then((cache) => cache.addAll(SHELL_URLS).catch(() => undefined)),
   );
   self.skipWaiting();
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (event) => {
@@ -39,6 +45,6 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(request).catch(() => caches.match('/feed')),
+    fetch(request).catch(() => caches.match('/dashboard')),
   );
 });

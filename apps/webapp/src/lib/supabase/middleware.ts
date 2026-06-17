@@ -37,10 +37,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Already logged in on login page → redirect to feed
+  // Already logged in on login page → redirect to dashboard
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/feed';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 

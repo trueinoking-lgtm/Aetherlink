@@ -33,7 +33,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         setProfile(prof);
       } catch (e) {
         console.error('Dashboard layout error:', e);
-        router.push('/');
+        // Don't redirect to login on profile fetch errors - let the page render
+        setProfile(null);
       } finally {
         setLoading(false);
       }
