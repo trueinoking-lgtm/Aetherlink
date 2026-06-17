@@ -53,8 +53,8 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
         ]);
         setJob(j);
         setProfile(prof ?? null);
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('Job detail load error:', e);
       } finally {
         setLoading(false);
       }
@@ -121,12 +121,15 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             </p>
           </div>
 
-          {/* Job description */}
+          {/* Job description — sanitized */}
           {job.description ? (
             <div
               className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]"
-              dangerouslySetInnerHTML={{ __html: job.description }}
-            />
+            >
+              {job.description.replace(/<[^>]+>/g, '').split('\n').filter(Boolean).map((line, i) => (
+                <p key={i} className="mb-2 last:mb-0">{line}</p>
+              ))}
+            </div>
           ) : job.raw_text ? (
             <pre className="whitespace-pre-wrap rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
               {job.raw_text}

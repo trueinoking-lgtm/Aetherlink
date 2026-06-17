@@ -31,7 +31,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           return;
         }
         setProfile(prof);
-      } catch {
+      } catch (e) {
+        console.error('Dashboard layout error:', e);
         router.push('/');
       } finally {
         setLoading(false);

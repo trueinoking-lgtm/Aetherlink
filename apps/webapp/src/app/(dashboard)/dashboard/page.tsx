@@ -37,8 +37,8 @@ export default function DashboardPage() {
         setProfile(prof ?? null);
         setJobs(feed.jobs);
         setApplications(apps);
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('Dashboard load error:', e);
       } finally {
         setLoading(false);
       }

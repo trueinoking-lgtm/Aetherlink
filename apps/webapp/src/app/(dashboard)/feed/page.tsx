@@ -55,8 +55,8 @@ export default function FeedPage() {
         setJobs(feed.jobs);
         setFilteredJobs(feed.jobs);
         setProfile(prof ?? null);
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('Feed load error:', e);
       } finally {
         setLoading(false);
       }

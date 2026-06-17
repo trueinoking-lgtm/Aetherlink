@@ -33,8 +33,8 @@ export default function AppliedPage() {
             (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
           ),
         );
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('Applications load error:', e);
       } finally {
         setLoading(false);
       }

@@ -202,8 +202,8 @@ export default function CVPage() {
           setSkills(prof.skills ?? []);
           setCertifications(prof.certifications ?? []);
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('CV load error:', e);
       } finally {
         setLoading(false);
       }

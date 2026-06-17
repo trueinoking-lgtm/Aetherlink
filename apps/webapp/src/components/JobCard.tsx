@@ -32,7 +32,7 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
 
   return (
     <Link
-      href={`/j/${job.id}`}
+      href={`/feed/${job.id}`}
       className="block rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-4 transition hover:border-[var(--accent-dim)]"
     >
       <div className="flex items-start justify-between gap-3">

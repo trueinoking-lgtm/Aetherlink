@@ -123,8 +123,8 @@ export default function OnboardingPage() {
             autoApplyThreshold: storedPrefs.autoApplyThreshold,
           });
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error('Onboarding load error:', e);
       }
       setLoading(false);
     })();
@@ -182,6 +182,9 @@ export default function OnboardingPage() {
 
         if (profileFallbackResult.error && profileFallbackResult.error.code !== '42703') {
           throw profileFallbackResult.error;
+        }
+        if (profileFallbackResult.error?.code === '42703') {
+          console.warn('Onboarding: profiles column missing (42703) — preferences saved locally only');
         }
       }
 
