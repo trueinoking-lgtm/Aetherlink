@@ -1,5 +1,5 @@
-const CACHE_SHELL = 'aetherlink-shell-v2';
-const SHELL_URLS = ['/dashboard', '/cv', '/tracker', '/manifest.json'];
+const CACHE_SHELL = 'aetherlink-shell-v3';
+const SHELL_URLS = ['/dashboard', '/feed', '/cv', '/applied', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
