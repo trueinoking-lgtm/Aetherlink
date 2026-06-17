@@ -81,10 +81,14 @@ export class AetherLinkSupabaseApi {
   }
 
   async getProfile() {
-    const [profile] = await this._supabaseApiCall(async () =>
-      this._supabase.from("profiles").select("*")
-    )
-    return profile as Profile | undefined
+    try {
+      const [profile] = await this._supabaseApiCall(async () =>
+        this._supabase.from("profiles").select("*")
+      )
+      return profile as Profile | undefined
+    } catch {
+      return undefined
+    }
   }
 
   async getAetherLinkProfile(): Promise<Profile | undefined> {
