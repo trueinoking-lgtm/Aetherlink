@@ -99,7 +99,7 @@ body {
    ═══════════════════════════════════════════ */
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
@@ -108,7 +108,7 @@ body {
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.04);
   border-color: var(--border-hover);
 }
 
@@ -147,14 +147,14 @@ body {
 }
 
 .premium-btn-secondary {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   color: var(--text-primary);
   padding: 0.625rem 1.25rem;
 }
 
 .premium-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--border-hover);
 }
 

@@ -174,7 +174,7 @@ function AccordionCard({
       >
         <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
         <svg
-          className={`accordion-chevron ${open ? 'open' : ''}`}
+          className={`accordion-chevron h-4 w-4 ${open ? 'open' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -460,14 +460,16 @@ export default function CVPage() {
       </div>
 
       {/* Save button */}
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving}
-        className="premium-btn premium-btn-primary disabled:opacity-40"
-      >
-        {saving ? 'Saving…' : 'Save Changes'}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="premium-btn premium-btn-primary disabled:opacity-40 pointer-active"
+        >
+          {saving ? 'Saving…' : 'Save Changes'}
+        </button>
+      </div>
 
       {/* Which jobs matched me */}
       <div>
@@ -484,7 +486,7 @@ export default function CVPage() {
               <Link
                 key={j.id}
                 href={`/feed/${j.id}`}
-                className="glass-card flex items-center justify-between p-4 transition hover:border-[var(--border-accent)]"
+                className="glass-card hover-lift flex items-center justify-between p-4 transition hover:border-[var(--border-accent)]"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>

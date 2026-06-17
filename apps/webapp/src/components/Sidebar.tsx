@@ -56,7 +56,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all pointer-active ${
                 isActive
                   ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
                   : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
@@ -84,7 +84,7 @@ export function Sidebar({
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)]"
+                  className="text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
                 >
                   Sign out
                 </button>

@@ -273,7 +273,7 @@ export default function FeedPage() {
               <Link
                 key={job.id}
                 href={`/feed/${job.id}`}
-                className="glass-card relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
+                className="glass-card hover-lift relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
               >
                 {/* Match score badge */}
                 {score !== null && (

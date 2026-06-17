@@ -22,7 +22,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`mobile-touch flex flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors rounded-lg ${
+              className={`mobile-touch flex flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors rounded-lg pointer-active ${
                 isActive
                   ? 'text-[var(--accent)] mobile-nav-indicator'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'

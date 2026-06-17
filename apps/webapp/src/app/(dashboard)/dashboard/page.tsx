@@ -157,7 +157,7 @@ export default function DashboardPage() {
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}
-                  className="glass-card flex items-center justify-between p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
+                  className="glass-card hover-lift flex items-center justify-between p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-[var(--text-primary)]">{job.title}</p>
@@ -181,16 +181,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick actions */}
-      <div className="flex flex-wrap gap-3">
-        <Link href="/feed" className="premium-btn premium-btn-primary">
-          View Jobs
-        </Link>
-        <Link href="/cv" className="premium-btn premium-btn-secondary">
-          My CV
-        </Link>
-        <Link href="/applied" className="premium-btn premium-btn-secondary">
-          Applications
-        </Link>
+      <div>
+        <h2 className="section-heading">Quick actions</h2>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">
+            View Jobs
+          </Link>
+          <Link href="/cv" className="premium-btn premium-btn-secondary pointer-active">
+            My CV
+          </Link>
+          <Link href="/applied" className="premium-btn premium-btn-secondary pointer-active">
+            Applications
+          </Link>
+        </div>
       </div>
     </div>
   );

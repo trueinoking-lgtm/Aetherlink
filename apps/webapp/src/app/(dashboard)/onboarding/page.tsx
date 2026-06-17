@@ -344,13 +344,48 @@ export default function OnboardingPage() {
                       key={type}
                       type="button"
                       onClick={() => toggleJobType(type)}
-                      className={`pill ${step1.jobTypes.includes(type) ? 'active' : ''}`}
+                      className={`pill pointer-active ${step1.jobTypes.includes(type) ? 'active' : ''}`}
                     >
                       {type}
                     </button>
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Navigation */}
+            <div className="mt-8 flex items-center justify-between gap-4">
+              {step > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => s - 1)}
+                  className="premium-btn premium-btn-secondary mobile-touch pointer-active"
+                >
+                  Back
+                </button>
+              ) : (
+                <div />
+              )}
+
+              {step < 2 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => s + 1)}
+                  disabled={!isStepValid()}
+                  className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleFinish}
+                  disabled={loading}
+                  className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                >
+                  {loading ? 'Saving…' : 'Start applying'}
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -369,7 +404,7 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
-                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
                     step2.mode === 'build'
                       ? 'bg-[var(--accent)] text-white shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -380,7 +415,7 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
-                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
                     step2.mode === 'upload'
                       ? 'bg-[var(--accent)] text-white shadow-sm'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -448,7 +483,7 @@ export default function OnboardingPage() {
                       <button
                         type="button"
                         onClick={addSkill}
-                        className="premium-btn premium-btn-primary"
+                        className="premium-btn premium-btn-primary pointer-active"
                       >
                         Add
                       </button>
@@ -481,7 +516,7 @@ export default function OnboardingPage() {
               {/* Upload mode */}
               {step2.mode === 'upload' && (
                 <div
-                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--border-accent)]"
+                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
@@ -514,6 +549,25 @@ export default function OnboardingPage() {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Navigation */}
+            <div className="mt-8 flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => setStep((s) => s - 1)}
+                className="premium-btn premium-btn-secondary mobile-touch pointer-active"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!isStepValid()}
+                className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+              >
+                Continue
+              </button>
             </div>
           </div>
         )}
@@ -554,7 +608,7 @@ export default function OnboardingPage() {
                       key={type}
                       type="button"
                       onClick={() => toggleStep3JobType(type)}
-                      className={`pill ${step3.jobTypes.includes(type) ? 'active' : ''}`}
+                      className={`pill pointer-active ${step3.jobTypes.includes(type) ? 'active' : ''}`}
                     >
                       {type}
                     </button>
@@ -589,7 +643,7 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={addBlacklist}
-                    className="premium-btn premium-btn-primary"
+                    className="premium-btn premium-btn-primary pointer-active"
                   >
                     Add
                   </button>
@@ -631,43 +685,27 @@ export default function OnboardingPage() {
                 </div>
               )}
             </div>
+
+            {/* Navigation */}
+            <div className="mt-8 flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => setStep((s) => s - 1)}
+                className="premium-btn premium-btn-secondary mobile-touch pointer-active"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleFinish}
+                disabled={loading}
+                className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+              >
+                {loading ? 'Saving…' : 'Start applying'}
+              </button>
+            </div>
           </div>
         )}
-
-        {/* Navigation buttons */}
-        <div className="mt-8 flex items-center justify-between gap-4">
-          {step > 0 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s - 1)}
-              className="premium-btn premium-btn-secondary mobile-touch"
-            >
-              Back
-            </button>
-          ) : (
-            <div />
-          )}
-
-          {step < 2 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s + 1)}
-              disabled={!isStepValid()}
-              className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleFinish}
-              disabled={loading}
-              className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40"
-            >
-              {loading ? 'Saving…' : 'Start applying'}
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
