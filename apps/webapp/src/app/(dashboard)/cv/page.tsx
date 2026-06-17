@@ -272,7 +272,7 @@ export default function CVPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">My CV</h1>
       </div>
 
       {/* Score card */}

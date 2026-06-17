@@ -48,7 +48,6 @@ export default function FeedPage() {
       try {
         let feed, prof;
         if (isDebug) {
-          // Use SDK mock data in debug mode
           [feed, prof] = await Promise.all([
             sdk.listFeedJobs({ limit: 200 }),
             sdk.getAetherLinkProfile(),
@@ -140,7 +139,7 @@ export default function FeedPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">
           Jobs
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
@@ -150,11 +149,11 @@ export default function FeedPage() {
 
       {/* Filter bar */}
       <div className="glass-card p-4">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {/* Search */}
-          <div className="relative min-w-[200px] flex-1">
+          <div className="relative flex-1">
             <svg
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -168,7 +167,7 @@ export default function FeedPage() {
             </svg>
             <input
               className="premium-input pl-10"
-              placeholder="Search jobs or companies..."
+              placeholder="Search jobs or companies…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -195,8 +194,8 @@ export default function FeedPage() {
             className="premium-select"
           >
             <option value="">Any salary</option>
-            <option value="0-1000">$0 - $1,000</option>
-            <option value="1000-3000">$1,000 - $3,000</option>
+            <option value="0-1000">$0 – $1,000</option>
+            <option value="1000-3000">$1,000 – $3,000</option>
             <option value="3000+">$3,000+</option>
           </select>
 
@@ -213,13 +212,20 @@ export default function FeedPage() {
           </select>
 
           {/* Suited for me toggle */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:border-[var(--border-accent)] mobile-touch">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text-secondary)] transition hover:border-[var(--accent-dim)] hover:text-[var(--text-primary)]">
             <input
               type="checkbox"
               checked={suitedForMe}
               onChange={(e) => setSuitedForMe(e.target.checked)}
-              className="h-4 w-4 accent-[var(--accent)]"
+              className="sr-only"
             />
+            <span className={`flex h-4 w-4 items-center justify-center rounded border transition ${suitedForMe ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[var(--border)] bg-transparent'}`}>
+              {suitedForMe && (
+                <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </span>
             Suited for me
           </label>
         </div>
@@ -237,6 +243,18 @@ export default function FeedPage() {
           <p className="text-[var(--text-secondary)]">
             No jobs match your filters.
           </p>
+          <button
+            onClick={() => {
+              setSearch('');
+              setJobType('');
+              setSalaryRange('');
+              setDatePosted('');
+              setSuitedForMe(false);
+            }}
+            className="mt-3 text-sm text-[var(--accent)] hover:underline"
+          >
+            Clear all filters
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -255,7 +273,7 @@ export default function FeedPage() {
               <Link
                 key={job.id}
                 href={`/feed/${job.id}`}
-                className="glass-card relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
+                className="glass-card relative overflow-hidden p-5 transition hover:border-[var(--accent-dim)]"
               >
                 {/* Match score badge */}
                 {score !== null && (
@@ -284,7 +302,7 @@ export default function FeedPage() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {job.salary && (
-                    <span className="badge badge-high">
+                    <span className="rounded-full bg-[var(--accent)]/20 px-2.5 py-0.5 text-xs font-medium text-[var(--accent)]">
                       {job.salary}
                     </span>
                   )}

@@ -284,7 +284,7 @@ return (
         {step === 0 && (
           <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
             <div>
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Tell us about you</h1>
               <p className="mt-1 text-sm text-[var(--text-muted)]">Let's start with the basics</p>
             </div>
 
@@ -334,7 +334,7 @@ return (
         {step === 1 && (
           <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
             <div>
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Your CV</h1>
               <p className="mt-1 text-sm text-[var(--text-muted)]">Build your profile or upload a PDF</p>
             </div>
 
@@ -422,7 +422,7 @@ return (
                     <button
                       type="button"
                       onClick={addSkill}
-                      className="rounded-lg bg-[var(--accent)] px-4 text-sm font-medium text-black hover:brightness-110"
+                      className="premium-btn premium-btn-primary"
                     >
                       Add
                     </button>
@@ -495,7 +495,7 @@ return (
                 {step === 2 && (
                   <div className="glass-card p-6 sm:p-8 space-y-6 animate-fade-in">
                     <div>
-                      <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
+                      <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">Auto-apply settings</h1>
                       <p className="mt-1 text-sm text-[var(--text-muted)]">Configure how AetherLink works for you</p>
                     </div>
 

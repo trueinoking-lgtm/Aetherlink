@@ -47,14 +47,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         }
         const prof = await sdk.getAetherLinkProfile();
         if (!prof?.full_name) {
-          // New user — redirect to onboarding
           router.push('/onboarding');
           return;
         }
         setProfile(prof);
       } catch (e) {
         console.error('Dashboard layout error:', e);
-        // Don't redirect to login on profile fetch errors - let the page render
         setProfile(null);
       } finally {
         setLoading(false);
@@ -77,12 +75,16 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)]">
-      <Sidebar profile={profile} collapsed={collapsed} onToggle={toggleSidebar} />
+      {/* Sidebar: hidden on mobile, shown on md+ */}
+      <div className="hidden md:block">
+        <Sidebar profile={profile} collapsed={collapsed} onToggle={toggleSidebar} />
+      </div>
+      {/* Bottom nav: shown on mobile, hidden on md+ */}
       <BottomNav />
       <main
-        className={`transition-all duration-200 ${
-          collapsed ? 'ml-16' : 'ml-60'
-        } pb-20 md:pb-0`}
+        className={`transition-all duration-200 pb-20 md:pb-0 ${
+          collapsed ? 'md:ml-16' : 'md:ml-60'
+        }`}
       >
         <div className="page-wrapper">{children}</div>
       </main>
