@@ -514,6 +514,53 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   MICRO-INTERACTIONS
+   ═══════════════════════════════════════════ */
+
+/* Smooth hover lift on interactive cards */
+.hover-lift {
+  transition: transform 0.15s var(--ease-out), border-color 0.15s var(--ease-out), background 0.15s var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Subtle press effect */
+.pointer-active:active {
+  transform: scale(0.98);
+}
+
+/* Fade in on mount */
+.fade-in {
+  animation: fadeIn 0.3s var(--ease-out) forwards;
+}
+
+/* Score bar animation */
+.score-bar-fill {
+  transition: width 0.6s var(--ease-out);
+}
+
+/* Sidebar nav item hover glow */
+.sidebar-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-nav-item:hover::before {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════
    FOCUS VISIBLE (Accessibility)
    ═══════════════════════════════════════════ */
 

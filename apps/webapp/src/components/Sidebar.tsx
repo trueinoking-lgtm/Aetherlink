@@ -39,7 +39,8 @@ export function Sidebar({
         <button
           type="button"
           onClick={onToggle}
-          className="rounded-lg p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          className="rounded-lg p-1.5 text-[var(--text-muted)] transition hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d={collapsed ? 'M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3' : 'M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'} />
@@ -55,7 +56,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 isActive
                   ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
                   : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
@@ -71,8 +72,8 @@ export function Sidebar({
 
       {/* User area */}
       <div className="border-t border-[var(--border)] p-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]/20 text-sm font-bold text-[var(--accent)]">
+        <div className={`flex items-center gap-3 rounded-lg p-2 ${collapsed ? 'justify-center' : ''}`}>
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-white">
             {profile?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           {!collapsed && (
@@ -83,7 +84,7 @@ export function Sidebar({
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)]"
+                  className="text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)]"
                 >
                   Sign out
                 </button>
