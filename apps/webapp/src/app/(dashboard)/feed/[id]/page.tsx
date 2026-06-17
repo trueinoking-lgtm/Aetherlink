@@ -206,7 +206,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                       {matchedSkills.map((s) => (
                         <li
                           key={s}
-                          className="rounded-md bg-[var(--success)]/10 px-2.5 py-1 text-xs text-[var(--success)]"
+                          className="rounded-md bg-[var(--success-bg)] px-2.5 py-1 text-xs text-[var(--success)]"
                         >
                           {s}
                         </li>
@@ -243,7 +243,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                 Apply Now
               </button>
             ) : (
-              <div className="rounded-lg bg-[var(--success)]/10 px-4 py-3 text-center text-sm text-[var(--success)]">
+              <div className="badge badge-high w-full text-center py-3">
                 ✓ Auto-applied
               </div>
             )}
