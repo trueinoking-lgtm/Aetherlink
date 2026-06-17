@@ -24,6 +24,32 @@ function computeCvScore(profile: Profile): number {
   return Math.min(100, score);
 }
 
+function CvScoreRing({ score }: { score: number }) {
+  const radius = 34;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  return (
+    <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+      <svg width="80" height="80" className="-rotate-90">
+        <circle cx="40" cy="40" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
+        <circle
+          cx="40"
+          cy="40"
+          r={radius}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-700"
+        />
+      </svg>
+      <span className="absolute font-display text-2xl font-bold text-[var(--accent)]">{score}</span>
+    </div>
+  );
+}
+
 function ExperienceForm({
   onAdd,
   onCancel,
@@ -38,19 +64,19 @@ function ExperienceForm({
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-[var(--accent-dim)] bg-[var(--bg-surface)] p-4">
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Role / title"
         value={role}
         onChange={(e) => setRole(e.target.value)}
       />
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Company"
         value={company}
         onChange={(e) => setCompany(e.target.value)}
       />
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Duration (e.g. 2 years)"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
@@ -60,14 +86,14 @@ function ExperienceForm({
           type="button"
           onClick={() => onAdd({ role, company, duration })}
           disabled={!role.trim()}
-          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-black hover:brightness-110 disabled:opacity-40"
+          className="premium-btn premium-btn-primary disabled:opacity-40"
         >
           Add
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          className="premium-btn premium-btn-ghost"
         >
           Cancel
         </button>
@@ -90,19 +116,19 @@ function EducationForm({
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-[var(--accent-dim)] bg-[var(--bg-surface)] p-4">
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Institution"
         value={institution}
         onChange={(e) => setInstitution(e.target.value)}
       />
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Qualification (e.g. BSc Computer Science)"
         value={qualification}
         onChange={(e) => setQualification(e.target.value)}
       />
       <input
-        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] p-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+        className="premium-input"
         placeholder="Year (e.g. 2022)"
         value={year}
         onChange={(e) => setYear(e.target.value)}
@@ -112,14 +138,14 @@ function EducationForm({
           type="button"
           onClick={() => onAdd({ institution, qualification, year })}
           disabled={!qualification.trim()}
-          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-black hover:brightness-110 disabled:opacity-40"
+          className="premium-btn premium-btn-primary disabled:opacity-40"
         >
           Add
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          className="premium-btn premium-btn-ghost"
         >
           Cancel
         </button>
@@ -144,11 +170,11 @@ function AccordionCard({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[var(--bg-surface)]"
+        className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
       >
         <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
         <svg
-          className={`h-5 w-5 text-[var(--text-muted)] transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`accordion-chevron ${open ? 'open' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -157,7 +183,7 @@ function AccordionCard({
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {open && <div className="border-t border-[var(--border)] p-4">{children}</div>}
+      {open && <div className="accordion-content">{children}</div>}
     </div>
   );
 }
@@ -190,7 +216,6 @@ export default function CVPage() {
       try {
         let prof, feed;
         if (isDebug) {
-          // Use SDK mock data in debug mode
           [prof, feed] = await Promise.all([
             sdk.getAetherLinkProfile(),
             sdk.listFeedJobs({ limit: 50 }),
@@ -263,7 +288,10 @@ export default function CVPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+          <p className="text-sm text-[var(--text-muted)]">Loading your CV…</p>
+        </div>
       </div>
     );
   }
@@ -272,29 +300,12 @@ export default function CVPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight">My CV</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
       </div>
 
       {/* Score card */}
       <div className="glass-card flex items-center gap-6 p-6">
-        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
-          <svg width="80" height="80" className="-rotate-90">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border-subtle)" strokeWidth="6" />
-            <circle
-              cx="40"
-              cy="40"
-              r="34"
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={213.6}
-              strokeDashoffset={213.6 - (cvScore / 100) * 213.6}
-              className="transition-all duration-700"
-            />
-          </svg>
-          <span className="absolute font-display text-2xl font-bold text-[var(--accent)]">{cvScore}</span>
-        </div>
+        <CvScoreRing score={cvScore} />
         <div>
           <p className="font-display text-lg font-bold text-[var(--text-primary)]">CV Strength</p>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
@@ -316,7 +327,7 @@ export default function CVPage() {
         >
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Full name</label>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name</label>
               <input
                 className="premium-input"
                 value={fullName}
@@ -324,7 +335,7 @@ export default function CVPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Headline</label>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Headline</label>
               <input
                 className="premium-input"
                 value={headline}
@@ -386,14 +397,14 @@ export default function CVPage() {
                     className="skill-tag-remove"
                     onClick={() => setSkills((prev) => prev.filter((x) => x !== s))}
                   >
-                    &times;
+                    ×
                   </button>
                 </span>
               ))}
             </div>
             <div className="flex gap-2">
               <input
-                className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                className="premium-input flex-1"
                 placeholder="Add a skill"
                 value={skillInput}
                 onChange={(e) => setSkillInput(e.target.value)}
@@ -455,14 +466,12 @@ export default function CVPage() {
         disabled={saving}
         className="premium-btn premium-btn-primary disabled:opacity-40"
       >
-        {saving ? 'Saving\u2026' : 'Save Changes'}
+        {saving ? 'Saving…' : 'Save Changes'}
       </button>
 
       {/* Which jobs matched me */}
       <div>
-        <h2 className="font-display mb-4 text-xl font-bold text-[var(--text-primary)]">
-          Which jobs matched me
-        </h2>
+        <h2 className="section-heading">Which jobs matched me</h2>
         {matchedJobs.length === 0 ? (
           <div className="glass-card p-8 text-center">
             <p className="text-sm text-[var(--text-secondary)]">
@@ -481,13 +490,13 @@ export default function CVPage() {
                   <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>
                   <p className="text-xs text-[var(--text-secondary)]">{j.companyName}</p>
                 </div>
-                <span className="shrink-0 font-mono text-sm font-bold text-[var(--match-high)]">
+                <span className="ml-4 shrink-0 font-mono text-sm font-bold text-[var(--match-high)]">
                   {j.score}%
                 </span>
               </Link>
             ))}
             <Link href="/feed" className="mt-3 block text-center text-sm text-[var(--accent)] hover:underline">
-              View all jobs &rarr;
+              View all jobs →
             </Link>
           </div>
         )}

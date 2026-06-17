@@ -11,16 +11,22 @@ function ScoreCircle({ score }: { score: number }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
+  const color =
+    score >= 80
+      ? 'var(--match-high)'
+      : score >= 50
+        ? 'var(--match-mid)'
+        : 'var(--match-low)';
   return (
     <div className="relative flex items-center justify-center">
       <svg width="100" height="100" className="-rotate-90">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
         <circle
           cx="50"
           cy="50"
           r={radius}
           fill="none"
-          stroke="var(--accent)"
+          stroke={color}
           strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -64,7 +70,10 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+          <p className="text-sm text-[var(--text-muted)]">Loading job details…</p>
+        </div>
       </div>
     );
   }
@@ -73,7 +82,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <p className="text-[var(--text-secondary)]">Job not found.</p>
-        <Link href="/feed" className="mt-4 text-sm text-[var(--accent)]">
+        <Link href="/feed" className="mt-4 text-sm text-[var(--accent)] hover:underline">
           &larr; Back to Jobs
         </Link>
       </div>
@@ -95,37 +104,43 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       {/* Back link */}
       <Link
         href="/feed"
-        className="inline-flex items-center gap-1 text-sm text-[var(--accent)] hover:underline"
+        className="inline-flex items-center gap-1 text-sm text-[var(--accent)] transition hover:underline"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        Jobs
+        All Jobs
       </Link>
 
       {/* Two-column layout */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left column: job description */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           <div>
-            <h1 className="font-display text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
               {job.title}
             </h1>
             <p className="mt-1 text-lg text-[var(--accent)]">{job.companyName}</p>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {new Date(job.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--text-muted)]">
+              <span>
+                {new Date(job.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </span>
+              {job.location && (
+                <>
+                  <span>&middot;</span>
+                  <span>{job.location}</span>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Job description — sanitized */}
+          {/* Job description */}
           {job.description ? (
-            <div
-              className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]"
-            >
+            <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
               {job.description.replace(/<[^>]+>/g, '').split('\n').filter(Boolean).map((line, i) => (
                 <p key={i} className="mb-2 last:mb-0">{line}</p>
               ))}
@@ -135,21 +150,28 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               {job.raw_text}
             </pre>
           ) : (
-            <p className="text-sm text-[var(--text-muted)]">No description available.</p>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+              <p className="text-sm text-[var(--text-muted)]">No description available for this job yet.</p>
+            </div>
           )}
 
           {/* Salary and metadata */}
-          {job.salary && (
-            <p className="text-sm">
-              <span className="text-[var(--text-secondary)]">Salary:</span>{' '}
-              <span className="font-medium text-[var(--accent)]">{job.salary}</span>
-            </p>
-          )}
-          {job.location && (
-            <p className="text-sm text-[var(--text-secondary)]">
-              Location: {job.location}
-            </p>
-          )}
+          <div className="flex flex-wrap gap-4">
+            {job.salary && (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3">
+                <p className="text-xs text-[var(--text-muted)]">Salary</p>
+                <p className="mt-0.5 font-medium text-[var(--accent)]">{job.salary}</p>
+              </div>
+            )}
+            {job.jobType && (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3">
+                <p className="text-xs text-[var(--text-muted)]">Job Type</p>
+                <p className="mt-0.5 font-medium text-[var(--text-primary)]">
+                  {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right column: sticky action panel */}
@@ -216,13 +238,13 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             {job.hr_email ? (
               <button
                 type="button"
-                className="premium-btn premium-btn-primary w-full py-3 text-base"
+                className="premium-btn premium-btn-primary w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
               >
                 Apply Now
               </button>
             ) : (
               <div className="rounded-lg bg-[var(--success)]/10 px-4 py-3 text-center text-sm text-[var(--success)]">
-                Auto-applied
+                ✓ Auto-applied
               </div>
             )}
 
@@ -232,7 +254,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                 {job.companyName}
               </h3>
               <p className="mt-1 text-xs text-[var(--text-muted)]">
-                {job.employer_verified ? 'Verified employer' : 'Company information pending'}
+                {job.employer_verified ? '✓ Verified employer' : 'Company information pending'}
               </p>
               {job.source_group && (
                 <p className="mt-2 text-xs text-[var(--text-muted)]">

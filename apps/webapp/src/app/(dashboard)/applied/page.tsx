@@ -44,7 +44,10 @@ export default function AppliedPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
+          <p className="text-sm text-[var(--text-muted)]">Loading applications…</p>
+        </div>
       </div>
     );
   }
@@ -60,33 +63,32 @@ export default function AppliedPage() {
 
       {applications.length === 0 ? (
         <div className="glass-card flex flex-col items-center gap-4 p-12 text-center">
-          <svg className="h-12 w-12 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <div>
-            <p className="text-[var(--text-secondary)]">Nothing sent yet &mdash; go find some jobs.</p>
-            <Link href="/feed" className="mt-2 inline-block text-sm text-[var(--accent)] hover:underline">
-              Browse Jobs &rarr;
-            </Link>
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--bg-raised)]">
+            <svg className="h-8 w-8 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
           </div>
+          <div>
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications yet</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">Start applying to jobs and track them here.</p>
+          </div>
+          <Link href="/feed" className="premium-btn premium-btn-primary">
+            Browse Jobs
+          </Link>
         </div>
       ) : (
-        /* Vertical timeline */
         <div className="relative pl-8">
-          {/* Vertical gold line */}
-          <div className="absolute left-[11px] top-2 h-[calc(100%-16px)] w-0.5 bg-[var(--accent)]/30" />
+          {/* Vertical line */}
+          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
 
-          <div className="space-y-8">
-            {applications.map((app, idx) => {
+          <div className="space-y-6">
+            {applications.map((app) => {
               const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
-              const isLast = idx === applications.length - 1;
               return (
                 <div key={app.id} className="relative">
                   {/* Dot */}
-                  <div
-                    className={`absolute -left-8 top-1.5 h-[22px] w-[22px] rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)] ${isLast ? '' : ''}`}
-                  >
-                    <div className="mt-[3px] ml-[3px] h-3 w-3 rounded-full bg-[var(--accent)]" />
+                  <div className="absolute -left-8 top-2 h-6 w-6 rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
+                    <div className="ml-[3px] mt-[3px] h-3.5 w-3.5 rounded-full bg-[var(--accent)]" />
                   </div>
 
                   {/* Card */}

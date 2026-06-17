@@ -127,7 +127,7 @@ export default function DashboardPage() {
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}
-                  className="glass-card flex items-center justify-between p-4 transition hover:border-[var(--accent-dim)]"
+                  className="glass-card flex items-center justify-between p-4 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-[var(--text-primary)]">{job.title}</p>
