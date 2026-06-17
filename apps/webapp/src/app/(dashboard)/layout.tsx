@@ -84,7 +84,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           collapsed ? 'ml-16' : 'ml-60'
         } pb-20 md:pb-0`}
       >
-        <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">{children}</div>
+        <div className="page-wrapper">{children}</div>
       </main>
     </div>
   );

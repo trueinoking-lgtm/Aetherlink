@@ -70,7 +70,175 @@
   box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.4);
 }
 
-/* Skeleton shimmer */
+/* Premium button variants */
+.premium-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-weight: 510;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.premium-btn-primary {
+  background: var(--accent);
+  color: #000;
+  padding: 0.5rem 1rem;
+}
+
+.premium-btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.premium-btn-secondary {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+}
+
+.premium-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--accent);
+}
+
+/* Premium heading styles */
+.premium-heading-xl {
+  font-family: var(--font-display);
+  font-weight: 510;
+  font-size: 2.25rem;
+  line-height: 1.13;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.premium-heading-lg {
+  font-family: var(--font-display);
+  font-weight: 510;
+  font-size: 1.5rem;
+  line-height: 1.33;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.premium-heading-md {
+  font-family: var(--font-display);
+  font-weight: 510;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* Input focus ring */
+.premium-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.4);
+}
+
+/* Job card premium styling */
+.job-card {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.job-card:hover {
+  background: rgba(255, 255, 255, 0.025);
+  border-color: var(--border);
+}
+
+/* Skill pill premium */
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 510;
+  border-radius: 9999px;
+  background: rgba(94, 106, 210, 0.15);
+  color: var(--accent);
+}
+
+.skill-pill-remove {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.skill-pill-remove:hover {
+  color: var(--accent);
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 510;
+  border-radius: 9999px;
+}
+
+.status-high {
+  background: rgba(39, 166, 68, 0.2);
+  color: var(--success-badge);
+}
+
+.status-mid {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--match-mid);
+}
+
+.status-low {
+  background: rgba(107, 114, 128, 0.2);
+  color: var(--match-low);
+}
+
+/* Spacing system */
+.premium-spacing-section {
+  margin-bottom: 2rem;
+}
+
+/* Smooth transitions */
+.premium-transition {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page wrapper for premium spacing */
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+@screen sm {
+  .page-wrapper {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@screen lg {
+  .page-wrapper {
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* Section spacing */
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 510;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Skeleton shimmer — refined */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
