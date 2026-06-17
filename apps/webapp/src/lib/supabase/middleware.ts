@@ -35,7 +35,6 @@ export async function updateSession(request: NextRequest) {
   if (!user && !isAuthPage && !isAuthCallback && !isPublicPage && !isDebugBypass) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
-    url.search = '';
     return NextResponse.redirect(url);
   }
 
@@ -43,7 +42,6 @@ export async function updateSession(request: NextRequest) {
   if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
-    url.search = '';
     return NextResponse.redirect(url);
   }
 
