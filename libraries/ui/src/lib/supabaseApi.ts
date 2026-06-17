@@ -18,6 +18,107 @@ const PASSWORD_RESET_REDIRECT =
   "http://localhost:3002"
 
 /**
+ * Check if we're in debug bypass mode (set by ?debug=true query param).
+ */
+function isDebugMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.location.search.includes('debug=true');
+}
+
+/**
+ * Return a mock user for debug mode.
+ */
+function getDebugUser(): User {
+  return { id: 'debug-user', email: 'debug@aetherlink.dev' } as User;
+}
+
+/**
+ * Return a mock profile for debug mode.
+ */
+function getDebugProfile(): Profile {
+  return {
+    id: 1,
+    user_id: 'debug-user',
+    full_name: 'Debug User',
+    location: 'Harare',
+    preferred_job_types: ['Tech'],
+    salary_floor: 0,
+    auto_apply_enabled: false,
+    auto_apply_threshold: 80,
+    skills: ['JavaScript', 'TypeScript', 'React'],
+    headline: 'Full Stack Developer',
+    subscription_end_date: new Date().toISOString(),
+    subscription_tier: 'basic' as const,
+    is_trial: false,
+  } as Profile;
+}
+
+/**
+ * Return mock jobs for debug mode.
+ */
+function getDebugJobs(): Job[] {
+  return [
+    {
+      id: 1,
+      user_id: 'debug-user',
+      externalId: 'test-1',
+      externalUrl: 'https://example.com/job/1',
+      siteId: 1,
+      title: 'Senior Full Stack Engineer',
+      companyName: 'TechCorp',
+      jobType: 'remote',
+      location: 'Harare, Zimbabwe',
+      salary: '$3,000 - $5,000',
+      tags: ['React', 'Node.js', 'TypeScript'],
+      description: 'Build amazing things.',
+      status: 'new',
+      labels: [],
+      created_at: new Date('2026-06-15'),
+      updated_at: new Date('2026-06-15'),
+      raw_text: 'Full stack engineer with React and Node.js experience. TypeScript preferred.',
+    },
+    {
+      id: 2,
+      user_id: 'debug-user',
+      externalId: 'test-2',
+      externalUrl: 'https://example.com/job/2',
+      siteId: 1,
+      title: 'Frontend Developer',
+      companyName: 'DesignStudio',
+      jobType: 'hybrid',
+      location: 'Harare',
+      salary: '$1,500 - $2,500',
+      tags: ['Vue', 'CSS', 'JavaScript'],
+      description: 'UI focused role.',
+      status: 'new',
+      labels: [],
+      created_at: new Date('2026-06-16'),
+      updated_at: new Date('2026-06-16'),
+      raw_text: 'Frontend developer with Vue.js and CSS skills needed.',
+    },
+    {
+      id: 3,
+      user_id: 'debug-user',
+      externalId: 'test-3',
+      externalUrl: 'https://example.com/job/3',
+      siteId: 1,
+      title: 'DevOps Engineer',
+      companyName: 'CloudSystems',
+      jobType: 'onsite',
+      location: 'Harare',
+      salary: '$2,000 - $4,000',
+      tags: ['AWS', 'Docker', 'Kubernetes'],
+      description: 'Infrastructure role.',
+      status: 'new',
+      labels: [],
+      created_at: new Date('2026-06-17'),
+      updated_at: new Date('2026-06-17'),
+      raw_text: 'DevOps engineer with AWS, Docker, and Kubernetes experience.',
+    },
+  ] as Job[];
+}
+
+/**
  * Supabase client API for AetherLink.
  */
 export class AetherLinkSupabaseApi {
@@ -71,7 +172,11 @@ export class AetherLinkSupabaseApi {
     if (error) throw error
   }
 
-  getUser(): Promise<{ user: User | null }> {
+  /** Override: return mock user in debug mode */
+  async getUser(): Promise<{ user: User | null }> {
+    if (isDebugMode()) {
+      return { user: getDebugUser() };
+    }
     return this._supabaseApiCall(
       // @ts-expect-error wrong typings, but works
       async () => await this._supabase.auth.getUser()
@@ -81,6 +186,9 @@ export class AetherLinkSupabaseApi {
   }
 
   async getProfile() {
+    if (isDebugMode()) {
+      return getDebugProfile();
+    }
     try {
       const { data: { user } } = await this._supabase.auth.getUser()
       if (!user) return undefined
@@ -120,6 +228,9 @@ export class AetherLinkSupabaseApi {
     after?: string
     search?: string
   }) {
+    if (isDebugMode()) {
+      return { jobs: getDebugJobs().slice(0, limit), nextPageToken: undefined };
+    }
     const jobs = await this._supabaseApiCall<Job[], PostgrestError>(async () =>
       this._supabase.rpc("list_feed_jobs", {
         jobs_after: after ?? null,
@@ -138,6 +249,10 @@ export class AetherLinkSupabaseApi {
   }
 
   async getFeedJob(jobId: number) {
+    if (isDebugMode()) {
+      const job = getDebugJobs().find(j => j.id === jobId);
+      return job ?? null;
+    }
     const rows = await this._supabaseApiCall<
       Array<Job & { employer_verified?: boolean }>,
       PostgrestError
@@ -147,6 +262,9 @@ export class AetherLinkSupabaseApi {
   }
 
   async listApplications() {
+    if (isDebugMode()) {
+      return [];
+    }
     return this._supabaseApiCall(async () =>
       this._supabase
         .from("applications")

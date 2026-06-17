@@ -21,7 +21,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       const isDebug = window.location.search.includes('debug=true');
       if (isDebug) {
         setProfile({
-          id: 'debug-user',
+          id: 1,
           user_id: 'debug-user',
           full_name: 'Debug User',
           location: 'Harare',
@@ -31,6 +31,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           auto_apply_threshold: 80,
           skills: ['JavaScript', 'TypeScript', 'React'],
           headline: 'Full Stack Developer',
+          subscription_end_date: new Date().toISOString(),
+          subscription_tier: 'basic' as const,
+          is_trial: false,
         } as Profile);
         setLoading(false);
         return;
