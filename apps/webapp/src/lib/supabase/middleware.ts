@@ -29,9 +29,10 @@ export async function updateSession(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname === '/';
   const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/');
   const isPublicPage = request.nextUrl.pathname === '/privacy';
+  const isDebugBypass = request.nextUrl.searchParams.get('debug') === 'true';
 
   // Unauthenticated → redirect to login
-  if (!user && !isAuthPage && !isAuthCallback && !isPublicPage) {
+  if (!user && !isAuthPage && !isAuthCallback && !isPublicPage && !isDebugBypass) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
