@@ -213,6 +213,10 @@ export class AetherLinkSupabaseApi {
   async updateAetherLinkProfile(
     fields: AetherLinkProfileUpdate
   ): Promise<Profile> {
+    if (isDebugMode()) {
+      // Return mock profile in debug mode
+      return { ...getDebugProfile(), ...fields };
+    }
     const [updated] = await this._supabaseApiCall(async () =>
       this._supabase.from("profiles").update(fields).select("*")
     )

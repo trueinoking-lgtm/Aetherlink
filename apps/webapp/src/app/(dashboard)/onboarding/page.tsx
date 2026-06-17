@@ -71,25 +71,27 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     void (async () => {
+      const isDebug = window.location.search.includes('debug=true');
       try {
         const storedPrefs = readOnboardingPreferences();
         const { user } = await sdk.getUser();
-        if (!user) {
+        if (!user && !isDebug) {
           router.push('/');
           return;
         }
 
-        const [prof, advancedMatchingResult] = await Promise.all([
-          sdk.getAetherLinkProfile(),
-          supabase
-            .from('advanced_matching')
-            .select('blacklisted_companies')
-            .eq('user_id', user.id)
-            .maybeSingle(),
-        ]);
+        const prof = await sdk.getAetherLinkProfile();
 
-        const persistedBlacklist =
-          advancedMatchingResult.data?.blacklisted_companies ?? storedPrefs.blacklistedCompanies;
+        // Skip advanced matching fetch in debug mode
+        let persistedBlacklist: string[];
+        if (isDebug) {
+          persistedBlacklist = storedPrefs.blacklistedCompanies;
+        } else if (user) {
+          const { data } = await supabase.from('advanced_matching').select('blacklisted_companies').eq('user_id', user.id).maybeSingle();
+          persistedBlacklist = data?.blacklisted_companies ?? storedPrefs.blacklistedCompanies;
+        } else {
+          persistedBlacklist = storedPrefs.blacklistedCompanies;
+        }
 
         if (prof) {
           setStep1({
@@ -146,6 +148,7 @@ export default function OnboardingPage() {
   async function handleFinish() {
     setLoading(true);
     try {
+      const isDebug = window.location.search.includes('debug=true');
       const prefsPayload = {
         location: step1.location,
         preferred_job_types: step3.jobTypes,
@@ -153,6 +156,20 @@ export default function OnboardingPage() {
         auto_apply_enabled: step3.autoApplyEnabled,
         auto_apply_threshold: step3.autoApplyThreshold,
       };
+
+      if (isDebug) {
+        // In debug mode, skip actual API calls
+        writeOnboardingPreferences({
+          location: step1.location,
+          preferredJobTypes: step3.jobTypes,
+          salaryFloor: step3.salaryFloor,
+          autoApplyEnabled: step3.autoApplyEnabled,
+          autoApplyThreshold: step3.autoApplyThreshold,
+          blacklistedCompanies: step3.blacklist,
+        });
+        router.push('/dashboard');
+        return;
+      }
 
       await sdk.updateAetherLinkProfile({
         full_name: step1.fullName,
