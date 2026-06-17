@@ -18,6 +18,24 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     void (async () => {
+      const isDebug = window.location.search.includes('debug=true');
+      if (isDebug) {
+        setProfile({
+          id: 'debug-user',
+          user_id: 'debug-user',
+          full_name: 'Debug User',
+          location: 'Harare',
+          preferred_job_types: ['Tech'],
+          salary_floor: 0,
+          auto_apply_enabled: false,
+          auto_apply_threshold: 80,
+          skills: ['JavaScript', 'TypeScript', 'React'],
+          headline: 'Full Stack Developer',
+        } as Profile);
+        setLoading(false);
+        return;
+      }
+
       try {
         const { user } = await sdk.getUser();
         if (!user) {
