@@ -167,7 +167,7 @@ export default function FeedPage() {
               />
             </svg>
             <input
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] py-2 pl-10 pr-3 text-sm text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+              className="premium-input pl-10"
               placeholder="Search jobs or companies..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -178,7 +178,7 @@ export default function FeedPage() {
           <select
             value={jobType}
             onChange={(e) => setJobType(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-secondary)] outline-none"
+            className="premium-select"
           >
             <option value="">All types</option>
             {JOB_TYPES.map((t) => (
@@ -192,7 +192,7 @@ export default function FeedPage() {
           <select
             value={salaryRange}
             onChange={(e) => setSalaryRange(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-secondary)] outline-none"
+            className="premium-select"
           >
             <option value="">Any salary</option>
             <option value="0-1000">$0 - $1,000</option>
@@ -204,7 +204,7 @@ export default function FeedPage() {
           <select
             value={datePosted}
             onChange={(e) => setDatePosted(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-secondary)] outline-none"
+            className="premium-select"
           >
             <option value="">Any time</option>
             <option value="today">Today</option>

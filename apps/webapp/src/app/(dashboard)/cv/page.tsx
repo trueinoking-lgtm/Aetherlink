@@ -318,7 +318,7 @@ export default function CVPage() {
             <div>
               <label className="mb-1 block text-sm text-[var(--text-secondary)]">Full name</label>
               <input
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                className="premium-input"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
@@ -326,7 +326,7 @@ export default function CVPage() {
             <div>
               <label className="mb-1 block text-sm text-[var(--text-secondary)]">Headline</label>
               <input
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3 text-[var(--text-primary)] outline-none transition focus:border-[var(--accent)]"
+                className="premium-input"
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
               />

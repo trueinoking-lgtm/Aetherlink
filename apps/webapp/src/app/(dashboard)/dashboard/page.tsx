@@ -146,19 +146,19 @@ export default function DashboardPage() {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/feed"
-          className="rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-medium text-black transition hover:brightness-110"
+          className="premium-btn premium-btn-primary"
         >
           View Jobs
         </Link>
         <Link
           href="/cv"
-          className="rounded-lg border border-[var(--border)] px-6 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--accent-dim)] hover:text-[var(--text-primary)]"
+          className="premium-btn premium-btn-secondary"
         >
           My CV
         </Link>
         <Link
           href="/applied"
-          className="rounded-lg border border-[var(--border)] px-6 py-3 text-sm font-medium text-[var(--text-secondary)] transition hover:border-[var(--accent-dim)] hover:text-[var(--text-primary)]"
+          className="premium-btn premium-btn-secondary"
         >
           Applications
         </Link>
