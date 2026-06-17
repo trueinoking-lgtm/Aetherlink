@@ -279,13 +279,13 @@ export default function CVPage() {
       <div className="glass-card flex items-center gap-6 p-6">
         <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
           <svg width="80" height="80" className="-rotate-90">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border-subtle)" strokeWidth="6" />
             <circle
               cx="40"
               cy="40"
               r="34"
               fill="none"
-              stroke="#FFD700"
+              stroke="var(--accent)"
               strokeWidth="6"
               strokeLinecap="round"
               strokeDasharray={213.6}
