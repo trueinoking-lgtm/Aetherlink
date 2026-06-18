@@ -1372,7 +1372,7 @@ body.onboarding-active main {
    ═══════════════════════════════════════════ */
 
 .score-bar {
-  height: 6px;
+  height: 8px;
   border-radius: var(--radius-full);
   background: var(--bg-raised);
   overflow: hidden;

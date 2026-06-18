@@ -49,7 +49,7 @@ export function Sidebar({
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 flex flex-col gap-1 p-3">
+      <nav className="flex-1 flex flex-col gap-1 p-3 pb-4">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
