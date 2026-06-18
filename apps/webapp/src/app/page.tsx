@@ -44,12 +44,33 @@ export default function LoginPage() {
           <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl">
             Aether<span className="gradient-text">Link</span>
           </h1>
-          <p className="mt-4 text-lg text-[var(--text-secondary)]">
+          <p className="mt-4 text-lg text-[var(--text-primary)]">
             Find jobs. Apply instantly.
           </p>
-          <p className="mt-1.5 text-sm text-[var(--text-muted)]">
+          <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
             Your AI-powered job search assistant.
           </p>
+          {/* Social proof */}
+          <div className="mt-6 flex items-center justify-center gap-6">
+            <div className="flex items-center gap-1.5">
+              <div className="flex -space-x-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--accent)]/30 text-[10px] font-bold text-[var(--accent)] ring-2 ring-[var(--bg-base)]">A</div>
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--success)]/30 text-[10px] font-bold text-[var(--success)] ring-2 ring-[var(--bg-base)]">M</div>
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--warning)]/30 text-[10px] font-bold text-[var(--warning)] ring-2 ring-[var(--bg-base)]">T</div>
+              </div>
+              <span className="text-xs text-[var(--text-secondary)]">500+ job seekers</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="flex gap-0.5">
+                {[1,2,3,4,5].map(i => (
+                  <svg key={i} className="h-3.5 w-3.5 text-[var(--warning)]" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-xs text-[var(--text-secondary)]">4.9 rating</span>
+            </div>
+          </div>
         </div>
 
         {/* Card */}
@@ -64,7 +85,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply to jobs</p>
-                <p className="text-xs text-[var(--text-muted)]">Apply to hundreds of jobs with one click</p>
+                <p className="text-xs text-[var(--text-secondary)]">Apply to hundreds of jobs with one click</p>
               </div>
             </div>
             <div className="flex items-start gap-3 group">
@@ -75,7 +96,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)]">Smart matching</p>
-                <p className="text-xs text-[var(--text-muted)]">AI matches you with the best opportunities</p>
+                <p className="text-xs text-[var(--text-secondary)]">AI matches you with the best opportunities</p>
               </div>
             </div>
             <div className="flex items-start gap-3 group">
@@ -86,7 +107,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)]">Track everything</p>
-                <p className="text-xs text-[var(--text-muted)]">Dashboard to monitor all your applications</p>
+                <p className="text-xs text-[var(--text-secondary)]">Dashboard to monitor all your applications</p>
               </div>
             </div>
           </div>
@@ -155,7 +176,7 @@ export default function LoginPage() {
           </button>
 
           {/* Trust signal */}
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-[var(--text-muted)]">
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-[var(--text-secondary)]">
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
