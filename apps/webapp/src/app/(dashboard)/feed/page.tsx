@@ -229,7 +229,7 @@ export default function FeedPage() {
                 </svg>
               )}
             </span>
-            Suited for me
+            <span className="select-none">Suited for me</span>
           </label>
         </div>
       </div>
@@ -283,7 +283,7 @@ export default function FeedPage() {
                   <span
                     className={`absolute right-3 top-3 rounded-full px-2 py-0.5 font-mono text-xs font-bold ${scoreColor} bg-[var(--bg-surface)]`}
                   >
-                    {score}%
+                    {score > 0 ? `${score}%` : '—'}
                   </span>
                 )}
 

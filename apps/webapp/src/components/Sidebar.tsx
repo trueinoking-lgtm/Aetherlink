@@ -73,7 +73,7 @@ export function Sidebar({
       {/* User area */}
       <div className="border-t border-[var(--border)] p-3">
         <div className={`flex items-center gap-3 rounded-lg p-2 ${collapsed ? 'justify-center' : ''}`}>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-white">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
             {profile?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           {!collapsed && (

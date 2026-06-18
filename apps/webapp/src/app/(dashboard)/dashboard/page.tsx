@@ -164,7 +164,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <span className={`ml-4 shrink-0 font-mono text-sm font-bold ${scoreColor}`}>
-                    {score}%
+                    {score > 0 ? `${score}%` : '—'}
                   </span>
                 </Link>
               );
