@@ -243,7 +243,13 @@ export default function FeedPage() {
         </div>
       ) : filteredJobs.length === 0 ? (
         <div className="glass-card p-12 text-center">
-          <p className="text-[var(--text-secondary)]">
+          <div className="empty-state-icon mx-auto">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs found</p>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
             No jobs match your filters.
           </p>
           <button
@@ -254,7 +260,7 @@ export default function FeedPage() {
               setDatePosted('');
               setSuitedForMe(false);
             }}
-            className="mt-3 text-sm text-[var(--accent)] hover:underline"
+            className="mt-4 premium-btn premium-btn-secondary"
           >
             Clear all filters
           </button>
@@ -263,6 +269,14 @@ export default function FeedPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 stagger-children">
           {filteredJobs.map((job) => {
             const score = getMatchScore(job);
+            const barColor =
+              score !== null
+                ? score >= 80
+                  ? 'high'
+                  : score >= 50
+                    ? 'mid'
+                    : 'low'
+                : '';
             const scoreColor =
               score !== null
                 ? score >= 80
@@ -276,18 +290,18 @@ export default function FeedPage() {
               <Link
                 key={job.id}
                 href={`/feed/${job.id}`}
-                className="glass-card hover-lift relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5"
+                className="glass-card hover-lift relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
               >
                 {/* Match score badge */}
-                {score !== null && (
+                {score !== null && score > 0 && (
                   <span
-                    className={`absolute right-3 top-3 rounded-full px-2 py-0.5 font-mono text-xs font-bold ${scoreColor} bg-[var(--bg-surface)]`}
+                    className={`absolute right-3 top-3 job-card-match-badge ${barColor}`}
                   >
-                    {score > 0 ? `${score}%` : '—'}
+                    {score}%
                   </span>
                 )}
 
-                <h3 className="font-display pr-12 text-lg font-bold text-[var(--text-primary)]">
+                <h3 className="font-display pr-14 text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">
                   {job.title}
                 </h3>
                 <p className="mt-0.5 text-sm text-[var(--accent)]">
@@ -302,6 +316,18 @@ export default function FeedPage() {
                     </>
                   )}
                 </p>
+
+                {/* Score bar */}
+                {score !== null && score > 0 && (
+                  <div className="mt-3 mb-1 flex items-center gap-2">
+                    <div className="score-bar flex-1 max-w-[140px]">
+                      <div className={`score-bar-fill ${barColor}`} style={{ width: `${score}%` }} />
+                    </div>
+                    <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                      {score}% match
+                    </span>
+                  </div>
+                )}
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {job.jobType && (

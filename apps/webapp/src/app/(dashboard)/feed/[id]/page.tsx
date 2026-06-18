@@ -17,28 +17,39 @@ function ScoreCircle({ score }: { score: number }) {
       : score >= 50
         ? 'var(--match-mid)'
         : 'var(--match-low)';
+  const label =
+    score >= 80
+      ? 'Strong match'
+      : score >= 50
+        ? 'Good match'
+        : 'Low match';
   return (
-    <div className="relative flex items-center justify-center">
-          <svg width="100" height="100" className="-rotate-90">
-            <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
-            <circle
-              cx="50"
-              cy="50"
-              r={radius}
-              fill="none"
-              stroke={color}
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference}
-              className="transition-all duration-700 ease-out"
-              style={{ strokeDashoffset: offset }}
-            />
-          </svg>
-          <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
-            {score}%
-          </span>
-        </div>
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative flex items-center justify-center">
+        <svg width="100" height="100" className="-rotate-90">
+          <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference}
+            className="score-ring-circle"
+            style={{ strokeDashoffset: offset }}
+          />
+        </svg>
+        <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
+          {score}%
+        </span>
+      </div>
+      <span className="text-xs font-medium" style={{ color: `var(--${score >= 80 ? 'match-high' : score >= 50 ? 'match-mid' : 'match-low'})` }}>
+        {label}
+      </span>
+    </div>
   );
 }
 

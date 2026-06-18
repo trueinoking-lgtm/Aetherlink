@@ -86,7 +86,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
         <div className="stat-card">
           <div className="stat-card-icon neutral">
             <svg className="h-5 w-5 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 stagger-children">
             {jobs.slice(0, 5).map((job) => {
               const score = computeMatchScore(job.title, job.raw_text, skills);
               const scoreColor =
@@ -153,11 +153,17 @@ export default function DashboardPage() {
                   : score > 0
                   ? 'text-[var(--match-low)]'
                   : 'text-[var(--text-faint)]';
+              const barColor =
+                score >= 80
+                  ? 'high'
+                  : score >= 50
+                  ? 'mid'
+                  : 'low';
               return (
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}
-                  className="glass-card hover-lift flex items-center justify-between p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
+                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-[var(--text-primary)]">{job.title}</p>
@@ -169,10 +175,25 @@ export default function DashboardPage() {
                         </span>
                       )}
                     </p>
+                    {/* Score bar */}
+                    {score > 0 && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="score-bar flex-1 max-w-[120px]">
+                          <div className={`score-bar-fill ${barColor}`} style={{ width: `${score}%` }} />
+                        </div>
+                        <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                          {score}%
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <span className={`ml-4 shrink-0 font-mono text-sm font-bold ${scoreColor}`}>
-                    {score > 0 ? `${score}%` : '—'}
-                  </span>
+                  {score > 0 ? (
+                    <span className={`job-card-match-badge ${barColor} shrink-0`}>
+                      {score}%
+                    </span>
+                  ) : (
+                    <span className="shrink-0 text-xs text-[var(--text-faint)]">No match</span>
+                  )}
                 </Link>
               );
             })}

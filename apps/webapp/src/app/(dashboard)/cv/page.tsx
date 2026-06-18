@@ -499,27 +499,40 @@ export default function CVPage() {
         <h2 className="section-heading">Which jobs matched me</h2>
         {matchedJobs.length === 0 ? (
           <div className="glass-card p-8 text-center">
+            <div className="empty-state-icon mx-auto">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
             <p className="text-sm text-[var(--text-secondary)]">
               Add skills to your CV to see matching jobs.
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {matchedJobs.map((j) => (
-              <Link
-                key={j.id}
-                href={`/feed/${j.id}`}
-                className="glass-card hover-lift flex items-center justify-between p-4 transition hover:border-[var(--border-accent)]"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>
-                  <p className="text-xs text-[var(--text-secondary)]">{j.companyName}</p>
-                </div>
-                <span className="ml-4 shrink-0 font-mono text-sm font-bold text-[var(--match-high)]">
-                  {j.score}%
-                </span>
-              </Link>
-            ))}
+          <div className="space-y-2 stagger-children">
+            {matchedJobs.map((j) => {
+              const barColor = j.score >= 80 ? 'high' : j.score >= 50 ? 'mid' : 'low';
+              return (
+                <Link
+                  key={j.id}
+                  href={`/feed/${j.id}`}
+                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition hover:border-[var(--border-accent)]"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{j.companyName}</p>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <div className="score-bar flex-1 max-w-[100px]">
+                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${j.score}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`job-card-match-badge ${barColor} shrink-0`}>
+                    {j.score}%
+                  </span>
+                </Link>
+              );
+            })}
             <Link href="/feed" className="mt-3 block text-center text-sm text-[var(--accent)] hover:underline">
               View all jobs →
             </Link>

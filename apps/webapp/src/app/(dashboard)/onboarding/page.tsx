@@ -312,6 +312,13 @@ export default function OnboardingPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
+        {/* Brand */}
+        <div className="mb-8 text-center">
+          <h2 className="font-display text-2xl font-bold tracking-tight">
+            <span className="text-[var(--text-primary)]">Aether</span><span className="gradient-text">Link</span>
+          </h2>
+        </div>
+
         <ProgressDots step={step} />
 
         {/* Step 1: Tell us about you */}

@@ -33,7 +33,7 @@ export function Sidebar({
       <div className="flex h-14 items-center justify-between border-b border-[var(--border)] px-4">
         {!collapsed && (
           <Link href="/dashboard" className="font-display text-lg font-bold tracking-tight">
-            Aether<span className="text-[var(--accent)]">Link</span>
+            Aether<span className="gradient-text">Link</span>
           </Link>
         )}
         <button
