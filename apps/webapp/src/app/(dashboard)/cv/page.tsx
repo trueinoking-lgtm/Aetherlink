@@ -46,7 +46,7 @@ function CvScoreRing({ score }: { score: number }) {
           style={{ strokeDashoffset: offset }}
         />
       </svg>
-      <span className="absolute font-display text-2xl font-bold text-[var(--accent)] animate-fade-in">{score}</span>
+      <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">{score}</span>
     </div>
   );
 }
@@ -175,13 +175,13 @@ function AccordionCard({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
+        className="flex w-full items-center justify-between p-5 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
       >
-        <span className="flex items-center gap-2.5 min-w-0">
+        <span className="flex items-center gap-3 min-w-0">
           {hasContent ? (
-            <span className="h-2 w-2 rounded-full bg-[var(--accent)] shrink-0" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shrink-0" />
           ) : (
-            <span className="h-2 w-2 rounded-full bg-[var(--border)] shrink-0" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--border)] shrink-0" />
           )}
           <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
           {preview && (
@@ -189,7 +189,7 @@ function AccordionCard({
           )}
         </span>
         <svg
-          className={`accordion-chevron h-4 w-4 ${open ? 'open' : ''}`}
+          className={`accordion-chevron h-5 w-5 shrink-0 ${open ? 'open' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

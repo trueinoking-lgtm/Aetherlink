@@ -116,9 +116,9 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       {/* Back link */}
       <Link
         href="/feed"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)] hover:underline underline-offset-2"
+        className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
         All Jobs
@@ -132,7 +132,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
               {job.title}
             </h1>
-            <p className="mt-1 text-lg text-[var(--accent)]">{job.companyName}</p>
+            <p className="mt-1 text-lg text-[var(--text-secondary)]">{job.companyName}</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--text-muted)]">
               <span>
                 {new Date(job.created_at).toLocaleDateString('en-US', {
@@ -170,23 +170,23 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           {/* Salary and metadata */}
           <div className="flex flex-wrap gap-4">
             {job.salary && (
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
-                <p className="text-xs text-[var(--text-muted)]">Salary</p>
-                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--accent)]">{job.salary}</p>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+                <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
+                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.salary}</p>
               </div>
             )}
             {job.jobType && (
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
-                <p className="text-xs text-[var(--text-muted)]">Job Type</p>
-                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--text-primary)]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+                <p className="text-xs font-medium text-[var(--text-muted)]">Job Type</p>
+                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">
                   {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
                 </p>
               </div>
             )}
             {job.location && (
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
-                <p className="text-xs text-[var(--text-muted)]">Location</p>
-                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+                <p className="text-xs font-medium text-[var(--text-muted)]">Location</p>
+                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
               </div>
             )}
           </div>

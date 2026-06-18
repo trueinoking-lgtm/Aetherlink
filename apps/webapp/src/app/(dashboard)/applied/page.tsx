@@ -82,31 +82,31 @@ export default function AppliedPage() {
           </div>
         </div>
       ) : (
-        <div className="relative pl-8">
+        <div className="relative pl-10">
           {/* Vertical line */}
-          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
+          <div className="absolute left-[13px] top-3 bottom-3 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             {applications.map((app) => {
               const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
               return (
                 <div key={app.id} className="relative">
                   {/* Dot */}
-                  <div className="absolute -left-8 top-2 h-6 w-6 rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
-                    <div className="ml-[3px] mt-[3px] h-3.5 w-3.5 rounded-full bg-[var(--accent)]" />
+                  <div className="absolute -left-10 top-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
+                    <div className="h-3 w-3 rounded-full bg-[var(--accent)]" />
                   </div>
 
                   {/* Card */}
-                  <div className="glass-card hover-lift p-4 transition-all hover:border-[var(--border-accent)]">
+                  <div className="glass-card hover-lift p-5 transition-all hover:border-[var(--border-accent)]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-[var(--text-primary)]">
                           {app.jobs?.title ?? 'Unknown Job'}
                         </p>
-                        <p className="text-sm text-[var(--text-secondary)]">
+                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
                           {app.jobs?.companyName ?? 'Unknown Company'}
                         </p>
-                        <p className="mt-1 text-xs text-[var(--text-muted)]">
+                        <p className="mt-1.5 text-xs text-[var(--text-muted)]">
                           {new Date(app.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
@@ -114,7 +114,7 @@ export default function AppliedPage() {
                           })}
                         </p>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${status.color}`}>
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${status.color}`}>
                         {status.label}
                       </span>
                     </div>

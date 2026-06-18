@@ -299,7 +299,7 @@ export default function FeedPage() {
                 <h3 className="font-display text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
                   {job.title}
                 </h3>
-                <p className="mt-0.5 text-sm text-[var(--accent)]">
+                <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
                   {job.companyName}
                 </p>
                 <p className="mt-1 text-xs text-[var(--text-muted)]">

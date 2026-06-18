@@ -74,14 +74,14 @@ export function Sidebar({
             {profile?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           {!collapsed && (
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex flex-col gap-0.5">
               <p className="truncate text-sm font-medium text-[var(--text-primary)]">
                 {profile?.full_name ?? 'User'}
               </p>
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="text-xs text-[var(--text-secondary)] transition hover:text-[var(--accent)] pointer-active"
+                  className="text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
                 >
                   Sign out
                 </button>

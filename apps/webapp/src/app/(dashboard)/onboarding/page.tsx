@@ -52,7 +52,7 @@ function ProgressDots({ step }: { step: number }) {
               <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
             )}
             <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
                 i === step
                   ? 'bg-[var(--accent)] text-[var(--text-primary)] scale-110 shadow-[var(--shadow-glow)]'
                   : i < step
@@ -433,7 +433,7 @@ export default function OnboardingPage() {
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
                   className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
                     step2.mode === 'build'
-                      ? 'bg-[var(--accent)] text-[var(--text-primary)] shadow-sm'
+                      ? 'premium-btn-primary'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
@@ -444,7 +444,7 @@ export default function OnboardingPage() {
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
                   className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
                     step2.mode === 'upload'
-                      ? 'bg-[var(--accent)] text-[var(--text-primary)] shadow-sm'
+                      ? 'premium-btn-primary'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                   }`}
                 >
@@ -613,13 +613,13 @@ export default function OnboardingPage() {
                   Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
                 </label>
                 <input
-                  type="range"
-                  min={0}
-                  max={5000}
-                  step={100}
-                  value={step3.salaryFloor}
-                  onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
-                  className="w-full accent-[var(--accent)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded"
+                type="range"
+                min={0}
+                max={5000}
+                step={100}
+                value={step3.salaryFloor}
+                onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
+                className="w-full cursor-pointer"
                 />
                 <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                   <span>$0</span>
@@ -703,7 +703,7 @@ export default function OnboardingPage() {
                     step={5}
                     value={step3.autoApplyThreshold}
                     onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                    className="w-full accent-[var(--accent)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded"
+                    className="w-full cursor-pointer"
                   />
                   <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                     <span>50%</span>

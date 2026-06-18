@@ -41,34 +41,35 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo / Brand */}
         <div className="mb-10 text-center">
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
             Aether<span className="gradient-text">Link</span>
           </h1>
-          <p className="mt-4 text-lg text-[var(--text-primary)]">
+          <p className="mt-4 text-xl font-medium text-[var(--text-primary)]">
             Find jobs. Apply instantly.
           </p>
-          <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
             Your AI-powered job search assistant.
           </p>
           {/* Social proof */}
-          <div className="mt-6 flex items-center justify-center gap-6">
-            <div className="flex items-center gap-1.5">
+          <div className="mt-7 flex items-center justify-center gap-6">
+            <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--accent)]/30 text-[10px] font-bold text-[var(--accent)] ring-2 ring-[var(--bg-base)]">A</div>
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--success)]/30 text-[10px] font-bold text-[var(--success)] ring-2 ring-[var(--bg-base)]">M</div>
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--warning)]/30 text-[10px] font-bold text-[var(--warning)] ring-2 ring-[var(--bg-base)]">T</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--success)] to-emerald-700 text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">M</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--warning)] to-amber-700 text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">T</div>
               </div>
-              <span className="text-xs text-[var(--text-secondary)]">500+ job seekers</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">500+ job seekers</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="h-4 w-px bg-[var(--border)]" />
+            <div className="flex items-center gap-1.5">
               <div className="flex gap-0.5">
                 {[1,2,3,4,5].map(i => (
-                  <svg key={i} className="h-3.5 w-3.5 text-[var(--warning)]" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={i} className="h-4 w-4 text-[var(--warning)]" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <span className="text-xs text-[var(--text-secondary)]">4.9 rating</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">4.9 rating</span>
             </div>
           </div>
         </div>
@@ -76,38 +77,38 @@ export default function LoginPage() {
         {/* Card */}
         <div className="login-card glass-card p-8 login-card-glow">
           {/* Feature highlights */}
-          <div className="mb-8 space-y-4">
-            <div className="flex items-start gap-3 group">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
+          <div className="mb-8 space-y-5">
+            <div className="flex items-start gap-4 group">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all duration-200 group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
                 <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply to jobs</p>
-                <p className="text-xs text-[var(--text-secondary)]">Apply to hundreds of jobs with one click</p>
+              <div className="pt-0.5">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Auto-apply to jobs</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">Apply to hundreds of jobs with one click</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 group">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
+            <div className="flex items-start gap-4 group">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all duration-200 group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
                 <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Smart matching</p>
-                <p className="text-xs text-[var(--text-secondary)]">AI matches you with the best opportunities</p>
+              <div className="pt-0.5">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Smart matching</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">AI matches you with the best opportunities</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 group">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
+            <div className="flex items-start gap-4 group">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all duration-200 group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
                 <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">Track everything</p>
-                <p className="text-xs text-[var(--text-secondary)]">Dashboard to monitor all your applications</p>
+              <div className="pt-0.5">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Track everything</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">Dashboard to monitor all your applications</p>
               </div>
             </div>
           </div>
@@ -185,13 +186,13 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-[var(--text-secondary)]">
+        <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
           By signing in, you agree to our{' '}
-          <a href="/terms" className="text-[var(--accent)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
+          <a href="/terms" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="/privacy" className="text-[var(--accent)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
+          <a href="/privacy" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm">
             Privacy Policy
           </a>.
         </p>
