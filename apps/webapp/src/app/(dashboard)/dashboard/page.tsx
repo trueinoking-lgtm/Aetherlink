@@ -126,7 +126,14 @@ export default function DashboardPage() {
 
       {/* Recent activity */}
       <div>
-        <h2 className="section-heading">Recent activity</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="section-heading mb-0">Recent activity</h2>
+          {jobs.length > 5 && (
+            <Link href="/feed" className="text-sm text-[var(--accent)] hover:underline">
+              View all →
+            </Link>
+          )}
+        </div>
         {jobs.length === 0 ? (
           <div className="glass-card p-8 text-center">
             <p className="text-[var(--text-secondary)]">No jobs matching your profile yet.</p>

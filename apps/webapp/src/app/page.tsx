@@ -38,7 +38,7 @@ export default function LoginPage() {
         {/* Logo / Brand */}
         <div className="mb-10 text-center">
           <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl">
-            Aether<span className="font-bold text-[var(--accent)]">Link</span>
+            Aether<span className="font-semibold text-[var(--accent)]">Link</span>
           </h1>
           <p className="mt-3 text-lg text-[var(--text-primary)]">
             Find jobs. Apply instantly.

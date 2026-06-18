@@ -673,7 +673,7 @@ export default function OnboardingPage() {
                     onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
                     className="peer sr-only"
                   />
-                  <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)]" />
+                  <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--accent)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[var(--bg-surface)]" />
                 </label>
               </div>
 
