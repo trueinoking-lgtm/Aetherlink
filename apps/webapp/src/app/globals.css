@@ -1040,6 +1040,25 @@ body.onboarding-active main {
 }
 
 /* ═══════════════════════════════════════════
+   PAGE TRANSITION
+   ═══════════════════════════════════════════ */
+
+.page-transition {
+  animation: pageContentFade 0.2s var(--ease-out) forwards;
+}
+
+@keyframes pageContentFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════
    PAGE TRANSITION WRAPPER
    ═══════════════════════════════════════════ */
 
@@ -1172,7 +1191,6 @@ body.onboarding-active main {
   background: var(--glass-bg-hover);
   border-color: var(--border-hover);
   transform: translateY(-1px);
-  box-shadow: inset 2px 0 0 0 var(--accent);
 }
 
 .stat-card-icon {
@@ -1758,13 +1776,13 @@ aside::-webkit-scrollbar-thumb {
 .bottom-nav-link.active::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
+  width: 28px;
   height: 3px;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 3px 3px 0 0;
 }
 
 .bottom-nav-link:active {

@@ -33,7 +33,7 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
         </span>
         <span className="font-mono text-sm text-[var(--text-secondary)]">{result.percentileLabel}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[var(--bg-raised)]">
+      <div className="score-bar h-2 overflow-hidden rounded-full">
         <div
           className={`h-full rounded-full transition-all duration-[600ms] ease-out ${barClass}`}
           style={{ '--score-width': `${width}%` } as React.CSSProperties}

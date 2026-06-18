@@ -176,7 +176,7 @@ export default function FeedPage() {
           </div>
 
           {/* Filters row - horizontal scroll on mobile */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 filter-bar-mobile">
             {/* Job type */}
             <select
               value={jobType}

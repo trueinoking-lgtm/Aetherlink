@@ -88,7 +88,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       <BottomNav />
       <main
         id="main-content"
-        className={`relative z-10 transition-all duration-200 pb-20 md:pb-0 ${
+        className={`relative z-10 transition-all duration-200 pb-20 md:pb-0 page-transition ${
           collapsed ? 'md:ml-16' : 'md:ml-60'
         }`}
       >

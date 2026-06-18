@@ -92,7 +92,7 @@ export default function AppliedPage() {
               return (
                 <div key={app.id} className="relative">
                   {/* Dot */}
-                  <div className="absolute -left-8 sm:-left-10 top-5 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--bg-base)]">
+                  <div className="absolute -left-8 sm:-left-10 top-5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--bg-base)]">
                     <div className="h-3 w-3 rounded-full bg-[var(--accent)] ring-2 ring-[var(--accent)]/20" />
                   </div>
 
