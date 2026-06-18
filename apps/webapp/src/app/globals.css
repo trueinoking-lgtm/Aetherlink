@@ -313,6 +313,12 @@ body {
   background: var(--danger-bg);
 }
 
+.skill-tag-remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 50%;
+}
+
 /* ═══════════════════════════════════════════
    STATUS BADGES
    ═══════════════════════════════════════════ */
@@ -845,6 +851,11 @@ body.onboarding-active main {
 
 .premium-checkbox:hover {
   color: var(--text-primary);
+}
+
+.premium-checkbox input:focus-visible + .premium-checkbox-box {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .premium-checkbox-box {
@@ -1386,6 +1397,11 @@ input[type="range"] {
   border-radius: var(--radius-full);
   outline: none;
   cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
