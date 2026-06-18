@@ -283,8 +283,10 @@ export default function FeedPage() {
                   ? 'text-[var(--match-high)]'
                   : score >= 50
                     ? 'text-[var(--match-mid)]'
-                    : 'text-[var(--match-low)]'
-                : 'text-[var(--text-muted)]';
+                    : score > 0
+                      ? 'text-[var(--match-low)]'
+                      : 'text-[var(--text-secondary)]'
+                : 'text-[var(--text-secondary)]';
 
             return (
               <Link
@@ -292,16 +294,7 @@ export default function FeedPage() {
                 href={`/feed/${job.id}`}
                 className="glass-card hover-lift relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
               >
-                {/* Match score badge */}
-                {score !== null && score > 0 && (
-                  <span
-                    className={`absolute right-3 top-3 job-card-match-badge ${barColor}`}
-                  >
-                    {score}%
-                  </span>
-                )}
-
-                <h3 className="font-display pr-14 text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">
+                <h3 className="font-display text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
                   {job.title}
                 </h3>
                 <p className="mt-0.5 text-sm text-[var(--accent)]">
@@ -318,16 +311,14 @@ export default function FeedPage() {
                 </p>
 
                 {/* Score bar */}
-                {score !== null && score > 0 && (
-                  <div className="mt-3 mb-1 flex items-center gap-2">
-                    <div className="score-bar flex-1 max-w-[140px]">
-                      <div className={`score-bar-fill ${barColor}`} style={{ width: `${score}%` }} />
-                    </div>
-                    <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                      {score}% match
-                    </span>
+                <div className="mt-3 mb-1 flex items-center gap-2">
+                  <div className="score-bar flex-1 max-w-[140px]">
+                    <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 2)}%` }} />
                   </div>
-                )}
+                  <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                    {score !== null && score > 0 ? `${score}% match` : 'No match'}
+                  </span>
+                </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {job.jobType && (

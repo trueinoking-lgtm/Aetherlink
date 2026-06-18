@@ -72,9 +72,14 @@ export default function AppliedPage() {
             <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications yet</p>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">Start applying to jobs and track them here.</p>
           </div>
-          <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">
-            Browse Jobs
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 mt-2">
+            <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">
+              Browse Jobs
+            </Link>
+            <Link href="/cv" className="premium-btn premium-btn-secondary pointer-active">
+              Update CV
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="relative pl-8">

@@ -44,12 +44,13 @@ function computeCvStrength(step2: Step2Data): number {
 
 function ProgressDots({ step }: { step: number }) {
   return (
-    <div className="mb-10 flex items-center justify-center gap-3">
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="flex items-center gap-3">
-          {i > 0 && (
-            <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
-          )}
+    <div className="mb-10 flex flex-col items-center gap-3">
+      <div className="flex items-center gap-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex items-center gap-3">
+            {i > 0 && (
+              <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
+            )}
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
                 i === step
@@ -69,6 +70,10 @@ function ProgressDots({ step }: { step: number }) {
           </div>
         </div>
       ))}
+      </div>
+      <span className="text-xs font-medium text-[var(--text-muted)]" aria-live="polite">
+        Step {step + 1} of 3
+      </span>
     </div>
   );
 }
@@ -330,12 +335,12 @@ export default function OnboardingPage() {
           <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">Let&rsquo;s start with the basics</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">Let&rsquo;s start with the basics</p>
             </div>
 
             <div className="space-y-5">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name</label>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name <span className="text-[var(--danger)]">*</span></label>
                 <input
                   className="premium-input"
                   placeholder="Your full name"
@@ -345,7 +350,7 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City)</label>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City) <span className="text-[var(--danger)]">*</span></label>
                 <input
                   className="premium-input"
                   placeholder="e.g. Harare"
@@ -417,7 +422,7 @@ export default function OnboardingPage() {
           <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">Build your profile or upload a PDF</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">Build your profile or upload a PDF</p>
             </div>
 
             <div className="space-y-5">

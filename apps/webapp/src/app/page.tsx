@@ -44,10 +44,10 @@ export default function LoginPage() {
           <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl">
             Aether<span className="gradient-text">Link</span>
           </h1>
-          <p className="mt-3 text-lg text-[var(--text-primary)]">
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">
             Find jobs. Apply instantly.
           </p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
+          <p className="mt-1.5 text-sm text-[var(--text-muted)]">
             Your AI-powered job search assistant.
           </p>
         </div>

@@ -58,6 +58,7 @@ export function Sidebar({
               href={item.href}
               className={`sidebar-nav-link ${isActive ? 'active' : ''}`}
               title={collapsed ? item.label : undefined}
+              aria-current={isActive ? 'page' : undefined}
             >
               <item.icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span>{item.label}</span>}
@@ -80,7 +81,7 @@ export function Sidebar({
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
+                  className="text-xs text-[var(--text-secondary)] transition hover:text-[var(--accent)] pointer-active"
                 >
                   Sign out
                 </button>

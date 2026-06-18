@@ -25,16 +25,16 @@ function computeCvScore(profile: Profile): number {
 }
 
 function CvScoreRing({ score }: { score: number }) {
-  const radius = 34;
+  const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   return (
-    <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
-      <svg width="80" height="80" className="-rotate-90">
-        <circle cx="40" cy="40" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
+    <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
+      <svg width="96" height="96" className="-rotate-90">
+        <circle cx="48" cy="48" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
         <circle
-          cx="40"
-          cy="40"
+          cx="48"
+          cy="48"
           r={radius}
           fill="none"
           stroke="var(--accent)"
@@ -313,9 +313,17 @@ export default function CVPage() {
 
   return (
     <div className="space-y-8 page-enter">
-      {/* Header */}
-      <div>
+      {/* Header with save button */}
+      <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="premium-btn premium-btn-secondary text-sm disabled:opacity-50"
+        >
+          {saving ? 'Saving…' : 'Save Changes'}
+        </button>
       </div>
 
       {/* Score card */}
@@ -500,18 +508,6 @@ export default function CVPage() {
             </button>
           )}
         </AccordionCard>
-      </div>
-
-      {/* Save button */}
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="premium-btn premium-btn-primary disabled:opacity-40 pointer-active"
-        >
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
       </div>
 
       {/* Which jobs matched me */}

@@ -39,14 +39,14 @@ function ScoreCircle({ score }: { score: number }) {
             strokeDasharray={circumference}
             strokeDashoffset={circumference}
             className="score-ring-circle"
-            style={{ strokeDashoffset: offset }}
+            style={{ strokeDashoffset: offset, stroke: color }}
           />
         </svg>
         <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
           {score}%
         </span>
       </div>
-      <span className="text-xs font-medium" style={{ color: `var(--${score >= 80 ? 'match-high' : score >= 50 ? 'match-mid' : 'match-low'})` }}>
+      <span className="text-xs font-medium" style={{ color }}>
         {label}
       </span>
     </div>
@@ -280,7 +280,11 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                     {job.companyName}
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
-                    {job.employer_verified ? '✓ Verified employer' : 'Company information pending'}
+                    {job.employer_verified ? (
+                      <span className="text-[var(--success)]">✓ Verified employer</span>
+                    ) : (
+                      'Company information pending'
+                    )}
                   </p>
                 </div>
               </div>
@@ -289,6 +293,19 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   Source: {job.source_group}
                 </p>
               )}
+            </div>
+
+            {/* Back to jobs link */}
+            <div className="glass-card p-5">
+              <Link
+                href="/feed"
+                className="flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Browse more jobs
+              </Link>
             </div>
           </div>
         </div>
