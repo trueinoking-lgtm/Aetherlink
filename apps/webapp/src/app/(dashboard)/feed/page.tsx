@@ -153,7 +153,7 @@ export default function FeedPage() {
           {/* Search */}
           <div className="relative flex-1 min-w-0">
             <svg
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -166,7 +166,7 @@ export default function FeedPage() {
               />
             </svg>
             <input
-              className="premium-input pl-10"
+              className="premium-input pl-11"
               placeholder="Search jobs or companies…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
