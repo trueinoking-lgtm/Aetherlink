@@ -159,11 +159,13 @@ function AccordionCard({
   open,
   onToggle,
   children,
+  hasContent,
 }: {
   title: string;
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  hasContent?: boolean;
 }) {
   return (
     <div className="glass-card overflow-hidden">
@@ -172,7 +174,12 @@ function AccordionCard({
         onClick={onToggle}
         className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
       >
-        <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
+        <span className="flex items-center gap-2.5">
+          {hasContent && (
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+          )}
+          <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
+        </span>
         <svg
           className={`accordion-chevron h-4 w-4 ${open ? 'open' : ''}`}
           fill="none"
@@ -324,6 +331,7 @@ export default function CVPage() {
           title="Personal Info"
           open={openSection === 'personal'}
           onToggle={() => setOpenSection(openSection === 'personal' ? null : 'personal')}
+          hasContent={!!fullName || !!headline}
         >
           <div className="space-y-4">
             <div>
@@ -349,6 +357,7 @@ export default function CVPage() {
           title="Experience"
           open={openSection === 'experience'}
           onToggle={() => setOpenSection(openSection === 'experience' ? null : 'experience')}
+          hasContent={experience.length > 0}
         >
           {experience.length === 0 && editSection !== 'experience' && (
             <p className="text-sm text-[var(--text-muted)]">No experience added yet.</p>
@@ -386,6 +395,7 @@ export default function CVPage() {
           title="Skills"
           open={openSection === 'skills'}
           onToggle={() => setOpenSection(openSection === 'skills' ? null : 'skills')}
+          hasContent={skills.length > 0}
         >
           <div className="space-y-3">
             <div className="flex flex-wrap gap-1.5">
@@ -425,6 +435,7 @@ export default function CVPage() {
           title="Education"
           open={openSection === 'education'}
           onToggle={() => setOpenSection(openSection === 'education' ? null : 'education')}
+          hasContent={education.length > 0}
         >
           {education.length === 0 && editSection !== 'education' && (
             <p className="text-sm text-[var(--text-muted)]">No education added yet.</p>
