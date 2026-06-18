@@ -319,7 +319,7 @@ export default function FeedPage() {
                       {job.location ?? 'Remote'}
                       {job.created_at && (
                         <>
-                          <span className="mx-1">&middot;</span>
+                          <span className="mx-1" aria-hidden="true">&middot;</span>
                           {new Date(job.created_at).toLocaleDateString()}
                         </>
                       )}
@@ -358,7 +358,7 @@ export default function FeedPage() {
                       <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent-hover)] group-hover:border-[var(--border-accent)]">
                         View details
                       </span>
-                      <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </div>

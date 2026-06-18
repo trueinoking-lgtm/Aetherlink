@@ -589,6 +589,12 @@ hr {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
   }
+
+  /* Ensure minimum touch targets */
+  .mobile-touch {
+    min-height: 48px;
+    min-width: 48px;
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -1466,6 +1472,23 @@ body.onboarding-active main {
 
 .accordion-card .glass-card:has(.accordion-content) {
   overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR SCROLLBAR
+   ═══════════════════════════════════════════ */
+
+aside::-webkit-scrollbar {
+  width: 4px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
 }
 
 /* ═══════════════════════════════════════════

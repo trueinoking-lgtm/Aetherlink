@@ -84,7 +84,7 @@ export default function AppliedPage() {
       ) : (
         <div className="relative pl-8 sm:pl-10">
           {/* Vertical line */}
-          <div className="absolute left-[11px] sm:left-[15px] top-6 bottom-6 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/15 to-transparent" />
+          <div className="absolute left-[11px] sm:left-[15px] top-6 bottom-6 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/15 to-transparent" aria-hidden="true" />
 
           <div className="space-y-4">
             {applications.map((app) => {

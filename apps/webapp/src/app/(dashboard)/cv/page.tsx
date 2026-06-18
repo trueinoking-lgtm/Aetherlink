@@ -596,7 +596,8 @@ export default function CVPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">No matches yet</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
               Add skills to your CV to see matching jobs.
             </p>
           </div>
@@ -604,30 +605,36 @@ export default function CVPage() {
           <div className="space-y-2 stagger-children">
             {matchedJobs.map((j) => {
               const barColor = j.score >= 80 ? 'high' : j.score >= 50 ? 'mid' : 'low';
+              const scoreColor = j.score >= 80 ? 'text-[var(--match-high)]' : j.score >= 50 ? 'text-[var(--match-mid)]' : 'text-[var(--match-low)]';
               return (
                 <Link
                   key={j.id}
                   href={`/feed/${j.id}`}
-                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition hover:border-[var(--border-accent)]"
+                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition hover:border-[var(--border-accent)] group"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>
+                    <p className="truncate text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{j.title}</p>
                     <p className="text-xs text-[var(--text-secondary)]">{j.companyName}</p>
                     <div className="mt-1.5 flex items-center gap-2">
                       <div className="score-bar score-bar-sm flex-1 max-w-[100px] overflow-hidden rounded-full">
                         <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${j.score}%` } as React.CSSProperties} />
                       </div>
-                      <span className={`font-mono text-xs font-bold ${j.score >= 80 ? 'text-[var(--match-high)]' : j.score >= 50 ? 'text-[var(--match-mid)]' : 'text-[var(--match-low)]'}`}>
+                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
                         {j.score}%
                       </span>
                     </div>
                   </div>
-
+                  <svg className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               );
             })}
-            <Link href="/feed" className="mt-3 block text-center text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
-              Browse all jobs →
+            <Link href="/feed" className="mt-3 flex items-center justify-center gap-1.5 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
+              Browse all jobs
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
         )}
