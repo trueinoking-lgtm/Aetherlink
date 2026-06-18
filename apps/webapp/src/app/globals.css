@@ -1489,8 +1489,9 @@ body.onboarding-active main {
 }
 
 .score-bar-fill.none {
-  background: transparent;
-  width: 0% !important;
+  background: var(--border);
+  width: 100% !important;
+  opacity: 0.3;
 }
 
 /* ── Small variant for inline score bars ── */
@@ -1499,11 +1500,65 @@ body.onboarding-active main {
 }
 
 /* ═══════════════════════════════════════════
+   ENHANCED MICRO-INTERACTIONS
+   ═══════════════════════════════════════════ */
+
+/* Smooth card entrance */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-entrance {
+  animation: cardEntrance 0.35s var(--ease-out) forwards;
+}
+
+/* Subtle border glow on hover for glass cards */
+.glass-card-hover-glow {
+  transition: all 0.25s var(--ease-out);
+}
+
+.glass-card-hover-glow:hover {
+  box-shadow: 0 0 0 1px var(--border-accent), var(--shadow-md);
+}
+
+/* Active press feedback */
+.press-feedback {
+  transition: transform 0.1s ease;
+}
+
+.press-feedback:active {
+  transform: scale(0.97);
+}
+
+/* Smooth color transitions for text links */
+.link-transition {
+  transition: color 0.15s var(--ease-out), opacity 0.15s var(--ease-out);
+}
+
+/* Badge entrance animation */
+@keyframes badgePop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.badge-animate {
+  animation: badgePop 0.25s var(--ease-spring) forwards;
+}
+
+/* ═══════════════════════════════════════════
    NO MATCH TEXT
    ═══════════════════════════════════════════ */
 
 .no-match-text {
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -1529,13 +1584,14 @@ body.onboarding-active main {
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 0.75rem;
-  margin-left: 0.5rem;
+  margin-left: 0;
   min-height: 44px;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
   transition: all 0.15s var(--ease-out);
+  overflow: visible;
 }
 
 .sidebar-nav-link:hover {
@@ -1551,7 +1607,7 @@ body.onboarding-active main {
 .sidebar-nav-link.active::before {
   content: '';
   position: absolute;
-  left: -0.5rem;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;

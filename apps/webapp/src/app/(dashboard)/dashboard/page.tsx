@@ -99,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
         <div className="stat-card hover-lift">
           <div className="stat-card-icon accent">
             <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -218,14 +218,14 @@ export default function DashboardPage() {
       {/* Quick actions */}
       <div>
         <h2 className="section-heading">Quick actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link href="/feed" className="premium-btn premium-btn-primary pointer-active text-center justify-center">
             View Jobs
           </Link>
-          <Link href="/cv" className="premium-btn premium-btn-secondary pointer-active">
+          <Link href="/cv" className="premium-btn premium-btn-secondary pointer-active text-center justify-center">
             My CV
           </Link>
-          <Link href="/applied" className="premium-btn premium-btn-secondary pointer-active">
+          <Link href="/applied" className="premium-btn premium-btn-secondary pointer-active text-center justify-center">
             Applications
           </Link>
         </div>

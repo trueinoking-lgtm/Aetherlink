@@ -268,7 +268,7 @@ export default function FeedPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-w-4xl stagger-children">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 stagger-children">
           {filteredJobs.map((job) => {
             const score = getMatchScore(job);
             const barColor =

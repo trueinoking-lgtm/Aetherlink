@@ -369,7 +369,7 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {JOB_TYPES.map((type) => (
                     <button
                       key={type}

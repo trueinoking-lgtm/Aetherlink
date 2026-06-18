@@ -167,15 +167,15 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           )}
 
           {/* Salary and metadata */}
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {job.salary && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
                 <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.salary}</p>
               </div>
             )}
             {job.jobType && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Job Type</p>
                 <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">
                   {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
@@ -183,7 +183,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               </div>
             )}
             {job.location && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4 min-w-[140px]">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Location</p>
                 <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
               </div>
@@ -295,15 +295,17 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             </div>
 
             {/* Back to jobs link */}
-            <Link
-              href="/feed"
-              className="flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              Browse more jobs
-            </Link>
+            <div className="mt-4 pt-4 border-t border-[var(--border)]">
+              <Link
+                href="/feed"
+                className="flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Browse more jobs
+              </Link>
+            </div>
           </div>
         </div>
       </div>
