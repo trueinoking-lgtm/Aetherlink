@@ -45,12 +45,12 @@ function computeCvStrength(step2: Step2Data): number {
 function ProgressDots({ step }: { step: number }) {
   const STEP_LABELS = ['About You', 'Your CV', 'Settings'];
   return (
-    <div className="mb-10 flex flex-col items-center gap-2">
+    <div className="mb-10 flex flex-col items-center gap-3">
       <div className="flex items-center">
         {[0, 1, 2].map((i) => (
           <div key={i} className="flex items-center">
             {i > 0 && (
-              <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
+              <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} aria-hidden="true" />
             )}
             <div className="flex flex-col items-center gap-1.5">
               <div
@@ -63,7 +63,7 @@ function ProgressDots({ step }: { step: number }) {
                 }`}
               >
               {i < step ? (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               ) : (

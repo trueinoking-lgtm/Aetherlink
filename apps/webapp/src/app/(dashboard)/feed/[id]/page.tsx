@@ -304,7 +304,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   </h3>
                   <p className="text-xs text-[var(--text-muted)]">
                     {job.employer_verified ? (
-                      <span className="text-[var(--success)]">✓ Verified employer</span>
+                      <span className="text-[var(--success)]">Verified employer</span>
                     ) : (
                       'Company information pending'
                     )}
@@ -319,12 +319,12 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             </div>
 
             {/* Back to jobs link */}
-            <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            <div className="pt-2">
               <Link
                 href="/feed"
-                className="flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
+                className="flex items-center gap-2 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)] group"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
                 Browse more jobs
