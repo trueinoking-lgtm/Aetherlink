@@ -170,8 +170,10 @@ export default function DashboardPage() {
                 score >= 80
                   ? 'high'
                   : score >= 50
-                  ? 'mid'
-                  : 'low';
+                    ? 'mid'
+                    : score > 0
+                      ? 'low'
+                      : 'none';
               return (
                 <Link
                   key={job.id}

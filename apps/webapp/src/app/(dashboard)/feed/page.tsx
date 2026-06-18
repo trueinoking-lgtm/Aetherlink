@@ -275,8 +275,10 @@ export default function FeedPage() {
                   ? 'high'
                   : score >= 50
                     ? 'mid'
-                    : 'low'
-                : '';
+                    : score > 0
+                      ? 'low'
+                      : 'none'
+                : 'none';
             const scoreColor =
               score !== null
                 ? score >= 80

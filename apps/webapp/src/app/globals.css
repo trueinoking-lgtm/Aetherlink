@@ -1307,8 +1307,8 @@ body.onboarding-active main {
   background: linear-gradient(90deg, var(--match-mid), var(--warning));
 }
 
-.score-bar-fill.low {
-  background: linear-gradient(90deg, var(--match-low), var(--text-muted));
+.score-bar-fill.none {
+  background: var(--border);
 }
 
 /* ═══════════════════════════════════════════
