@@ -20,7 +20,8 @@
   --accent-dim:    #4338ca;
   --accent-hover:  #818cf8;
   --accent-active: #a5b4fc;
-  --accent-glow:   rgba(99, 102, 241, 0.15);
+  --accent-glow:   rgba(99, 102, 241, 0.2);
+  --accent-glow-strong: rgba(99, 102, 241, 0.35);
 
   /* ── Text Hierarchy ── */
   --text-primary:    #f4f4f5;
@@ -1010,7 +1011,8 @@ body.onboarding-active main {
 }
 
 .stat-card-icon.accent {
-  background: var(--accent-glow);
+  background: var(--accent-glow-strong);
+  border: 1px solid var(--border-accent);
 }
 
 .stat-card-icon.neutral {
