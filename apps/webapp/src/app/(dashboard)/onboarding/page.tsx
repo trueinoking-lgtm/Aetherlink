@@ -297,6 +297,11 @@ export default function OnboardingPage() {
     );
   }
 
+  // Ensure body class is set even during loading
+  if (typeof document !== 'undefined') {
+    document.body.classList.add('onboarding-active');
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-[var(--bg-base)] px-4 py-8">
       {/* Background gradient orbs */}
