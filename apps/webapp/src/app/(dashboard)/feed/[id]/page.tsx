@@ -173,19 +173,19 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
           {/* Job description */}
           {job.description ? (
-            <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
+            <div className="job-description-md glass-card p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
               {job.description.replace(/<[^>]+>/g, '').split('\n').filter(line => line.trim()).map((line, i) => (
                 <p key={i} className="mb-2.5 last:mb-0">{line}</p>
               ))}
             </div>
           ) : job.raw_text ? (
-            <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
+            <div className="job-description-md glass-card p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
               {job.raw_text.split('\n').filter(line => line.trim()).map((line, i) => (
                 <p key={i} className="mb-2.5 last:mb-0">{line}</p>
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+            <div className="glass-card p-5">
               <p className="text-sm text-[var(--text-muted)]">No description available for this job yet.</p>
             </div>
           )}
@@ -193,13 +193,13 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           {/* Salary and metadata */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {job.salary && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
+              <div className="glass-card px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
                 <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.salary}</p>
               </div>
             )}
             {job.jobType && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
+              <div className="glass-card px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Job Type</p>
                 <p className="mt-1 font-display text-lg font-semibold capitalize text-[var(--text-primary)]">
                   {job.jobType}
@@ -207,7 +207,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               </div>
             )}
             {job.location && (
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
+              <div className="glass-card px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Location</p>
                 <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
               </div>

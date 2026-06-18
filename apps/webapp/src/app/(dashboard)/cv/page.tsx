@@ -353,7 +353,7 @@ export default function CVPage() {
         </div>
         {/* Tips */}
         {cvScore < 70 && (
-          <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3">
+          <div className="mt-4 glass-card p-3">
             <p className="text-xs font-medium text-[var(--text-secondary)]">💡 Tips to improve:</p>
             <ul className="mt-1.5 space-y-1 text-xs text-[var(--text-muted)]">
               {!fullName && <li>• Add your full name</li>}
@@ -418,7 +418,7 @@ export default function CVPage() {
             <p className="text-sm text-[var(--text-muted)]">No experience added yet.</p>
           )}
           {experience.map((exp, idx) => (
-            <div key={idx} className="mb-3 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3">
+            <div key={idx} className="mb-3 glass-card p-3">
               <p className="text-sm font-medium text-[var(--text-primary)]">{exp.role || 'Untitled role'}</p>
               <p className="text-xs text-[var(--text-secondary)]">{exp.company} &middot; {exp.duration}</p>
               <button
@@ -508,7 +508,7 @@ export default function CVPage() {
             <p className="text-sm text-[var(--text-muted)]">No education added yet.</p>
           )}
           {education.map((edu, idx) => (
-            <div key={idx} className="mb-3 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3">
+            <div key={idx} className="mb-3 glass-card p-3">
               <p className="text-sm font-medium text-[var(--text-primary)]">{edu.qualification || 'Untitled'}</p>
               <p className="text-xs text-[var(--text-secondary)]">{edu.institution} &middot; {edu.year}</p>
               <button
