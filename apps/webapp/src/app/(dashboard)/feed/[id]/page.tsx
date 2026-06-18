@@ -157,9 +157,9 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               ))}
             </div>
           ) : job.raw_text ? (
-            <pre className="whitespace-pre-wrap rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
-              {job.raw_text}
-            </pre>
+            <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <p className="whitespace-pre-wrap">{job.raw_text}</p>
+            </div>
           ) : (
             <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
               <p className="text-sm text-[var(--text-muted)]">No description available for this job yet.</p>

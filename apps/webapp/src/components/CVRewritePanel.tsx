@@ -38,7 +38,7 @@ export function CVRewritePanel({
         <div className="flex-1 space-y-4 overflow-y-auto">
           {rewrites.map((r, i) => (
             <div key={i} className="rounded-lg border border-[var(--border)] p-3">
-              <p className="text-sm text-[var(--text-muted)] line-through">{r.original}</p>
+              <p className="text-sm text-[var(--text-muted)] line-through-decoration">{r.original}</p>
               <p className="mt-2 text-sm text-[var(--text-primary)]">{r.rewritten}</p>
               <p className="mt-1 text-xs text-[var(--accent)]">{r.change_reason}</p>
               <label className="mt-2 flex items-center gap-2 text-sm cursor-pointer">
