@@ -26,7 +26,7 @@ function ScoreCircle({ score }: { score: number }) {
   return (
     <div className="flex flex-col items-center gap-2" role="img" aria-label={`${score}% match: ${label}`}>
       <div className="relative flex items-center justify-center">
-        <svg width="100" height="100" className="-rotate-90">
+        <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
           <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
           <circle
             cx="50"

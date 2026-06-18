@@ -30,7 +30,7 @@ function CvScoreRing({ score }: { score: number }) {
   const offset = circumference - (score / 100) * circumference;
   return (
     <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
-      <svg width="96" height="96" className="-rotate-90">
+      <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">
         <circle cx="48" cy="48" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
         <circle
           cx="48"

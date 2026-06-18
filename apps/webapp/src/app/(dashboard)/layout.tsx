@@ -74,16 +74,21 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)]">
+    <div className="min-h-screen bg-[var(--bg-base)] relative">
+      {/* Subtle background pattern */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.008)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.008)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,var(--bg-base)_70%)]" />
+      </div>
       {/* Sidebar: hidden on mobile, shown on md+ */}
-      <div className="hidden md:block">
+      <div className="hidden md:block relative z-10">
         <Sidebar profile={profile} collapsed={collapsed} onToggle={toggleSidebar} />
       </div>
       {/* Bottom nav: shown on mobile, hidden on md+ */}
       <BottomNav />
       <main
         id="main-content"
-        className={`transition-all duration-200 pb-20 md:pb-0 ${
+        className={`relative z-10 transition-all duration-200 pb-20 md:pb-0 ${
           collapsed ? 'md:ml-16' : 'md:ml-60'
         }`}
       >
