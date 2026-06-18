@@ -12,15 +12,15 @@ function ScoreCircle({ score }: { score: number }) {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   const color =
-    score >= 80
+    score >= 70
       ? 'var(--match-high)'
-      : score >= 50
+      : score >= 40
         ? 'var(--match-mid)'
         : 'var(--match-low)';
   const label =
-    score >= 80
+    score >= 70
       ? 'Strong match'
-      : score >= 50
+      : score >= 40
         ? 'Good match'
         : 'Low match';
   return (
@@ -111,7 +111,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   );
 
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-5 page-enter">
       {/* Back link */}
       <Link
         href="/feed"

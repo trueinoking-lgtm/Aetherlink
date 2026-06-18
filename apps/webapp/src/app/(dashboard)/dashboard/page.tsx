@@ -89,7 +89,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8 page-enter">
+    <div className="space-y-6 page-enter">
       {/* Greeting */}
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
@@ -99,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 stagger-children">
         <div className="stat-card hover-lift">
           <div className="stat-card-icon accent">
             <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -139,7 +139,7 @@ export default function DashboardPage() {
 
       {/* Recent activity */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <h2 className="section-heading mb-0">Recent activity</h2>
           {jobs.length > 5 && (
             <Link href="/feed" className="text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]">
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                         <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                        {score > 0 ? `${score}%` : <span className="no-match-text">No match</span>}
+                        {score > 0 ? `${score}%` : <span className="no-match-text">Not scored</span>}
                       </span>
                     </div>
                   </div>
@@ -217,8 +217,8 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div>
-        <h2 className="section-heading">Quick actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <h2 className="section-heading mb-3">Quick actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <Link href="/feed" className="premium-btn premium-btn-primary pointer-active text-center justify-center">
             View Jobs
           </Link>

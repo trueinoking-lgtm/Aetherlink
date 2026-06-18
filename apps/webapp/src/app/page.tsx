@@ -187,13 +187,13 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-8 text-center text-xs text-[var(--text-muted)]">
+        <p className="mt-8 text-center text-xs text-[var(--text-secondary)]">
           By signing in, you agree to our{' '}
-          <a href="/terms" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-sm">
+          <a href="/terms" className="text-[var(--accent-hover)] underline underline-offset-2 transition-colors hover:text-[var(--accent-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-sm">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="/privacy" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-sm">
+          <a href="/privacy" className="text-[var(--accent-hover)] underline underline-offset-2 transition-colors hover:text-[var(--accent-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-sm">
             Privacy Policy
           </a>.
         </p>

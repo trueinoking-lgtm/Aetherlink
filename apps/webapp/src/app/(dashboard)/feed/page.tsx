@@ -159,7 +159,6 @@ export default function FeedPage() {
               stroke="currentColor"
               strokeWidth={2}
               aria-hidden="true"
-
             >
               <path
                 strokeLinecap="round"
@@ -181,7 +180,7 @@ export default function FeedPage() {
             <select
               value={jobType}
               onChange={(e) => setJobType(e.target.value)}
-              className="premium-select flex-1 sm:flex-none"
+              className="premium-select flex-1 sm:flex-none min-w-0"
             >
               <option value="">All types</option>
               {JOB_TYPES.map((t) => (
@@ -195,7 +194,7 @@ export default function FeedPage() {
             <select
               value={salaryRange}
               onChange={(e) => setSalaryRange(e.target.value)}
-              className="premium-select flex-1 sm:flex-none"
+              className="premium-select flex-1 sm:flex-none min-w-0"
             >
               <option value="">Any salary</option>
               <option value="0-1000">$0 – $1,000</option>
@@ -207,7 +206,7 @@ export default function FeedPage() {
             <select
               value={datePosted}
               onChange={(e) => setDatePosted(e.target.value)}
-              className="premium-select flex-1 sm:flex-none"
+              className="premium-select flex-1 sm:flex-none min-w-0"
             >
               <option value="">Any time</option>
               <option value="today">Today</option>
@@ -238,13 +237,13 @@ export default function FeedPage() {
 
       {/* Job grid */}
       {loading ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
         </div>
       ) : filteredJobs.length === 0 ? (
-        <div className="glass-card p-12 text-center">
+        <div className="glass-card p-8 text-center">
           <div className="empty-state-icon mx-auto">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -268,7 +267,7 @@ export default function FeedPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 stagger-children">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-children">
           {filteredJobs.map((job) => {
             const score = getMatchScore(job);
             const barColor =
@@ -298,7 +297,7 @@ export default function FeedPage() {
                 href={`/feed/${job.id}`}
                 className="glass-card hover-lift relative p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
               >
-                <h3 className="font-display text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
+                <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
                   {job.title}
                 </h3>
                 <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
@@ -315,16 +314,16 @@ export default function FeedPage() {
                 </p>
 
                 {/* Score bar */}
-                <div className="mt-3 mb-1 flex items-center gap-2">
-                  <div className="score-bar score-bar-sm flex-1 max-w-[140px] overflow-hidden rounded-full">
+                <div className="mt-2.5 mb-1 flex items-center gap-2">
+                  <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
                     <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
                   </div>
                   <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                    {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">No match</span>}
+                    {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
                   </span>
                 </div>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   {job.jobType && (
                     <span className="badge badge-mid">
                       {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}

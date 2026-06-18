@@ -313,7 +313,7 @@ export default function CVPage() {
   }
 
   return (
-    <div className="space-y-8 page-enter">
+    <div className="space-y-6 page-enter">
       {/* Header with save button */}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
@@ -328,8 +328,8 @@ export default function CVPage() {
       </div>
 
       {/* Score card */}
-      <div className="glass-card p-6">
-        <div className="flex items-center gap-6">
+      <div className="glass-card p-5">
+        <div className="flex items-center gap-5">
           <CvScoreRing score={cvScore} />
           <div className="flex-1">
             <p className="font-display text-lg font-bold text-[var(--text-primary)]">
@@ -366,7 +366,7 @@ export default function CVPage() {
       </div>
 
       {/* Accordion sections */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <AccordionCard
           title="Personal Info"
           open={openSection === 'personal'}
