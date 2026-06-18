@@ -135,8 +135,10 @@ export default function FeedPage() {
     return computeMatchScore(job.title, job.raw_text, skills);
   }
 
+  const activeFilterCount = [jobType, salaryRange, datePosted, suitedForMe].filter(Boolean).length;
+
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-5 page-enter">
       {/* Header */}
       <div>
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">
@@ -176,12 +178,12 @@ export default function FeedPage() {
           </div>
 
           {/* Filters row - horizontal scroll on mobile */}
-          <div className="flex flex-wrap gap-2 filter-bar-mobile">
+          <div className="flex gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-none">
             {/* Job type */}
             <select
               value={jobType}
               onChange={(e) => setJobType(e.target.value)}
-              className="premium-select min-w-0"
+              className="premium-select min-w-0 shrink-0"
               aria-label="Filter by job type"
             >
               <option value="">All types</option>
@@ -196,7 +198,7 @@ export default function FeedPage() {
             <select
               value={salaryRange}
               onChange={(e) => setSalaryRange(e.target.value)}
-              className="premium-select min-w-0"
+              className="premium-select min-w-0 shrink-0"
               aria-label="Filter by salary range"
             >
               <option value="">Any salary</option>
@@ -209,7 +211,7 @@ export default function FeedPage() {
             <select
               value={datePosted}
               onChange={(e) => setDatePosted(e.target.value)}
-              className="premium-select min-w-0"
+              className="premium-select min-w-0 shrink-0"
               aria-label="Filter by date posted"
             >
               <option value="">Any time</option>
@@ -217,6 +219,21 @@ export default function FeedPage() {
               <option value="week">Past week</option>
               <option value="month">Past month</option>
             </select>
+
+            {/* Clear filters */}
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => {
+                  setJobType('');
+                  setSalaryRange('');
+                  setDatePosted('');
+                  setSuitedForMe(false);
+                }}
+                className="shrink-0 text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors px-2 py-1"
+              >
+                Clear ({activeFilterCount})
+              </button>
+            )}
           </div>
 
           {/* Suited for me toggle */}
@@ -239,134 +256,124 @@ export default function FeedPage() {
         </div>
       </div>
 
-          {/* Job grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
-            </div>
-          ) : filteredJobs.length === 0 ? (
-            <div className="glass-card p-8 text-center">
-              <div className="empty-state-icon mx-auto">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs found</p>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                No jobs match your filters.
-              </p>
-              <button
-                onClick={() => {
-                  setSearch('');
-                  setJobType('');
-                  setSalaryRange('');
-                  setDatePosted('');
-                  setSuitedForMe(false);
-                }}
-                className="mt-4 premium-btn premium-btn-secondary pointer-active"
+      {/* Job grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      ) : filteredJobs.length === 0 ? (
+        <div className="glass-card p-8 text-center">
+          <div className="empty-state-icon mx-auto">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs found</p>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            No jobs match your filters.
+          </p>
+          <button
+            onClick={() => {
+              setSearch('');
+              setJobType('');
+              setSalaryRange('');
+              setDatePosted('');
+              setSuitedForMe(false);
+            }}
+            className="mt-4 premium-btn premium-btn-secondary pointer-active"
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-children">
+          {filteredJobs.map((job) => {
+            const score = getMatchScore(job);
+            const barColor =
+              score !== null
+                ? score >= 80
+                  ? 'high'
+                  : score >= 50
+                    ? 'mid'
+                    : score > 0
+                      ? 'low'
+                      : 'none'
+                : 'none';
+            const scoreColor =
+              score !== null
+                ? score >= 80
+                  ? 'text-[var(--match-high)]'
+                  : score >= 50
+                    ? 'text-[var(--match-mid)]'
+                    : score > 0
+                      ? 'text-[var(--match-low)]'
+                      : 'text-[var(--text-secondary)]'
+                : 'text-[var(--text-secondary)]';
+
+            return (
+              <Link
+                key={job.id}
+                href={`/feed/${job.id}`}
+                className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.04] group hover:border-l-[var(--border-accent)] border-l-2 border-l-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
               >
-                Clear all filters
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-children">
-              {filteredJobs.map((job) => {
-                const score = getMatchScore(job);
-                const barColor =
-                  score !== null
-                    ? score >= 80
-                      ? 'high'
-                      : score >= 50
-                        ? 'mid'
-                        : score > 0
-                          ? 'low'
-                          : 'none'
-                    : 'none';
-                const scoreColor =
-                  score !== null
-                    ? score >= 80
-                      ? 'text-[var(--match-high)]'
-                      : score >= 50
-                        ? 'text-[var(--match-mid)]'
-                        : score > 0
-                          ? 'text-[var(--match-low)]'
-                          : 'text-[var(--text-secondary)]'
-                    : 'text-[var(--text-secondary)]';
-
-                return (
-                  <Link
-                    key={job.id}
-                    href={`/feed/${job.id}`}
-                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.04] group hover:border-l-[var(--border-accent)] border-l-2 border-l-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
-                  >
-                    <div className="flex items-start gap-3">
-                      {/* Company avatar placeholder */}
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/5 border border-[var(--border)] text-sm font-bold text-[var(--accent)]">
-                        {job.companyName?.charAt(0)?.toUpperCase() ?? '?'}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14 truncate">
-                          {job.title}
-                        </h3>
-                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
-                          {job.companyName}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="mt-2 text-xs text-[var(--text-muted)]">
-                      {job.location ?? 'Remote'}
-                      {job.created_at && (
-                        <>
-                          <span className="mx-1" aria-hidden="true">&middot;</span>
-                          {new Date(job.created_at).toLocaleDateString()}
-                        </>
-                      )}
+                <div className="flex items-start gap-3">
+                  {/* Company avatar placeholder */}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/5 border border-[var(--border)] text-sm font-bold text-[var(--accent)]">
+                    {job.companyName?.charAt(0)?.toUpperCase() ?? '?'}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14 truncate">
+                      {job.title}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                      {job.companyName}
                     </p>
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                  {job.location ?? 'Remote'}
+                  {job.created_at && (
+                    <>
+                      <span className="mx-1" aria-hidden="true">&middot;</span>
+                      {new Date(job.created_at).toLocaleDateString()}
+                    </>
+                  )}
+                </p>
 
-                    {/* Score bar */}
-                    <div className="mt-3 mb-1 flex items-center gap-2">
-                      <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-                        <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${Math.max(score ?? 0, 0)}%` } as React.CSSProperties} />
-                      </div>
-                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                        {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
-                      </span>
-                    </div>
+                {/* Score bar */}
+                <div className="mt-3 mb-1 flex items-center gap-2">
+                  <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
+                    <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${Math.max(score ?? 0, 0)}%` } as React.CSSProperties} />
+                  </div>
+                  <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                    {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
+                  </span>
+                </div>
 
-                    <div className="mt-auto pt-2 flex flex-wrap items-center gap-1.5">
-                      {job.jobType && (
-                        <span className="badge badge-mid">
-                          {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
-                        </span>
-                      )}
-                      {job.salary && (
-                        <span className="badge badge-high">
-                          {job.salary}
-                        </span>
-                      )}
-                      {job.source_group && (
-                        <span className="text-xs text-[var(--text-muted)]">
-                          via {job.source_group}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* View button */}
-                    <div className="mt-3 flex items-center gap-2 border-t border-[var(--border)] pt-3">
-                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent-hover)] group-hover:border-[var(--border-accent)]" role="button" tabIndex={0}>
-                        View details
-                      </span>
-                      <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+                <div className="mt-auto pt-2 flex flex-wrap items-center gap-1.5">
+                  {job.jobType && (
+                    <span className="badge badge-mid">
+                      {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                    </span>
+                  )}
+                  {job.salary && (
+                    <span className="badge badge-high">
+                      {job.salary}
+                    </span>
+                  )}
+                  {job.source_group && (
+                    <span className="text-xs text-[var(--text-muted)]">
+                      via {job.source_group}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

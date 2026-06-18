@@ -317,7 +317,7 @@ export default function CVPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Header with save button */}
-      <div className="flex items-center justify-between sticky top-0 z-20 bg-[var(--bg-base)]/95 backdrop-blur-sm py-3 -mx-1 px-1">
+      <div className="flex items-center justify-between sticky top-0 z-20 bg-[var(--bg-base)]/80 backdrop-blur-md py-3 -mx-1 px-1 border-b border-[var(--border)]">
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
         <button
           type="button"
@@ -630,9 +630,9 @@ export default function CVPage() {
                 </Link>
               );
             })}
-            <Link href="/feed" className="mt-3 flex items-center justify-center gap-1.5 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
+            <Link href="/feed" className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors group">
               Browse all jobs
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </Link>

@@ -26,9 +26,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="login-page relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)] px-4">
+    <main className="login-page relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)] px-4 py-12">
       {/* Background gradient orbs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="bg-orb absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/8 blur-3xl" />
         <div className="bg-orb-delayed absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/5 blur-3xl" />
         <div className="bg-orb-slow absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--accent)]/3 blur-3xl" />
@@ -40,7 +40,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo / Brand */}
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center animate-fade-in">
           <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
             Aether<span className="gradient-text">Link</span>
           </h1>
@@ -51,7 +51,7 @@ export default function LoginPage() {
             Your AI-powered job search assistant.
           </p>
           {/* Social proof */}
-          <div className="mt-7 flex items-center justify-center gap-6 animate-fade-in">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 animate-fade-in">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2" aria-hidden="true">
                 <div className="login-avatar bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>
@@ -60,7 +60,7 @@ export default function LoginPage() {
               </div>
               <span className="text-xs font-medium text-[var(--text-secondary)]">500+ job seekers</span>
             </div>
-            <div className="login-divider" aria-hidden="true" />
+            <div className="hidden sm:block login-divider" aria-hidden="true" />
             <div className="flex items-center gap-1.5">
               <div className="flex gap-0.5" aria-hidden="true">
                 {[1,2,3,4,5].map(i => (
@@ -75,16 +75,16 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="login-card glass-card p-8 login-card-glow animate-fade-in">
+        <div className="login-card glass-card p-8 login-card-glow animate-slide-up">
           {/* Feature highlights */}
-          <div className="mb-10 space-y-5">
+          <div className="mb-10 space-y-4">
             <div className="flex items-start gap-4 group p-2.5 -m-2.5 rounded-xl transition-all duration-200 hover:bg-[var(--glass-bg-subtle)]">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all duration-200 group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
                 <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <div className="pt-0.5">
+              <div className="pt-0.5 min-w-0">
                 <span className="text-sm font-semibold text-[var(--text-primary)]">Auto-apply to jobs</span>
                 <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">Apply to hundreds of jobs with one click</span>
               </div>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <div className="pt-0.5">
+              <div className="pt-0.5 min-w-0">
                 <span className="text-sm font-semibold text-[var(--text-primary)]">Smart matching</span>
                 <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">AI matches you with the best opportunities</span>
               </div>
@@ -106,7 +106,7 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <div className="pt-0.5">
+              <div className="pt-0.5 min-w-0">
                 <span className="text-sm font-semibold text-[var(--text-primary)]">Track everything</span>
                 <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">Dashboard to monitor all your applications</span>
               </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div className="mb-4 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger-bg)] px-4 py-3 text-center text-sm text-[var(--danger)]">
+            <div className="mb-4 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger-bg)] px-4 py-3 text-center text-sm text-[var(--danger)]" role="alert">
               {error}
             </div>
           )}
@@ -179,7 +179,7 @@ export default function LoginPage() {
 
           {/* Trust signal */}
           <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-[var(--text-secondary)]">
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
             Secure sign-in · No password required

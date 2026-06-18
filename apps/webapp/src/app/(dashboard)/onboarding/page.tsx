@@ -341,21 +341,27 @@ export default function OnboardingPage() {
 
             <div className="space-y-5">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name <span className="text-[var(--danger)]">*</span></label>
+                <label htmlFor="onboarding-fullname" className="form-label">Full name <span className="text-[var(--danger)]" aria-hidden="true">*</span></label>
                 <input
+                  id="onboarding-fullname"
                   className="premium-input"
                   placeholder="Your full name"
                   value={step1.fullName}
                   onChange={(e) => setStep1((prev) => ({ ...prev, fullName: e.target.value }))}
+                  required
+                  aria-required="true"
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City) <span className="text-[var(--danger)]">*</span></label>
+                <label htmlFor="onboarding-location" className="form-label">Location (City) <span className="text-[var(--danger)]" aria-hidden="true">*</span></label>
                 <select
+                  id="onboarding-location"
                   className="premium-select"
                   value={step1.location}
                   onChange={(e) => setStep1((prev) => ({ ...prev, location: e.target.value }))}
+                  required
+                  aria-required="true"
                 >
                   <option value="">Select your city</option>
                   {ZW_CITIES.map((c) => (<option key={c} value={c}>{c}</option>))}
@@ -363,8 +369,8 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <p className="form-label mb-2.5" id="onboarding-jobtypes-label">Preferred job type</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-labelledby="onboarding-jobtypes-label">
                   {JOB_TYPES.map((type) => (
                     <button
                       key={type}
@@ -465,8 +471,9 @@ export default function OnboardingPage() {
               {step2.mode === 'build' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Current role</label>
+                    <label htmlFor="onboarding-role" className="form-label">Current role</label>
                     <input
+                      id="onboarding-role"
                       className="premium-input"
                       placeholder="e.g. Software Engineer"
                       value={step2.currentRole}
@@ -475,8 +482,8 @@ export default function OnboardingPage() {
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Skills</label>
-                    <div className="mb-2 flex flex-wrap gap-1.5">
+                    <label htmlFor="onboarding-skills" className="form-label">Skills</label>
+                    <div className="mb-2 flex flex-wrap gap-1.5" aria-live="polite">
                       {step2.skills.map((s) => (
                         <span key={s} className="skill-tag">
                           {s}
@@ -493,6 +500,7 @@ export default function OnboardingPage() {
                     </div>
                     <div className="flex gap-2">
                       <input
+                        id="onboarding-skills"
                         className="premium-input flex-1"
                         placeholder="Add a skill"
                         value={skillInput}
@@ -510,8 +518,9 @@ export default function OnboardingPage() {
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Years of experience</label>
+                    <label htmlFor="onboarding-experience" className="form-label">Years of experience</label>
                     <input
+                      id="onboarding-experience"
                       type="number"
                       className="premium-input"
                       placeholder="e.g. 3"
@@ -521,8 +530,9 @@ export default function OnboardingPage() {
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Education</label>
+                    <label htmlFor="onboarding-education" className="form-label">Education</label>
                     <input
+                      id="onboarding-education"
                       className="premium-input"
                       placeholder="e.g. BSc Computer Science, UZ"
                       value={step2.education}
@@ -535,7 +545,9 @@ export default function OnboardingPage() {
               {/* Upload mode */}
               {step2.mode === 'upload' && (
                 <div
-                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
+                  role="button"
+                  tabIndex={0}
+                  className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-10 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-surface)]"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
@@ -554,6 +566,20 @@ export default function OnboardingPage() {
                     };
                     input.click();
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = '.pdf';
+                      input.onchange = (ev) => {
+                        const file = (ev.target as HTMLInputElement).files?.[0];
+                        if (file) setStep2((prev) => ({ ...prev, uploadedFileName: file.name }));
+                      };
+                      input.click();
+                    }
+                  }}
+                  aria-label="Upload PDF CV. Press Enter to browse files."
                 >
                   <svg className="mb-3 h-10 w-10 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -601,17 +627,22 @@ export default function OnboardingPage() {
 
             <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
+                <label htmlFor="onboarding-salary" className="form-label">
                   Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
                 </label>
                 <input
-                type="range"
-                min={0}
-                max={5000}
-                step={100}
-                value={step3.salaryFloor}
-                onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
-                className="premium-range w-full cursor-pointer"
+                  id="onboarding-salary"
+                  type="range"
+                  min={0}
+                  max={5000}
+                  step={100}
+                  value={step3.salaryFloor}
+                  onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
+                  className="premium-range w-full cursor-pointer"
+                  aria-valuemin={0}
+                  aria-valuemax={5000}
+                  aria-valuenow={step3.salaryFloor}
+                  aria-valuetext={`$${step3.salaryFloor} USD`}
                 />
                 <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                   <span>$0</span>
@@ -620,8 +651,8 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Job types</label>
-                <div className="flex flex-wrap gap-2">
+                <p className="form-label mb-2.5" id="onboarding-step3-jobtypes-label">Job types</p>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="onboarding-step3-jobtypes-label">
                   {JOB_TYPES.map((type) => (
                     <button
                       key={type}
@@ -637,8 +668,8 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Blacklist companies</label>
-                <div className="mb-2 flex flex-wrap gap-1.5">
+                <label htmlFor="onboarding-blacklist" className="form-label">Blacklist companies</label>
+                <div className="mb-2 flex flex-wrap gap-1.5" aria-live="polite">
                   {step3.blacklist.map((c) => (
                     <span key={c} className="skill-tag">
                       {c}
@@ -646,6 +677,7 @@ export default function OnboardingPage() {
                         type="button"
                         className="skill-tag-remove"
                         onClick={() => setStep3((prev) => ({ ...prev, blacklist: prev.blacklist.filter((x) => x !== c) }))}
+                        aria-label={`Remove ${c} from blacklist`}
                       >
                         ×
                       </button>
@@ -654,6 +686,7 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex gap-2">
                   <input
+                    id="onboarding-blacklist"
                     className="premium-input flex-1"
                     placeholder="Company name"
                     value={blacklistInput}
@@ -671,7 +704,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match &gt; {step3.autoApplyThreshold}%</p>
                     <p className="mt-0.5 text-xs text-[var(--text-muted)]">Automatically apply to high-match jobs</p>
@@ -681,6 +714,7 @@ export default function OnboardingPage() {
                       type="checkbox"
                       checked={step3.autoApplyEnabled}
                       onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
+                      aria-label={`Auto-apply when match exceeds ${step3.autoApplyThreshold}%`}
                     />
                     <span className="slider" />
                   </label>
@@ -688,10 +722,11 @@ export default function OnboardingPage() {
 
                 {step3.autoApplyEnabled && (
                   <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                    <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
+                    <label htmlFor="onboarding-threshold" className="form-label">
                       Match threshold: <span className="text-[var(--accent)] font-semibold">{step3.autoApplyThreshold}%</span>
                     </label>
                     <input
+                      id="onboarding-threshold"
                       type="range"
                       min={50}
                       max={100}
@@ -699,6 +734,10 @@ export default function OnboardingPage() {
                       value={step3.autoApplyThreshold}
                       onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
                       className="premium-range w-full cursor-pointer"
+                      aria-valuemin={50}
+                      aria-valuemax={100}
+                      aria-valuenow={step3.autoApplyThreshold}
+                      aria-valuetext={`${step3.autoApplyThreshold}% match threshold`}
                     />
                     <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                       <span>50% (More applications)</span>

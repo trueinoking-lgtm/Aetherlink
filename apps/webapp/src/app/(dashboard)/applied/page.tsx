@@ -62,15 +62,17 @@ export default function AppliedPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="glass-card flex flex-col items-center gap-3 p-8 text-center">
+        <div className="glass-card flex flex-col items-center gap-4 p-10 text-center">
           <div className="empty-state-icon mx-auto">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <div>
             <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications yet</p>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">Start applying to jobs and track them here.</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)] max-w-sm">
+              Start applying to jobs and track them here. Your application history will appear as a timeline.
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 mt-2">
             <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">

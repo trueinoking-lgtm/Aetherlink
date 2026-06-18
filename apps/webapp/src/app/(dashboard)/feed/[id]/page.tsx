@@ -11,7 +11,13 @@ function ScoreCircle({ score }: { score: number }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
-  const colorVar =
+  const barColor =
+    score >= 70
+      ? 'high'
+      : score >= 40
+        ? 'mid'
+        : 'low';
+  const barTrackColor =
     score >= 70
       ? 'var(--match-high)'
       : score >= 40
@@ -26,7 +32,7 @@ function ScoreCircle({ score }: { score: number }) {
   return (
     <div className="flex flex-col items-center gap-2" role="img" aria-label={`${score}% match: ${label}`}>
       <div className="relative flex items-center justify-center">
-        <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
+        <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90" aria-hidden="true">
           <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
           <circle
             cx="50"
@@ -38,16 +44,25 @@ function ScoreCircle({ score }: { score: number }) {
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             className="score-ring-circle"
-            style={{ '--score-color': colorVar } as React.CSSProperties}
+            style={{ '--score-color': barTrackColor } as React.CSSProperties}
           />
         </svg>
         <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
           {score}%
         </span>
       </div>
-      <span className="text-xs font-medium" style={{ color: colorVar }}>
+      <span className={`text-xs font-medium ${barColor === 'high' ? 'text-[var(--match-high)]' : barColor === 'mid' ? 'text-[var(--match-mid)]' : 'text-[var(--match-low)]'}`}>
         {label}
       </span>
+    </div>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="glass-card px-4 py-3">
+      <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">{label}</p>
+      <p className="mt-1 font-display text-base font-semibold text-[var(--text-primary)]">{value}</p>
     </div>
   );
 }
@@ -92,6 +107,11 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
+        <div className="empty-state-icon mx-auto mb-4">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} className="w-8 h-8 text-[var(--text-muted)]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
         <p className="text-[var(--text-secondary)]">Job not found.</p>
         <Link href="/feed" className="mt-4 text-sm text-[var(--accent)] hover:underline">
           &larr; Back to Jobs
@@ -191,33 +211,22 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           )}
 
           {/* Salary and metadata */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {job.salary && (
-              <div className="glass-card px-5 py-4">
-                <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
-                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.salary}</p>
-              </div>
+              <MetaItem label="Salary" value={job.salary} />
             )}
             {job.jobType && (
-              <div className="glass-card px-5 py-4">
-                <p className="text-xs font-medium text-[var(--text-muted)]">Job Type</p>
-                <p className="mt-1 font-display text-lg font-semibold capitalize text-[var(--text-primary)]">
-                  {job.jobType}
-                </p>
-              </div>
+              <MetaItem label="Job Type" value={job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)} />
             )}
             {job.location && (
-              <div className="glass-card px-5 py-4">
-                <p className="text-xs font-medium text-[var(--text-muted)]">Location</p>
-                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
-              </div>
+              <MetaItem label="Location" value={job.location} />
             )}
           </div>
         </div>
 
         {/* Right column: sticky action panel */}
         <div className="lg:col-span-1">
-          <div className="sticky top-6 space-y-5">
+          <div className="sticky top-6 space-y-4">
             {/* Match score */}
             <div className="glass-card flex flex-col items-center gap-3 p-6">
               <p className="text-sm font-medium text-[var(--text-secondary)]">
@@ -226,9 +235,14 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               {skills.length > 0 ? (
                 <ScoreCircle score={score} />
               ) : (
-                <span className="text-sm text-[var(--text-muted)]">
-                  Add skills to your CV to see your match score
-                </span>
+                <div className="flex flex-col items-center gap-2 py-2">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--border)]">
+                    <span className="text-lg font-bold text-[var(--text-muted)]">—</span>
+                  </div>
+                  <span className="text-xs text-[var(--text-muted)] text-center mt-1">
+                    Add skills to your CV to see your match score
+                  </span>
+                </div>
               )}
             </div>
 
@@ -285,7 +299,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               </a>
             ) : (
               <div className="flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--success)]/30 bg-[var(--success-bg)] px-4 py-2.5 text-sm font-medium text-[var(--success)]">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 Auto-applied

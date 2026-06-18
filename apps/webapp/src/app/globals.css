@@ -1931,3 +1931,48 @@ input[type="range"]::-moz-range-thumb {
 .toggle-switch input:focus-visible + .slider {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR NONE (for filter bars)
+   ═══════════════════════════════════════════ */
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════
+   GRADIENT TEXT ANIMATION
+   ═══════════════════════════════════════════ */
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.gradient-text-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* ═══════════════════════════════════════════
+   GLASS CARD COMPACT (for dashboard)
+   ═══════════════════════════════════════════ */
+
+.glass-card-compact {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s var(--ease-out);
+}
+
+.glass-card-compact:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--border-hover);
+}

@@ -40,7 +40,7 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
   return (
     <Link
       href={`/feed/${job.id}`}
-      className="glass-card hover-lift group block p-4"
+      className="glass-card hover-lift group block p-4 relative"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
