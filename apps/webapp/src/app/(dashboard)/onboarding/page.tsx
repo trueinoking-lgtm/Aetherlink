@@ -614,7 +614,7 @@ export default function OnboardingPage() {
                 step={100}
                 value={step3.salaryFloor}
                 onChange={(e) => setStep3((prev) => ({ ...prev, salaryFloor: Number(e.target.value) }))}
-                className="w-full cursor-pointer"
+                className="premium-range w-full cursor-pointer"
                 />
                 <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                   <span>$0</span>
@@ -698,7 +698,7 @@ export default function OnboardingPage() {
                     step={5}
                     value={step3.autoApplyThreshold}
                     onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                    className="w-full cursor-pointer"
+                    className="premium-range w-full cursor-pointer"
                   />
                   <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
                     <span>50%</span>

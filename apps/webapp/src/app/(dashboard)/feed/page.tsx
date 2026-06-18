@@ -230,131 +230,131 @@ export default function FeedPage() {
                 </svg>
               )}
             </span>
-            <span className="select-none">Suited for me</span>
+            <span className="premium-checkbox-text select-none">Suited for me</span>
           </label>
         </div>
       </div>
 
-      {/* Job grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-      ) : filteredJobs.length === 0 ? (
-        <div className="glass-card p-8 text-center">
-          <div className="empty-state-icon mx-auto">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs found</p>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            No jobs match your filters.
-          </p>
-          <button
-            onClick={() => {
-              setSearch('');
-              setJobType('');
-              setSalaryRange('');
-              setDatePosted('');
-              setSuitedForMe(false);
-            }}
-            className="mt-4 premium-btn premium-btn-secondary"
-          >
-            Clear all filters
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-children">
-          {filteredJobs.map((job) => {
-            const score = getMatchScore(job);
-            const barColor =
-              score !== null
-                ? score >= 80
-                  ? 'high'
-                  : score >= 50
-                    ? 'mid'
-                    : score > 0
-                      ? 'low'
-                      : 'none'
-                : 'none';
-            const scoreColor =
-              score !== null
-                ? score >= 80
-                  ? 'text-[var(--match-high)]'
-                  : score >= 50
-                    ? 'text-[var(--match-mid)]'
-                    : score > 0
-                      ? 'text-[var(--match-low)]'
-                      : 'text-[var(--text-secondary)]'
-                : 'text-[var(--text-secondary)]';
-
-            return (
-              <Link
-                key={job.id}
-                href={`/feed/${job.id}`}
-                className="glass-card hover-lift relative p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
+          {/* Job grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          ) : filteredJobs.length === 0 ? (
+            <div className="glass-card p-8 text-center">
+              <div className="empty-state-icon mx-auto">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs found</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                No jobs match your filters.
+              </p>
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setJobType('');
+                  setSalaryRange('');
+                  setDatePosted('');
+                  setSuitedForMe(false);
+                }}
+                className="mt-4 premium-btn premium-btn-secondary pointer-active"
               >
-                <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
-                  {job.title}
-                </h3>
-                <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
-                  {job.companyName}
-                </p>
-                <p className="mt-1 text-xs text-[var(--text-muted)]">
-                  {job.location ?? 'Remote'}
-                  {job.created_at && (
-                    <>
-                      <span className="mx-1">&middot;</span>
-                      {new Date(job.created_at).toLocaleDateString()}
-                    </>
-                  )}
-                </p>
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 stagger-children">
+              {filteredJobs.map((job) => {
+                const score = getMatchScore(job);
+                const barColor =
+                  score !== null
+                    ? score >= 80
+                      ? 'high'
+                      : score >= 50
+                        ? 'mid'
+                        : score > 0
+                          ? 'low'
+                          : 'none'
+                    : 'none';
+                const scoreColor =
+                  score !== null
+                    ? score >= 80
+                      ? 'text-[var(--match-high)]'
+                      : score >= 50
+                        ? 'text-[var(--match-mid)]'
+                        : score > 0
+                          ? 'text-[var(--match-low)]'
+                          : 'text-[var(--text-secondary)]'
+                    : 'text-[var(--text-secondary)]';
 
-                {/* Score bar */}
-                <div className="mt-2.5 mb-1 flex items-center gap-2">
-                  <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-                    <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
-                  </div>
-                  <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                    {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
-                  </span>
-                </div>
+                return (
+                  <Link
+                    key={job.id}
+                    href={`/feed/${job.id}`}
+                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
+                  >
+                    <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
+                      {job.title}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                      {job.companyName}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--text-muted)]">
+                      {job.location ?? 'Remote'}
+                      {job.created_at && (
+                        <>
+                          <span className="mx-1">&middot;</span>
+                          {new Date(job.created_at).toLocaleDateString()}
+                        </>
+                      )}
+                    </p>
 
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  {job.jobType && (
-                    <span className="badge badge-mid">
-                      {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
-                    </span>
-                  )}
-                  {job.salary && (
-                    <span className="badge badge-high">
-                      {job.salary}
-                    </span>
-                  )}
-                  {job.source_group && (
-                    <span className="text-xs text-[var(--text-muted)]">
-                      via {job.source_group}
-                    </span>
-                  )}
-                </div>
+                    {/* Score bar */}
+                    <div className="mt-2.5 mb-1 flex items-center gap-2">
+                      <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
+                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
+                      </div>
+                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                        {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
+                      </span>
+                    </div>
 
-                {/* View button */}
-                <div className="mt-4 flex items-center gap-3">
-                  <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent)]">
-                    View details
-                  </span>
-                  <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+                    <div className="mt-auto pt-2 flex flex-wrap items-center gap-1.5">
+                      {job.jobType && (
+                        <span className="badge badge-mid">
+                          {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                        </span>
+                      )}
+                      {job.salary && (
+                        <span className="badge badge-high">
+                          {job.salary}
+                        </span>
+                      )}
+                      {job.source_group && (
+                        <span className="text-xs text-[var(--text-muted)]">
+                          via {job.source_group}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* View button */}
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent)]">
+                        View details
+                      </span>
+                      <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
     </div>
   );
 }

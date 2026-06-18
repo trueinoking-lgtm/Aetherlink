@@ -75,6 +75,8 @@ export default function DashboardPage() {
     );
   }
 
+  const firstName = profile?.full_name?.trim().split(/\s+/)[0] ?? 'there';
+
   const getSubtitle = (): string => {
     if (applications.length === 0 && jobs.length === 0) {
       return 'Set up your profile to start seeing matched jobs.';
@@ -93,7 +95,7 @@ export default function DashboardPage() {
       {/* Greeting */}
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-          {getGreeting()}, {profile?.full_name?.split(' ')[0] ?? 'there'}
+          {getGreeting()}, {firstName}
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">{getSubtitle()}</p>
       </div>
@@ -107,7 +109,7 @@ export default function DashboardPage() {
             </svg>
           </div>
           <div className="stat-card-body">
-            <p className="stat-card-label">Jobs seen today</p>
+            <p className="stat-card-label">Jobs found</p>
             <p className="stat-card-value accent">{jobs.length}</p>
           </div>
         </div>
@@ -181,7 +183,7 @@ export default function DashboardPage() {
                       ? 'low'
                       : 'none';
               return (
-                <div className="hover-lift">
+                <div className="hover-lift relative">
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}

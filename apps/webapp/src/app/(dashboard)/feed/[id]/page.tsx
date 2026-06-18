@@ -146,13 +146,35 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   <span>{job.location}</span>
                 </>
               )}
+              {job.jobType && (
+                <>
+                  <span>&middot;</span>
+                  <span className="capitalize">{job.jobType}</span>
+                </>
+              )}
+            </div>
+            {/* Quick badges */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {job.jobType && (
+                <span className="badge badge-mid">
+                  {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                </span>
+              )}
+              {job.salary && (
+                <span className="badge badge-high">
+                  {job.salary}
+                </span>
+              )}
+              {job.employer_verified && (
+                <span className="badge badge-high">✓ Verified</span>
+              )}
             </div>
           </div>
 
           {/* Job description */}
           {job.description ? (
             <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
-              {job.description.replace(/<[^>]+>/g, '').split('\n').filter(Boolean).map((line, i) => (
+              {job.description.replace(/<[^>]+>/g, '').split('\n').filter(line => line.trim()).map((line, i) => (
                 <p key={i} className="mb-2 last:mb-0">{line}</p>
               ))}
             </div>
