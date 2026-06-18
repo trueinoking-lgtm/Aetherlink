@@ -36,10 +36,9 @@ function ScoreCircle({ score }: { score: number }) {
             strokeWidth="6"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            strokeDashoffset={circumference}
+            strokeDashoffset={offset}
             className="score-ring-circle"
             style={{ stroke: color }}
-            data-offset={offset}
           />
         </svg>
         <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">

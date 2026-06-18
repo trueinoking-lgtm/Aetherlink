@@ -41,9 +41,8 @@ function CvScoreRing({ score }: { score: number }) {
           strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={circumference}
-          strokeDashoffset={circumference}
-          className="transition-all duration-700 ease-out"
-          style={{ strokeDashoffset: offset }}
+          strokeDashoffset={offset}
+          className="score-ring-circle"
         />
       </svg>
       <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">{score}</span>
