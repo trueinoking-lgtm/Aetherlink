@@ -161,12 +161,14 @@ function AccordionCard({
   onToggle,
   children,
   hasContent,
+  preview,
 }: {
   title: string;
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
   hasContent?: boolean;
+  preview?: string;
 }) {
   return (
     <div className="glass-card overflow-hidden">
@@ -175,11 +177,16 @@ function AccordionCard({
         onClick={onToggle}
         className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
       >
-        <span className="flex items-center gap-2.5">
-          {hasContent && (
-            <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+        <span className="flex items-center gap-2.5 min-w-0">
+          {hasContent ? (
+            <span className="h-2 w-2 rounded-full bg-[var(--accent)] shrink-0" />
+          ) : (
+            <span className="h-2 w-2 rounded-full bg-[var(--border)] shrink-0" />
           )}
           <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
+          {preview && (
+            <span className="ml-2 truncate text-xs text-[var(--text-muted)] hidden sm:inline">{preview}</span>
+          )}
         </span>
         <svg
           className={`accordion-chevron h-4 w-4 ${open ? 'open' : ''}`}
@@ -333,6 +340,7 @@ export default function CVPage() {
           open={openSection === 'personal'}
           onToggle={() => setOpenSection(openSection === 'personal' ? null : 'personal')}
           hasContent={!!fullName || !!headline}
+          preview={fullName ? `${fullName}${headline ? ' — ' + headline : ''}` : undefined}
         >
           <div className="space-y-4">
             <div>
@@ -359,6 +367,7 @@ export default function CVPage() {
           open={openSection === 'experience'}
           onToggle={() => setOpenSection(openSection === 'experience' ? null : 'experience')}
           hasContent={experience.length > 0}
+          preview={experience.length > 0 ? `${experience.length} ${experience.length === 1 ? 'entry' : 'entries'}` : undefined}
         >
           {experience.length === 0 && editSection !== 'experience' && (
             <p className="text-sm text-[var(--text-muted)]">No experience added yet.</p>
@@ -397,6 +406,7 @@ export default function CVPage() {
           open={openSection === 'skills'}
           onToggle={() => setOpenSection(openSection === 'skills' ? null : 'skills')}
           hasContent={skills.length > 0}
+          preview={skills.length > 0 ? skills.slice(0, 3).join(', ') + (skills.length > 3 ? ` +${skills.length - 3} more` : '') : undefined}
         >
           <div className="space-y-3">
             <div className="flex flex-wrap gap-1.5">
@@ -437,6 +447,7 @@ export default function CVPage() {
           open={openSection === 'education'}
           onToggle={() => setOpenSection(openSection === 'education' ? null : 'education')}
           hasContent={education.length > 0}
+          preview={education.length > 0 ? `${education.length} ${education.length === 1 ? 'entry' : 'entries'}` : undefined}
         >
           {education.length === 0 && editSection !== 'education' && (
             <p className="text-sm text-[var(--text-muted)]">No education added yet.</p>
