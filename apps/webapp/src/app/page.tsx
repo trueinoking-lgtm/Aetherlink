@@ -42,7 +42,7 @@ export default function LoginPage() {
         {/* Logo / Brand */}
         <div className="mb-8 text-center animate-fade-in">
           <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
-            Aether<span className="gradient-text">Link</span>
+            Aether<span className="gradient-text gradient-text-animated">Link</span>
           </h1>
           <p className="mt-4 text-xl font-medium text-[var(--text-primary)]">
             Find jobs. Apply instantly.
