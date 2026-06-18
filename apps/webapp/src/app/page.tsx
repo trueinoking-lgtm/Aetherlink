@@ -77,7 +77,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="login-card glass-card p-8 login-card-glow">
           {/* Feature highlights */}
-          <div className="mb-8 space-y-5">
+          <div className="mb-10 space-y-6">
             <div className="flex items-start gap-4 group hover-lift p-2 -m-2 rounded-lg transition-all duration-200">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)]/10 transition-all duration-200 group-hover:bg-[var(--accent)]/20 group-hover:scale-105">
                 <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -187,7 +187,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-[var(--text-muted)]">
+        <p className="mt-8 text-center text-xs text-[var(--text-muted)]">
           By signing in, you agree to our{' '}
           <a href="/terms" className="text-[var(--text-secondary)] underline underline-offset-2 transition-colors hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-sm">
             Terms of Service

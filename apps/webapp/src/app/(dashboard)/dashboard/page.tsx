@@ -199,7 +199,7 @@ export default function DashboardPage() {
                     </p>
                     {/* Score bar */}
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="score-bar score-bar-sm flex-1 max-w-[120px]">
+                      <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
                         <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>

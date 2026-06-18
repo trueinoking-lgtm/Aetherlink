@@ -554,7 +554,7 @@ export default function CVPage() {
                 </Link>
               );
             })}
-            <Link href="/feed" className="mt-3 block text-center text-sm text-[var(--accent)] hover:underline">
+            <Link href="/feed" className="mt-3 block text-center text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
               View all jobs →
             </Link>
           </div>
