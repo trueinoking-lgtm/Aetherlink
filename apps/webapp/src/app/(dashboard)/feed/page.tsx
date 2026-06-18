@@ -149,9 +149,9 @@ export default function FeedPage() {
 
       {/* Filter bar */}
       <div className="glass-card p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <div className="flex flex-col gap-3">
           {/* Search */}
-          <div className="relative flex-1 min-w-0">
+          <div className="relative">
             <svg
               className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
               fill="none"
@@ -173,7 +173,7 @@ export default function FeedPage() {
             />
           </div>
 
-          {/* Filters row */}
+          {/* Filters row - horizontal scroll on mobile */}
           <div className="flex flex-wrap gap-2">
             {/* Job type */}
             <select
@@ -342,6 +342,13 @@ export default function FeedPage() {
                       via {job.source_group}
                     </span>
                   )}
+                </div>
+
+                {/* View button */}
+                <div className="mt-4 flex items-center gap-3">
+                  <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active">
+                    View job
+                  </span>
                 </div>
               </Link>
             );

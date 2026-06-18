@@ -176,10 +176,10 @@ export default function DashboardPage() {
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}
-                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02]"
+                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02] group"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-[var(--text-primary)]">{job.title}</p>
+                    <p className="truncate font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</p>
                     <p className="text-sm text-[var(--text-secondary)]">
                       {job.companyName}
                       {job.location && (
