@@ -53,7 +53,7 @@ export default function AppliedPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 page-enter">
       <div>
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Applications</h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
@@ -63,8 +63,8 @@ export default function AppliedPage() {
 
       {applications.length === 0 ? (
         <div className="glass-card flex flex-col items-center gap-4 p-12 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--bg-raised)]">
-            <svg className="h-8 w-8 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="empty-state-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
@@ -72,7 +72,7 @@ export default function AppliedPage() {
             <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications yet</p>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">Start applying to jobs and track them here.</p>
           </div>
-          <Link href="/feed" className="premium-btn premium-btn-primary">
+          <Link href="/feed" className="premium-btn premium-btn-primary pointer-active">
             Browse Jobs
           </Link>
         </div>

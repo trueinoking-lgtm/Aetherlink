@@ -297,7 +297,7 @@ export default function CVPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 page-enter">
       {/* Header */}
       <div>
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>

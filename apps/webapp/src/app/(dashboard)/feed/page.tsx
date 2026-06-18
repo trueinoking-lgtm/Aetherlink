@@ -136,7 +136,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Header */}
       <div>
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">
@@ -215,16 +215,16 @@ export default function FeedPage() {
           </div>
 
           {/* Suited for me toggle */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] mobile-touch pointer-active">
+          <label className="premium-checkbox mobile-touch">
             <input
               type="checkbox"
               checked={suitedForMe}
               onChange={(e) => setSuitedForMe(e.target.checked)}
               className="sr-only"
             />
-            <span className={`flex h-4 w-4 items-center justify-center rounded border transition ${suitedForMe ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[var(--border)] bg-transparent'}`}>
+            <span className={`premium-checkbox-box ${suitedForMe ? 'checked' : ''}`}>
               {suitedForMe && (
-                <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -260,7 +260,7 @@ export default function FeedPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 stagger-children">
           {filteredJobs.map((job) => {
             const score = getMatchScore(job);
             const scoreColor =

@@ -100,7 +100,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Back link */}
       <Link
         href="/feed"
