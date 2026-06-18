@@ -1017,6 +1017,13 @@ body.onboarding-active main {
   background: var(--bg-raised);
 }
 
+.stat-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
 .stat-card-label {
   font-size: 0.8125rem;
   color: var(--text-muted);
