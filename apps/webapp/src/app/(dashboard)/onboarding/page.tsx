@@ -281,10 +281,15 @@ export default function OnboardingPage() {
     }));
   }
 
+  useEffect(() => {
+    document.body.classList.add('onboarding-active');
+    return () => document.body.classList.remove('onboarding-active');
+  }, []);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--bg-base)]">
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
           <p className="text-sm text-[var(--text-muted)]">Setting up your onboarding…</p>
         </div>
@@ -296,8 +301,9 @@ export default function OnboardingPage() {
     <div className="flex min-h-screen flex-col items-center bg-[var(--bg-base)] px-4 py-8">
       {/* Background gradient orbs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/5 blur-3xl" />
-        <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/3 blur-3xl" />
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/8 blur-3xl" />
+        <div className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/5 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--accent)]/3 blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">

@@ -151,7 +151,7 @@ export default function FeedPage() {
       <div className="glass-card p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <svg
               className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]"
               fill="none"
@@ -173,46 +173,49 @@ export default function FeedPage() {
             />
           </div>
 
-          {/* Job type */}
-          <select
-            value={jobType}
-            onChange={(e) => setJobType(e.target.value)}
-            className="premium-select"
-          >
-            <option value="">All types</option>
-            {JOB_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </option>
-            ))}
-          </select>
+          {/* Filters row */}
+          <div className="flex flex-wrap gap-2">
+            {/* Job type */}
+            <select
+              value={jobType}
+              onChange={(e) => setJobType(e.target.value)}
+              className="premium-select flex-1 sm:flex-none"
+            >
+              <option value="">All types</option>
+              {JOB_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </option>
+              ))}
+            </select>
 
-          {/* Salary range */}
-          <select
-            value={salaryRange}
-            onChange={(e) => setSalaryRange(e.target.value)}
-            className="premium-select"
-          >
-            <option value="">Any salary</option>
-            <option value="0-1000">$0 – $1,000</option>
-            <option value="1000-3000">$1,000 – $3,000</option>
-            <option value="3000+">$3,000+</option>
-          </select>
+            {/* Salary range */}
+            <select
+              value={salaryRange}
+              onChange={(e) => setSalaryRange(e.target.value)}
+              className="premium-select flex-1 sm:flex-none"
+            >
+              <option value="">Any salary</option>
+              <option value="0-1000">$0 – $1,000</option>
+              <option value="1000-3000">$1,000 – $3,000</option>
+              <option value="3000+">$3,000+</option>
+            </select>
 
-          {/* Date posted */}
-          <select
-            value={datePosted}
-            onChange={(e) => setDatePosted(e.target.value)}
-            className="premium-select"
-          >
-            <option value="">Any time</option>
-            <option value="today">Today</option>
-            <option value="week">Past week</option>
-            <option value="month">Past month</option>
-          </select>
+            {/* Date posted */}
+            <select
+              value={datePosted}
+              onChange={(e) => setDatePosted(e.target.value)}
+              className="premium-select flex-1 sm:flex-none"
+            >
+              <option value="">Any time</option>
+              <option value="today">Today</option>
+              <option value="week">Past week</option>
+              <option value="month">Past month</option>
+            </select>
+          </div>
 
           {/* Suited for me toggle */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] mobile-touch">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm text-[var(--text-secondary)] transition hover:border-[var(--border-accent)] hover:text-[var(--text-primary)] mobile-touch pointer-active">
             <input
               type="checkbox"
               checked={suitedForMe}

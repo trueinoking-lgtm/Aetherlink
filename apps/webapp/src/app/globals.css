@@ -700,6 +700,20 @@ select:focus-visible {
   box-shadow: var(--shadow-lg);
 }
 
+/* ═══════════════════════════════════════════
+   ONBOARDING - hide sidebar/nav
+   ═══════════════════════════════════════════ */
+
+body.onboarding-active aside,
+body.onboarding-active nav.md\:hidden {
+  display: none !important;
+}
+
+body.onboarding-active main {
+  margin-left: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
