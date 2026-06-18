@@ -10,7 +10,7 @@ export function GmailConnectPrompt({ onConnect }: { onConnect: () => void }) {
       <button
         type="button"
         onClick={onConnect}
-        className="mt-3 w-full rounded-lg bg-[var(--accent)] py-2 text-sm font-medium text-[var(--text-primary)]"
+        className="mt-3 premium-btn premium-btn-primary w-full"
       >
         Connect Gmail
       </button>

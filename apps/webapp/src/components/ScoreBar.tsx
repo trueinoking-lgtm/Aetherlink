@@ -20,13 +20,13 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
 
   const barClass =
     result.percentileColor === 'green'
-      ? 'bg-[var(--success)]'
+      ? 'score-bar-fill high'
       : result.percentileColor === 'amber'
-        ? 'bg-[var(--warning)]'
-        : 'bg-[var(--danger)]';
+        ? 'score-bar-fill mid'
+        : 'score-bar-fill low';
 
   return (
-    <div className="score-bar space-y-2">
+    <div className="space-y-2">
       <div className="flex items-end justify-between">
         <span className={`score-bar-value font-display text-3xl font-bold ${colorClass}`}>
           {result.score}%
@@ -35,7 +35,7 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-[var(--bg-raised)]">
         <div
-          className={`score-bar-fill h-full rounded-full transition-all duration-[600ms] ease-out ${barClass}`}
+          className={`h-full rounded-full transition-all duration-[600ms] ease-out ${barClass}`}
           style={{ '--score-width': `${width}%` } as React.CSSProperties}
         />
       </div>

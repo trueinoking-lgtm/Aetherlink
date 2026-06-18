@@ -16,10 +16,10 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
 
   const scoreColor =
     score && score.score >= 70
-      ? 'text-[var(--success)]'
+      ? 'text-[var(--match-high)]'
       : score && score.score >= 40
-        ? 'text-[var(--warning)]'
-        : 'text-[var(--danger)]';
+        ? 'text-[var(--match-mid)]'
+        : 'text-[var(--match-low)]';
 
   const windowLeft = job.opportunity_window_expires_at
     ? Math.max(

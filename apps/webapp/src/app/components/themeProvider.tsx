@@ -4,7 +4,7 @@ import { ThemeProvider as LibThemeProvider } from '@aetherlink/ui/components/the
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <LibThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange>
+    <LibThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
       {children}
     </LibThemeProvider>
   );

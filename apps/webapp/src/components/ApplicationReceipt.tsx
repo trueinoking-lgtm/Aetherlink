@@ -72,7 +72,7 @@ export function ApplicationReceipt({
         <p className="text-xs text-[var(--text-muted)]">{new Date(sentAt).toLocaleString()}</p>
         <button
           type="button"
-          className="w-full rounded-lg border border-[var(--accent)] py-2 text-[var(--accent)]"
+          className="premium-btn premium-btn-primary w-full"
           onClick={() => {
             if (navigator.share) {
               void navigator.share({ text: shareText });
@@ -83,7 +83,7 @@ export function ApplicationReceipt({
         >
           Share on WhatsApp
         </button>
-        <button type="button" onClick={onClose} className="text-sm text-[var(--text-secondary)]">
+        <button type="button" onClick={onClose} className="premium-btn premium-btn-ghost mx-auto">
           Back to feed
         </button>
       </div>
