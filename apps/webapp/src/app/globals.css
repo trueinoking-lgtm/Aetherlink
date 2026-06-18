@@ -1319,6 +1319,7 @@ body.onboarding-active main {
    ═══════════════════════════════════════════ */
 
 .score-ring-circle {
+  stroke: var(--score-color);
   transition: stroke-dashoffset 0.8s var(--ease-out);
 }
 
