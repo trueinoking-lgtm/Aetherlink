@@ -142,7 +142,7 @@ export default function DashboardPage() {
       {/* Recent activity */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="section-heading mb-0">Recent activity</h2>
+          <h2 className="section-heading mb-0">Latest jobs</h2>
           {jobs.length > 5 && (
             <Link href="/feed" className="text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]">
               View all

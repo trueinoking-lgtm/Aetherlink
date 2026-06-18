@@ -317,7 +317,7 @@ export default function CVPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Header with save button */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sticky top-0 z-20 bg-[var(--bg-base)]/95 backdrop-blur-sm py-3 -mx-1 px-1">
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
         <button
           type="button"

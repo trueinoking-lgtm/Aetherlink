@@ -355,7 +355,7 @@ export default function FeedPage() {
 
                     {/* View button */}
                     <div className="mt-3 flex items-center gap-2 border-t border-[var(--border)] pt-3">
-                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent-hover)] group-hover:border-[var(--border-accent)]">
+                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent-hover)] group-hover:border-[var(--border-accent)]" role="button" tabIndex={0}>
                         View details
                       </span>
                       <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
