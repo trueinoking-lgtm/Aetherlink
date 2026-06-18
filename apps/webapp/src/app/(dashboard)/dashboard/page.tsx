@@ -182,6 +182,7 @@ export default function DashboardPage() {
                     : score > 0
                       ? 'low'
                       : 'none';
+              const barWidth = Math.max(score, 0);
               return (
                 <Link
                   key={job.id}
@@ -201,7 +202,7 @@ export default function DashboardPage() {
                     {/* Score bar */}
                     <div className="mt-2 flex items-center gap-2">
                       <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
+                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${barWidth}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>
                         {score > 0 ? `${score}%` : <span className="no-match-text">Not scored</span>}

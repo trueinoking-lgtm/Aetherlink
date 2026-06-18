@@ -275,12 +275,12 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
             {/* Apply button */}
             {job.hr_email ? (
-              <button
-                type="button"
+              <a
+                href={`mailto:${job.hr_email}?subject=Application for ${encodeURIComponent(job.title)}`}
                 className="premium-btn premium-btn-primary w-full pointer-active"
               >
                 Apply Now
-              </button>
+              </a>
             ) : (
               <div className="flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--success)]/30 bg-[var(--success-bg)] px-4 py-2.5 text-sm font-medium text-[var(--success)]">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

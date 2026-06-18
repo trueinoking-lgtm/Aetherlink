@@ -56,7 +56,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`sidebar-nav-link pointer-active ${isActive ? 'active' : ''}`}
+              className={`sidebar-nav-link pointer-active ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-0' : ''}`}
               title={collapsed ? item.label : undefined}
               aria-current={isActive ? 'page' : undefined}
             >

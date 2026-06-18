@@ -171,6 +171,7 @@ export default function FeedPage() {
               placeholder="Search jobs or companies…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search jobs or companies"
             />
           </div>
 
@@ -180,7 +181,8 @@ export default function FeedPage() {
             <select
               value={jobType}
               onChange={(e) => setJobType(e.target.value)}
-              className="premium-select flex-1 sm:flex-none min-w-0"
+              className="premium-select min-w-0"
+              aria-label="Filter by job type"
             >
               <option value="">All types</option>
               {JOB_TYPES.map((t) => (
@@ -194,7 +196,8 @@ export default function FeedPage() {
             <select
               value={salaryRange}
               onChange={(e) => setSalaryRange(e.target.value)}
-              className="premium-select flex-1 sm:flex-none min-w-0"
+              className="premium-select min-w-0"
+              aria-label="Filter by salary range"
             >
               <option value="">Any salary</option>
               <option value="0-1000">$0 – $1,000</option>
@@ -206,7 +209,8 @@ export default function FeedPage() {
             <select
               value={datePosted}
               onChange={(e) => setDatePosted(e.target.value)}
-              className="premium-select flex-1 sm:flex-none min-w-0"
+              className="premium-select min-w-0"
+              aria-label="Filter by date posted"
             >
               <option value="">Any time</option>
               <option value="today">Today</option>
