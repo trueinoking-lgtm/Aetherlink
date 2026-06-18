@@ -170,17 +170,23 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           {/* Salary and metadata */}
           <div className="flex flex-wrap gap-4">
             {job.salary && (
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3">
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
                 <p className="text-xs text-[var(--text-muted)]">Salary</p>
-                <p className="mt-0.5 font-medium text-[var(--accent)]">{job.salary}</p>
+                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--accent)]">{job.salary}</p>
               </div>
             )}
             {job.jobType && (
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3">
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
                 <p className="text-xs text-[var(--text-muted)]">Job Type</p>
-                <p className="mt-0.5 font-medium text-[var(--text-primary)]">
+                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--text-primary)]">
                   {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
                 </p>
+              </div>
+            )}
+            {job.location && (
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3 min-w-[140px]">
+                <p className="text-xs text-[var(--text-muted)]">Location</p>
+                <p className="mt-0.5 font-display text-lg font-semibold text-[var(--text-primary)]">{job.location}</p>
               </div>
             )}
           </div>
@@ -264,15 +270,22 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             )}
 
             {/* Company info */}
-            <div className="glass-card p-4">
-              <h3 className="text-sm font-medium text-[var(--text-primary)]">
-                {job.companyName}
-              </h3>
-              <p className="mt-1 text-xs text-[var(--text-muted)]">
-                {job.employer_verified ? '✓ Verified employer' : 'Company information pending'}
-              </p>
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
+                  {job.companyName.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--text-primary)]">
+                    {job.companyName}
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {job.employer_verified ? '✓ Verified employer' : 'Company information pending'}
+                  </p>
+                </div>
+              </div>
               {job.source_group && (
-                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                <p className="text-xs text-[var(--text-muted)]">
                   Source: {job.source_group}
                 </p>
               )}

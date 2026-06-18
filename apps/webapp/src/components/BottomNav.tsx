@@ -14,19 +14,15 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--bg-base)] md:hidden">
-      <div className="flex items-center justify-around py-2 px-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--border)] bg-[var(--bg-base)]/95 backdrop-blur-md md:hidden">
+      <div className="flex items-center justify-around py-1.5 px-1">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`mobile-touch flex flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors rounded-lg pointer-active ${
-                isActive
-                  ? 'text-[var(--accent)] mobile-nav-indicator'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-              }`}
+              className={`bottom-nav-link mobile-touch relative ${isActive ? 'active' : ''}`}
             >
               <item.icon className="h-5 w-5" />
               <span className="mobile-text-lg">{item.label}</span>

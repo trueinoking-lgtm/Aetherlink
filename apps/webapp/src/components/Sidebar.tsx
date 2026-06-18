@@ -56,11 +56,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all pointer-active ${
-                isActive
-                  ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`sidebar-nav-link ${isActive ? 'active' : ''}`}
               title={collapsed ? item.label : undefined}
             >
               <item.icon className="h-5 w-5 shrink-0" />

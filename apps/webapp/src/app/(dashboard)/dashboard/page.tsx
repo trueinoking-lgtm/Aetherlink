@@ -75,14 +75,27 @@ export default function DashboardPage() {
     );
   }
 
+  const getSubtitle = (): string => {
+    if (applications.length === 0 && jobs.length === 0) {
+      return 'Set up your profile to start seeing matched jobs.';
+    }
+    if (applications.length === 0) {
+      return `We found ${jobs.length} jobs for you. Start applying!`;
+    }
+    if (avgMatch > 0) {
+      return `${applications.length} applications sent · ${avgMatch}% avg match rate.`;
+    }
+    return `${applications.length} applications sent. Keep going!`;
+  };
+
   return (
     <div className="space-y-8 page-enter">
       {/* Greeting */}
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-          {getGreeting()}, {profile?.full_name ?? 'there'}
+          {getGreeting()}, {profile?.full_name?.split(' ')[0] ?? 'there'}
         </h1>
-        <p className="mt-1 text-[var(--text-secondary)]">Here&rsquo;s your job search overview.</p>
+        <p className="mt-1 text-[var(--text-secondary)]">{getSubtitle()}</p>
       </div>
 
       {/* Stats row */}
