@@ -58,7 +58,7 @@ export default function TrackerPage() {
                     <button
                       key={o.id}
                       type="button"
-                      className="rounded border border-[var(--border)] px-2 py-1 text-xs hover:border-[var(--accent)]"
+                      className="pill pointer-active"
                       onClick={() =>
                         void sdk
                           .recordApplicationOutcome({ applicationId: app.id, outcome: o.id })
