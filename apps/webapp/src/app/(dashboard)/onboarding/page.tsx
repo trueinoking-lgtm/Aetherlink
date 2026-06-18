@@ -201,7 +201,7 @@ export default function OnboardingPage() {
           autoApplyThreshold: step3.autoApplyThreshold,
           blacklistedCompanies: step3.blacklist,
         });
-        router.push('/dashboard');
+        router.push('/feed');
         return;
       }
 
@@ -248,7 +248,7 @@ export default function OnboardingPage() {
         blacklistedCompanies: step3.blacklist,
       });
 
-      router.push('/dashboard');
+      router.push('/feed');
     } catch (e) {
       console.error('Onboarding finish error:', e);
     } finally {

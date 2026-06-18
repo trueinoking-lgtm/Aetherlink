@@ -215,12 +215,24 @@ export class AetherLinkSupabaseApi {
   ): Promise<Profile> {
     if (isDebugMode()) {
       // Return mock profile in debug mode
-      return { ...getDebugProfile(), ...fields };
+      return { ...getDebugProfile(), ...fields } as Profile;
     }
-    const [updated] = await this._supabaseApiCall(async () =>
-      this._supabase.from("profiles").update(fields).select("*")
+
+    const { data: { user } } = await this._supabase.auth.getUser()
+    if (!user) throw new Error('Authentication required to update profile')
+
+    const { data, error } = await this._supabaseApiCall(async () =>
+      this._supabase
+        .from("profiles")
+        .upsert({ user_id: user.id, ...fields }, { onConflict: "user_id" })
+        .select("*")
+        .maybeSingle()
     )
-    return updated as Profile
+
+    if (error) throw error
+    if (!data) throw new Error('Unable to update profile')
+
+    return data as Profile
   }
 
   async listFeedJobs({
