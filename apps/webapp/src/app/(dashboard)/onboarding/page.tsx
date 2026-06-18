@@ -309,6 +309,10 @@ export default function OnboardingPage() {
         <div className="bg-orb absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)]/8 blur-3xl" />
         <div className="bg-orb-delayed absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full bg-[var(--accent)]/5 blur-3xl" />
         <div className="bg-orb-slow absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-[var(--accent)]/3 blur-3xl" />
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        {/* Radial vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--bg-base)_70%)]" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">

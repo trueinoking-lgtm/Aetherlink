@@ -319,18 +319,38 @@ export default function CVPage() {
       </div>
 
       {/* Score card */}
-      <div className="glass-card flex items-center gap-6 p-6">
-        <CvScoreRing score={cvScore} />
-        <div>
-          <p className="font-display text-lg font-bold text-[var(--text-primary)]">CV Strength</p>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            {cvScore < 40
-              ? 'Add your details to improve your match score.'
-              : cvScore < 70
-              ? 'Good start! Add more skills to stand out.'
-              : 'Great profile! You are ready to apply.'}
-          </p>
+      <div className="glass-card p-6">
+        <div className="flex items-center gap-6">
+          <CvScoreRing score={cvScore} />
+          <div className="flex-1">
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">CV Strength</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              {cvScore < 40
+                ? 'Add your details to improve your match score.'
+                : cvScore < 70
+                ? 'Good start! Add more skills to stand out.'
+                : 'Great profile! You are ready to apply.'}
+            </p>
+            {/* Progress bar */}
+            <div className="mt-3 score-bar">
+              <div className={`score-bar-fill ${cvScore >= 70 ? 'high' : cvScore >= 40 ? 'mid' : 'low'}`} style={{ width: `${cvScore}%` }} />
+            </div>
+          </div>
         </div>
+        {/* Tips */}
+        {cvScore < 70 && (
+          <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-3">
+            <p className="text-xs font-medium text-[var(--text-secondary)]">💡 Tips to improve:</p>
+            <ul className="mt-1.5 space-y-1 text-xs text-[var(--text-muted)]">
+              {!fullName && <li>• Add your full name</li>}
+              {!headline && <li>• Write a professional headline</li>}
+              {skills.length === 0 && <li>• Add relevant skills</li>}
+              {skills.length > 0 && skills.length <= 3 && <li>• Add more skills (aim for 5+)</li>}
+              {experience.length === 0 && <li>• Add work experience</li>}
+              {education.length === 0 && <li>• Add education details</li>}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Accordion sections */}
