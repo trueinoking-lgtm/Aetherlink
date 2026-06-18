@@ -189,7 +189,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           )}
 
           {/* Salary and metadata */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {job.salary && (
               <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
@@ -294,7 +294,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             <div className="glass-card p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
-                  {job.companyName.charAt(0).toUpperCase()}
+                  {job.companyName?.charAt(0)?.toUpperCase() ?? '?'}
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-[var(--text-primary)]">

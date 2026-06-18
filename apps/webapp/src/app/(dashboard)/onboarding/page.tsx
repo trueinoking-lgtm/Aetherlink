@@ -341,7 +341,7 @@ export default function OnboardingPage() {
           <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">Let&rsquo;s start with the basics</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">Let&apos;s start with the basics</p>
             </div>
 
             <div className="space-y-5">
@@ -369,7 +369,7 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="mb-2.5 block text-sm font-medium text-[var(--text-secondary)]">Preferred job type</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {JOB_TYPES.map((type) => (
                     <button
                       key={type}
@@ -383,6 +383,7 @@ export default function OnboardingPage() {
                   ))}
                 </div>
               </div>
+
             </div>
 
             {/* Navigation */}
@@ -488,6 +489,7 @@ export default function OnboardingPage() {
                             type="button"
                             className="skill-tag-remove"
                             onClick={() => setStep2((prev) => ({ ...prev, skills: prev.skills.filter((x) => x !== s) }))}
+                            aria-label={`Remove ${s}`}
                           >
                             ×
                           </button>

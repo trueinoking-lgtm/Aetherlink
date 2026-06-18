@@ -555,7 +555,7 @@ export default function CVPage() {
               );
             })}
             <Link href="/feed" className="mt-3 block text-center text-sm font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
-              View all jobs →
+              Browse all jobs →
             </Link>
           </div>
         )}

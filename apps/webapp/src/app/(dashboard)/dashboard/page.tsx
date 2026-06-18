@@ -115,26 +115,26 @@ export default function DashboardPage() {
         </div>
 
         <div className="stat-card hover-lift">
-          <div className="stat-card-icon accent">
-            <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+          <div className="stat-card-icon success">
+            <svg className="h-5 w-5 text-[var(--success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="stat-card-body">
             <p className="stat-card-label">Applications sent</p>
-            <p className={`stat-card-value ${applications.length > 0 ? 'highlight' : 'default'}`}>{applications.length}</p>
+            <p className={`stat-card-value ${applications.length > 0 ? 'highlight' : ''}`}>{applications.length}</p>
           </div>
         </div>
 
         <div className="stat-card hover-lift">
-          <div className="stat-card-icon accent">
-            <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+          <div className="stat-card-icon warning">
+            <svg className="h-5 w-5 text-[var(--warning)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
             </svg>
           </div>
           <div className="stat-card-body">
             <p className="stat-card-label">Avg match score</p>
-            <p className={`stat-card-value ${avgMatch >= 50 ? 'highlight' : 'default'}`}>{avgMatch > 0 ? `${avgMatch}%` : '—'}</p>
+            <p className={`stat-card-value ${avgMatch >= 50 ? 'highlight' : ''}`}>{avgMatch > 0 ? `${avgMatch}%` : '—'}</p>
           </div>
         </div>
       </div>
@@ -183,11 +183,10 @@ export default function DashboardPage() {
                       ? 'low'
                       : 'none';
               return (
-                <div className="hover-lift relative">
                 <Link
                   key={job.id}
                   href={`/feed/${job.id}`}
-                  className="glass-card flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02] group"
+                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02] group"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</p>
@@ -210,7 +209,6 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </Link>
-                </div>
               );
             })}
           </div>

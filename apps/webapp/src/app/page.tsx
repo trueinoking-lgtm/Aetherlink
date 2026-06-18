@@ -54,13 +54,13 @@ export default function LoginPage() {
           <div className="mt-7 flex items-center justify-center gap-6">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--success)] to-[var(--avatar-success-end)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">M</div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--warning)] to-[var(--avatar-warning-end)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">T</div>
+                <div className="login-avatar bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>
+                <div className="login-avatar bg-gradient-to-br from-[var(--success)] to-[var(--avatar-success-end)] text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">M</div>
+                <div className="login-avatar bg-gradient-to-br from-[var(--warning)] to-[var(--avatar-warning-end)] text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">T</div>
               </div>
               <span className="text-xs font-medium text-[var(--text-secondary)]">500+ job seekers</span>
             </div>
-            <div className="h-4 w-px bg-[var(--border)]" />
+            <div className="login-divider" />
             <div className="flex items-center gap-1.5">
               <div className="flex gap-0.5">
                 {[1,2,3,4,5].map(i => (
@@ -85,8 +85,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div className="pt-0.5">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">Auto-apply to jobs</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">Apply to hundreds of jobs with one click</p>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">Auto-apply to jobs</span>
+                <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">Apply to hundreds of jobs with one click</span>
               </div>
             </div>
             <div className="flex items-start gap-4 group hover-lift p-2 -m-2 rounded-lg transition-all duration-200">
@@ -96,8 +96,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div className="pt-0.5">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">Smart matching</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">AI matches you with the best opportunities</p>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">Smart matching</span>
+                <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">AI matches you with the best opportunities</span>
               </div>
             </div>
             <div className="flex items-start gap-4 group hover-lift p-2 -m-2 rounded-lg transition-all duration-200">
@@ -107,8 +107,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div className="pt-0.5">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">Track everything</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)] leading-relaxed">Dashboard to monitor all your applications</p>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">Track everything</span>
+                <span className="mt-0.5 block text-xs text-[var(--text-secondary)] leading-relaxed">Dashboard to monitor all your applications</span>
               </div>
             </div>
           </div>
