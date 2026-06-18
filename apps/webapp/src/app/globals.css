@@ -145,7 +145,7 @@ hr {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  transition: all 0.2s var(--ease-out);
+  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
 
 .glass-card:hover {
@@ -262,8 +262,13 @@ hr {
 }
 
 /* ═══════════════════════════════════════════
-   PREMIUM SELECT
+   PREMIUM SELECT (selected value color fix)
    ═══════════════════════════════════════════ */
+
+.premium-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
 
 .premium-select {
   appearance: none;
@@ -1240,14 +1245,15 @@ body.onboarding-active main {
   font-weight: 600;
   line-height: 1.2;
   margin-top: 2px;
+  color: var(--text-primary);
 }
 
 .stat-card-value.accent {
   color: var(--accent);
 }
 
-.stat-card-value.default {
-  color: var(--text-primary);
+.stat-card-value.highlight {
+  color: var(--match-high);
 }
 
 /* ═══════════════════════════════════════════
@@ -1289,14 +1295,6 @@ body.onboarding-active main {
 .bg-orb-slow {
   animation: orb-float 18s ease-in-out 6s infinite;
   opacity: 40%;
-}
-
-/* ═══════════════════════════════════════════
-   ENHANCED STAT CARD VALUE COLORS
-   ═══════════════════════════════════════════ */
-
-.stat-card-value.highlight {
-  color: var(--match-high);
 }
 
 /* ═══════════════════════════════════════════
@@ -1484,11 +1482,7 @@ body.onboarding-active main {
 }
 
 /* ── Fix: accordion overflow clips focus ring ── */
-.accordion-card .glass-card {
-  overflow: visible;
-}
-
-.accordion-card .glass-card:has(.accordion-content) {
+.accordion-card > .glass-card {
   overflow: hidden;
 }
 
@@ -1571,6 +1565,7 @@ aside::-webkit-scrollbar-thumb {
   width: var(--score-width, 0%);
   transition: width 0.6s var(--ease-out);
   animation: scoreBarFill 0.6s var(--ease-out) forwards;
+  min-width: 0;
 }
 
 @keyframes scoreBarFill {
@@ -1605,6 +1600,13 @@ aside::-webkit-scrollbar-thumb {
 /* ── Small variant for inline score bars ── */
 .score-bar-sm {
   height: 6px;
+}
+
+/* ── Score bar fill minimum for visibility ── */
+.score-bar-fill.high,
+.score-bar-fill.mid,
+.score-bar-fill.low {
+  min-width: 4px;
 }
 
 /* ── Stat card left border accent on hover ── */
@@ -1717,7 +1719,7 @@ aside::-webkit-scrollbar-thumb {
   font-weight: 500;
   color: var(--text-secondary);
   transition: all 0.15s var(--ease-out);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .sidebar-nav-link:hover {
@@ -1772,16 +1774,20 @@ aside::-webkit-scrollbar-thumb {
   color: var(--accent);
 }
 
-.bottom-nav-link.active::after {
+.bottom-nav-link.active::before {
   content: '';
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 28px;
   height: 3px;
   background: var(--accent);
-  border-radius: 3px 3px 0 0;
+  border-radius: 0 0 3px 3px;
+}
+
+.bottom-nav-link.active::after {
+  display: none;
 }
 
 .bottom-nav-link:active {

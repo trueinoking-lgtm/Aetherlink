@@ -166,12 +166,6 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   <span>{job.location}</span>
                 </>
               )}
-              {job.jobType && (
-                <>
-                  <span aria-hidden="true">&middot;</span>
-                  <span className="capitalize">{job.jobType}</span>
-                </>
-              )}
             </div>
             {/* Quick badges */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -298,7 +292,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                 Apply Now
               </a>
             ) : (
-              <div className="flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--success)]/30 bg-[var(--success-bg)] px-4 py-2.5 text-sm font-medium text-[var(--success)]">
+              <div className="flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--success)]/30 bg-[var(--success-bg)] px-4 py-3 text-sm font-medium text-[var(--success)]">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>

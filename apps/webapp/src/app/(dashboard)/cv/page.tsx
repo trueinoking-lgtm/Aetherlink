@@ -317,13 +317,13 @@ export default function CVPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Header with save button */}
-      <div className="flex items-center justify-between sticky top-0 z-20 bg-[var(--bg-base)]/80 backdrop-blur-md py-3 -mx-1 px-1 border-b border-[var(--border)]">
+      <div className="flex items-center justify-between sticky top-0 z-20 bg-[var(--bg-base)]/80 backdrop-blur-md py-3 border-b border-[var(--border)] -mx-1 px-1">
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">My CV</h1>
         <button
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="premium-btn premium-btn-secondary text-sm disabled:opacity-50"
+          className="premium-btn premium-btn-secondary text-sm disabled:opacity-50 pointer-active"
         >
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
@@ -424,7 +424,7 @@ export default function CVPage() {
               <button
                 type="button"
                 onClick={() => setExperience((prev) => prev.filter((_, i) => i !== idx))}
-                className="mt-1 text-xs text-[var(--danger)] hover:underline"
+                className="mt-1 text-xs text-[var(--danger)] hover:underline pointer-active"
               >
                 Remove
               </button>
@@ -514,7 +514,7 @@ export default function CVPage() {
               <button
                 type="button"
                 onClick={() => setEducation((prev) => prev.filter((_, i) => i !== idx))}
-                className="mt-1 text-xs text-[var(--danger)] hover:underline"
+                className="mt-1 text-xs text-[var(--danger)] hover:underline pointer-active"
               >
                 Remove
               </button>

@@ -72,6 +72,9 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
           <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
             <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${Math.max(score.score, 0)}%` } as React.CSSProperties} />
           </div>
+          <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+            {score.score >= 70 ? 'Strong match' : score.score >= 40 ? 'Good match' : 'Low match'}
+          </span>
         </div>
       )}
       <div className="mt-2 flex flex-wrap gap-1.5">
@@ -86,7 +89,7 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
           </span>
         )}
       </div>
-      <svg className="absolute right-4 top-4 h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <svg className="absolute right-4 bottom-4 h-4 w-4 text-[var(--text-muted)] opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </Link>
