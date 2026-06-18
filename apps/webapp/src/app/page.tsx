@@ -51,7 +51,7 @@ export default function LoginPage() {
             Your AI-powered job search assistant.
           </p>
           {/* Social proof */}
-          <div className="mt-7 flex items-center justify-center gap-6">
+          <div className="mt-7 flex items-center justify-center gap-6 animate-fade-in">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2" aria-hidden="true">
                 <div className="login-avatar bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>

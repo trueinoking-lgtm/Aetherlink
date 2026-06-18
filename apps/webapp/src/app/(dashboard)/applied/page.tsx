@@ -82,11 +82,11 @@ export default function AppliedPage() {
           </div>
         </div>
       ) : (
-        <div className="relative pl-8 sm:pl-10">
+        <div className="relative">
           {/* Vertical line */}
           <div className="absolute left-[11px] sm:left-[15px] top-6 bottom-6 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/15 to-transparent" aria-hidden="true" />
 
-          <div className="space-y-4">
+          <div className="space-y-4 pl-8 sm:pl-10">
             {applications.map((app) => {
               const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
               return (
