@@ -69,19 +69,19 @@ export function Sidebar({
 
       {/* User area */}
       <div className="border-t border-[var(--border)] p-3 mt-auto">
-        <div className={`flex items-center gap-3 rounded-lg p-2.5 ${collapsed ? 'justify-center' : ''}`}>
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
             {profile?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
           </div>
           {!collapsed && (
-            <div className="min-w-0 flex-1 flex flex-col">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-[var(--text-primary)]">
                 {profile?.full_name ?? 'User'}
               </p>
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="mt-1 text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
+                  className="mt-0.5 text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
                 >
                   Sign out
                 </button>

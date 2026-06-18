@@ -215,7 +215,7 @@ export default function FeedPage() {
           </div>
 
           {/* Suited for me toggle */}
-          <label className="premium-checkbox mobile-touch">
+          <label className="premium-checkbox mobile-touch pt-1">
             <input
               type="checkbox"
               checked={suitedForMe}
@@ -318,7 +318,7 @@ export default function FeedPage() {
                     <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
                   </div>
                   <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                    {score !== null && score > 0 ? `${score}% match` : 'No match'}
+                    {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">No match</span>}
                   </span>
                 </div>
 

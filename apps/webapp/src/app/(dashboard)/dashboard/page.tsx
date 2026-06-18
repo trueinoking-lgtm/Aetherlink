@@ -202,7 +202,7 @@ export default function DashboardPage() {
                         <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                        {score > 0 ? `${score}%` : 'No match'}
+                        {score > 0 ? `${score}%` : <span className="no-match-text">No match</span>}
                       </span>
                     </div>
                   </div>

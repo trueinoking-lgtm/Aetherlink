@@ -46,7 +46,7 @@ export function CVRewritePanel({
                   type="checkbox"
                   checked={r.accepted}
                   onChange={() => onToggle(i)}
-                  className="w-4 h-4 rounded border-[var(--border)] cursor-pointer accent-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-1"
+                  className="premium-checkbox-input"
                 />
                 Accept rewrite
               </label>

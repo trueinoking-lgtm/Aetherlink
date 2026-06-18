@@ -115,7 +115,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       {/* Back link */}
       <Link
         href="/feed"
-        className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 rounded-sm"
+        className="group inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--accent-hover)]"
       >
         <svg className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -193,7 +193,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
         {/* Right column: sticky action panel */}
         <div className="lg:col-span-1">
-          <div className="sticky top-24 space-y-5">
+          <div className="sticky top-6 space-y-5">
             {/* Match score */}
             <div className="glass-card flex flex-col items-center gap-3 p-6">
               <p className="text-sm font-medium text-[var(--text-secondary)]">
@@ -255,7 +255,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             {job.hr_email ? (
               <button
                 type="button"
-                className="premium-btn premium-btn-primary w-full pointer-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]"
+                className="premium-btn premium-btn-primary w-full pointer-active"
               >
                 Apply Now
               </button>

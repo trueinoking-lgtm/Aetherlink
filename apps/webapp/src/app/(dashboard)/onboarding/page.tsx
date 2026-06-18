@@ -379,8 +379,8 @@ export default function OnboardingPage() {
             </div>
 
             {/* Navigation */}
-            <div className="mt-8 flex items-center justify-between gap-4">
-              {step > 0 ? (
+            <div className="mt-8 flex items-center justify-end gap-4">
+              {step > 0 && (
                 <button
                   type="button"
                   onClick={() => setStep((s) => s - 1)}
@@ -388,8 +388,6 @@ export default function OnboardingPage() {
                 >
                   Back
                 </button>
-              ) : (
-                <div />
               )}
 
               {step < 2 ? (
@@ -397,7 +395,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={() => setStep((s) => s + 1)}
                   disabled={!isStepValid()}
-                  className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                  className="premium-btn premium-btn-primary mobile-touch flex-1 sm:flex-none sm:min-w-[160px] disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
                 >
                   Continue
                 </button>
@@ -406,7 +404,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={handleFinish}
                   disabled={loading}
-                  className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                  className="premium-btn premium-btn-primary mobile-touch flex-1 sm:flex-none sm:min-w-[160px] disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
                 >
                   {loading ? 'Saving…' : 'Start applying'}
                 </button>
@@ -577,7 +575,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Navigation */}
-            <div className="mt-8 flex items-center justify-between gap-4">
+            <div className="mt-8 flex items-center justify-end gap-4">
               <button
                 type="button"
                 onClick={() => setStep((s) => s - 1)}
@@ -589,7 +587,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!isStepValid()}
-                className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                className="premium-btn premium-btn-primary mobile-touch flex-1 sm:flex-none sm:min-w-[160px] disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
               >
                 Continue
               </button>
@@ -680,14 +678,13 @@ export default function OnboardingPage() {
                   <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score &gt; X%</p>
                   <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
                 </div>
-                <label className="relative inline-flex cursor-pointer items-center">
+                <label className="toggle-switch">
                   <input
                     type="checkbox"
                     checked={step3.autoApplyEnabled}
                     onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
-                    className="peer sr-only"
                   />
-                  <div className="h-6 w-11 rounded-full bg-[var(--bg-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-[var(--text-muted)] after:transition-all peer-checked:bg-[var(--accent)]/40 peer-checked:after:translate-x-full peer-checked:after:bg-[var(--accent)] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--accent)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[var(--bg-surface)]" />
+                  <span className="slider" />
                 </label>
               </div>
 
@@ -712,7 +709,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Navigation */}
-            <div className="mt-8 flex items-center justify-between gap-4">
+            <div className="mt-8 flex items-center justify-end gap-4">
               <button
                 type="button"
                 onClick={() => setStep((s) => s - 1)}
@@ -724,7 +721,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleFinish}
                 disabled={loading}
-                className="premium-btn premium-btn-primary mobile-touch flex-1 disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
+                className="premium-btn premium-btn-primary mobile-touch flex-1 sm:flex-none sm:min-w-[160px] disabled:opacity-40 disabled:cursor-not-allowed pointer-active"
               >
                 {loading ? 'Saving…' : 'Start applying'}
               </button>

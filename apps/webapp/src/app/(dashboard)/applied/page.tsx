@@ -82,18 +82,18 @@ export default function AppliedPage() {
           </div>
         </div>
       ) : (
-        <div className="relative pl-10">
+        <div className="relative pl-8">
           {/* Vertical line */}
-          <div className="absolute left-[13px] top-3 bottom-3 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
+          <div className="absolute left-[11px] top-3 bottom-3 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {applications.map((app) => {
               const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
               return (
                 <div key={app.id} className="relative">
                   {/* Dot */}
-                  <div className="absolute -left-10 top-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
-                    <div className="h-3 w-3 rounded-full bg-[var(--accent)]" />
+                  <div className="absolute -left-8 top-4 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
+                    <div className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
                   </div>
 
                   {/* Card */}
