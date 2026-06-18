@@ -221,7 +221,8 @@ export class AetherLinkSupabaseApi {
     const { data: { user } } = await this._supabase.auth.getUser()
     if (!user) throw new Error('Authentication required to update profile')
 
-    const { data, error } = await this._supabase.rpc("update_aetherlink_profile", { p_fields: fields })
+    const rpcResult = await this._supabase.rpc("update_aetherlink_profile", { p_fields: fields })
+    const { data, error } = rpcResult as unknown as { data: Profile | null; error: PostgrestError | null }
 
     if (error) throw error
     if (!data) throw new Error('Unable to update profile')

@@ -99,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 stagger-children">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
         <div className="stat-card hover-lift">
           <div className="stat-card-icon accent">
             <svg className="h-5 w-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -199,7 +199,7 @@ export default function DashboardPage() {
                     </p>
                     {/* Score bar */}
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="score-bar flex-1 max-w-[120px]" style={{ height: '6px' }}>
+                      <div className="score-bar score-bar-sm flex-1 max-w-[120px]">
                         <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>

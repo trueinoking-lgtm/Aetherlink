@@ -344,7 +344,7 @@ export default function CVPage() {
                 : 'Great profile! You are ready to apply.'}
             </p>
             {/* Progress bar */}
-            <div className="mt-3 score-bar" style={{ height: '8px' }}>
+            <div className="mt-3 score-bar">
               <div className={`score-bar-fill ${cvScore >= 70 ? 'high' : cvScore >= 40 ? 'mid' : 'low'}`} style={{ width: `${cvScore}%` }} />
             </div>
           </div>
@@ -542,7 +542,7 @@ export default function CVPage() {
                     <p className="truncate text-sm font-medium text-[var(--text-primary)]">{j.title}</p>
                     <p className="text-xs text-[var(--text-secondary)]">{j.companyName}</p>
                     <div className="mt-1.5 flex items-center gap-2">
-                      <div className="score-bar flex-1 max-w-[100px]" style={{ height: '6px' }}>
+                      <div className="score-bar score-bar-sm flex-1 max-w-[100px]">
                         <div className={`score-bar-fill ${barColor}`} style={{ width: `${j.score}%` }} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${j.score >= 80 ? 'text-[var(--match-high)]' : j.score >= 50 ? 'text-[var(--match-mid)]' : 'text-[var(--match-low)]'}`}>

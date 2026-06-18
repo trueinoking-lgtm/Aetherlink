@@ -428,22 +428,14 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'build' }))}
-                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
-                    step2.mode === 'build'
-                      ? 'premium-btn-primary'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                  }`}
+                  className={`toggle-btn ${step2.mode === 'build' ? 'active' : ''}`}
                 >
                   Build it here
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep2((prev) => ({ ...prev, mode: 'upload' }))}
-                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all pointer-active ${
-                    step2.mode === 'upload'
-                      ? 'premium-btn-primary'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                  }`}
+                  className={`toggle-btn ${step2.mode === 'upload' ? 'active' : ''}`}
                 >
                   Upload PDF
                 </button>

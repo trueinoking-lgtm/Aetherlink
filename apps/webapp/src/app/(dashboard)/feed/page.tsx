@@ -316,7 +316,7 @@ export default function FeedPage() {
 
                 {/* Score bar */}
                 <div className="mt-3 mb-1 flex items-center gap-2">
-                  <div className="score-bar flex-1 max-w-[140px]" style={{ height: '6px' }}>
+                  <div className="score-bar score-bar-sm flex-1 max-w-[140px]">
                     <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
                   </div>
                   <span className={`font-mono text-xs font-bold ${scoreColor}`}>
