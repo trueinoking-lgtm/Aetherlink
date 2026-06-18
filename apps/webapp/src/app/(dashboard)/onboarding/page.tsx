@@ -351,16 +351,14 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Location (City) <span className="text-[var(--danger)]">*</span></label>
-                <input
-                  className="premium-input"
-                  placeholder="e.g. Harare"
-                  list="zw-cities"
+                <select
+                  className="premium-select"
                   value={step1.location}
                   onChange={(e) => setStep1((prev) => ({ ...prev, location: e.target.value }))}
-                />
-                <datalist id="zw-cities">
-                  {ZW_CITIES.map((c) => (<option key={c} value={c} />))}
-                </datalist>
+                >
+                  <option value="">Select your city</option>
+                  {ZW_CITIES.map((c) => (<option key={c} value={c}>{c}</option>))}
+                </select>
               </div>
 
               <div>
@@ -604,7 +602,7 @@ export default function OnboardingPage() {
           <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">Configure how AetherLink works for you</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">Configure how AetherLink works for you</p>
             </div>
 
             <div className="space-y-5">

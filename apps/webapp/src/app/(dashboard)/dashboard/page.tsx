@@ -95,7 +95,7 @@ export default function DashboardPage() {
         <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
           {getGreeting()}, {profile?.full_name?.split(' ')[0] ?? 'there'}
         </h1>
-        <p className="mt-1 text-[var(--text-secondary)]">{getSubtitle()}</p>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">{getSubtitle()}</p>
       </div>
 
       {/* Stats row */}
@@ -142,15 +142,21 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="section-heading mb-0">Recent activity</h2>
           {jobs.length > 5 && (
-            <Link href="/feed" className="text-sm text-[var(--accent)] hover:underline">
+            <Link href="/feed" className="text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]">
               View all →
             </Link>
           )}
         </div>
         {jobs.length === 0 ? (
           <div className="glass-card p-8 text-center">
-            <p className="text-[var(--text-secondary)]">No jobs matching your profile yet.</p>
-            <Link href="/feed" className="mt-3 inline-block text-sm text-[var(--accent)] hover:underline">
+            <div className="empty-state-icon mx-auto">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+              </svg>
+            </div>
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs yet</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">Set up your profile to start seeing matched jobs.</p>
+            <Link href="/feed" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]">
               Browse all jobs →
             </Link>
           </div>
