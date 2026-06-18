@@ -41,6 +41,7 @@
   --match-high:    #22c55e;
   --match-mid:     #f59e0b;
   --match-low:     #6b7280;
+  --match-low-gradient: #9ca3af;
 
   /* ── Borders ── */
   --border:        rgba(255, 255, 255, 0.06);
@@ -48,7 +49,9 @@
   --border-focus:  rgba(99, 102, 241, 0.4);
   --border-accent: rgba(99, 102, 241, 0.25);
 
-  /* ── Low-match background ── */
+  /* ── Avatar gradient endpoints ── */
+  --avatar-success-end: #059669;
+  --avatar-warning-end: #d97706;
   --match-low-bg:  rgba(107, 114, 128, 0.15);
 
   /* ── Login card ── */
@@ -1310,7 +1313,7 @@ body.onboarding-active main {
 }
 
 .score-bar-fill.low {
-  background: linear-gradient(90deg, var(--match-low), #9ca3af);
+  background: linear-gradient(90deg, var(--match-low), var(--match-low-gradient));
 }
 
 .score-bar-fill.none {

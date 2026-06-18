@@ -55,8 +55,8 @@ export default function LoginPage() {
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">A</div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--success)] to-emerald-700 text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">M</div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--warning)] to-amber-700 text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">T</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--success)] to-[var(--avatar-success-end)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">M</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--warning)] to-[var(--avatar-warning-end)] text-[10px] font-bold text-[var(--text-primary)] ring-2 ring-[var(--bg-base)]">T</div>
               </div>
               <span className="text-xs font-medium text-[var(--text-secondary)]">500+ job seekers</span>
             </div>
