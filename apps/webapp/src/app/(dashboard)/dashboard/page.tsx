@@ -190,18 +190,12 @@ export default function DashboardPage() {
                     </p>
                     {/* Score bar */}
                     <div className="mt-2 flex items-center gap-2">
-                      {score > 0 ? (
-                        <>
-                          <div className="score-bar flex-1 max-w-[120px]">
-                            <div className={`score-bar-fill ${barColor}`} style={{ width: `${score}%` }} />
-                          </div>
-                          <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                            {score}%
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-xs text-[var(--text-muted)]">No match</span>
-                      )}
+                      <div className="score-bar flex-1 max-w-[120px]">
+                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score, 0)}%` }} />
+                      </div>
+                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                        {score > 0 ? `${score}%` : 'No match'}
+                      </span>
                     </div>
                   </div>
                 </Link>

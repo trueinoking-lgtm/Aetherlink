@@ -266,7 +266,7 @@ export default function FeedPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 stagger-children">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 max-w-4xl stagger-children">
           {filteredJobs.map((job) => {
             const score = getMatchScore(job);
             const barColor =
@@ -312,18 +312,12 @@ export default function FeedPage() {
 
                 {/* Score bar */}
                 <div className="mt-3 mb-1 flex items-center gap-2">
-                  {score !== null && score > 0 ? (
-                    <>
-                      <div className="score-bar flex-1 max-w-[140px]">
-                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${score}%` }} />
-                      </div>
-                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                        {score}% match
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-xs text-[var(--text-muted)]">No match</span>
-                  )}
+                  <div className="score-bar flex-1 max-w-[140px]">
+                    <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
+                  </div>
+                  <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                    {score !== null && score > 0 ? `${score}% match` : 'No match'}
+                  </span>
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">

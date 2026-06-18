@@ -49,7 +49,7 @@ export function Sidebar({
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 flex flex-col gap-1 p-3">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
@@ -68,7 +68,7 @@ export function Sidebar({
       </nav>
 
       {/* User area */}
-      <div className="border-t border-[var(--border)] p-3">
+      <div className="border-t border-[var(--border)] p-3 mt-auto">
         <div className={`flex items-center gap-3 rounded-lg p-2 ${collapsed ? 'justify-center' : ''}`}>
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
             {profile?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
