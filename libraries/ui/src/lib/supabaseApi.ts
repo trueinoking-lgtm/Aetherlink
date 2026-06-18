@@ -221,16 +221,36 @@ export class AetherLinkSupabaseApi {
     const { data: { user } } = await this._supabase.auth.getUser()
     if (!user) throw new Error('Authentication required to update profile')
 
-    const { data, error } = await this._supabaseApiCall(async () =>
-      this._supabase
-        .from("profiles")
-        .upsert({ user_id: user.id, ...fields }, { onConflict: "user_id" })
+    const profiles = this._supabase.from("profiles") as any
+
+    const { data: existing, error: existingError } = await profiles
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle()
+
+    if (existingError) throw existingError
+
+    if (existing) {
+      const { data, error } = await profiles
+        .update(fields)
+        .eq("user_id", user.id)
         .select("*")
         .maybeSingle()
-    )
+
+      if (error) throw error
+      if (!data) throw new Error('Unable to update profile')
+
+      return data as Profile
+    }
+
+    const { data, error } = await this._supabase
+      .from("profiles")
+      .insert({ user_id: user.id, ...fields } as never)
+      .select("*")
+      .maybeSingle()
 
     if (error) throw error
-    if (!data) throw new Error('Unable to update profile')
+    if (!data) throw new Error('Unable to create profile')
 
     return data as Profile
   }
