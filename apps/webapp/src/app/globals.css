@@ -1489,9 +1489,10 @@ body.onboarding-active main {
 }
 
 .score-bar-fill.none {
-  background: var(--border);
+  background: var(--bg-raised);
   width: 100% !important;
-  opacity: 0.3;
+  opacity: 0.6;
+  box-shadow: inset 0 0 0 1px var(--border);
 }
 
 /* ── Small variant for inline score bars ── */
