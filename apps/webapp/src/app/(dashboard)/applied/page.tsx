@@ -92,7 +92,7 @@ export default function AppliedPage() {
                   </div>
 
                   {/* Card */}
-                  <div className="glass-card p-4">
+                  <div className="glass-card hover-lift p-4 transition-all hover:border-[var(--border-accent)]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-[var(--text-primary)]">

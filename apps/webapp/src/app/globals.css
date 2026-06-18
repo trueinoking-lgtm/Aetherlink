@@ -388,12 +388,13 @@ body {
   font-weight: 600;
   font-size: 0.9375rem;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all 0.15s var(--ease-out);
   border-radius: var(--radius-md);
 }
 
 .accordion-header:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--accent-hover);
 }
 
 .accordion-chevron {

@@ -19,25 +19,26 @@ function ScoreCircle({ score }: { score: number }) {
         : 'var(--match-low)';
   return (
     <div className="relative flex items-center justify-center">
-      <svg width="100" height="100" className="-rotate-90">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
-        <circle
-          cx="50"
-          cy="50"
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className="transition-all duration-700"
-        />
-      </svg>
-      <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)]">
-        {score}%
-      </span>
-    </div>
+          <svg width="100" height="100" className="-rotate-90">
+            <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--border)" strokeWidth="6" />
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="none"
+              stroke={color}
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference}
+              className="transition-all duration-700 ease-out"
+              style={{ strokeDashoffset: offset }}
+            />
+          </svg>
+          <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
+            {score}%
+          </span>
+        </div>
   );
 }
 
