@@ -143,7 +143,9 @@ export default function DashboardPage() {
                   ? 'text-[var(--match-high)]'
                   : score >= 50
                   ? 'text-[var(--match-mid)]'
-                  : 'text-[var(--match-low)]';
+                  : score > 0
+                  ? 'text-[var(--match-low)]'
+                  : 'text-[var(--text-faint)]';
               return (
                 <Link
                   key={job.id}

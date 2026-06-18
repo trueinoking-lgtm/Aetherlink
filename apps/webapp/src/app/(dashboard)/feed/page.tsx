@@ -304,6 +304,11 @@ export default function FeedPage() {
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {job.jobType && (
+                    <span className="badge badge-mid">
+                      {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                    </span>
+                  )}
                   {job.salary && (
                     <span className="badge badge-high">
                       {job.salary}

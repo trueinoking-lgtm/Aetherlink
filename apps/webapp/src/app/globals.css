@@ -693,11 +693,8 @@ select:focus-visible {
   box-shadow: var(--shadow-lg);
 }
 
-.login-card {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+.login-card-glow {
+  box-shadow: var(--shadow-lg), 0 0 40px var(--accent-glow);
 }
 
 /* ═══════════════════════════════════════════

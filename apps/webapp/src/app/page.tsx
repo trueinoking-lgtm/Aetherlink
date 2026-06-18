@@ -37,10 +37,10 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo / Brand */}
         <div className="mb-10 text-center">
-          <h1 className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
-            Aether<span className="text-[var(--accent)]">Link</span>
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-5xl">
+            Aether<span className="font-bold text-[var(--accent)]">Link</span>
           </h1>
-          <p className="mt-3 text-base text-[var(--text-secondary)]">
+          <p className="mt-3 text-lg text-[var(--text-primary)]">
             Find jobs. Apply instantly.
           </p>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
@@ -49,11 +49,11 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="login-card glass-card p-8">
+        <div className="login-card glass-card p-8 login-card-glow">
           {/* Feature highlights */}
           <div className="mb-8 space-y-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)]/10">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]/10">
                 <svg className="h-4 w-4 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--success-bg)]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--success-bg)]">
                 <svg className="h-4 w-4 text-[var(--success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
@@ -75,7 +75,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--warning-bg)]">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--warning-bg)]">
                 <svg className="h-4 w-4 text-[var(--warning)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -149,6 +149,14 @@ export default function LoginPage() {
               </>
             )}
           </button>
+
+          {/* Trust signal */}
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-[var(--text-faint)]">
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            Secure sign-in · No password required
+          </p>
         </div>
 
         {/* Footer */}
