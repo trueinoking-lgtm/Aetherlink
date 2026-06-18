@@ -254,6 +254,13 @@ hr {
   background: var(--glass-bg-input);
 }
 
+/* ── Number input spinner styling ── */
+.premium-input[type="number"]::-webkit-inner-spin-button,
+.premium-input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 24px;
+}
+
 /* ═══════════════════════════════════════════
    PREMIUM SELECT
    ═══════════════════════════════════════════ */
@@ -320,6 +327,11 @@ hr {
 
 .pill.active:hover {
   background: var(--accent-hover);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ═══════════════════════════════════════════
@@ -1054,8 +1066,19 @@ body.onboarding-active main {
   box-shadow: var(--shadow-glow), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.google-btn-primary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-glow), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 .google-btn:active {
   transform: translateY(0) scale(0.98);
+}
+
+.google-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  background: var(--accent-dim);
 }
 
 .google-btn:focus-visible {
@@ -1604,6 +1627,10 @@ body.onboarding-active main {
   background: var(--accent);
   color: var(--text-primary);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn:active {
+  transform: scale(0.98);
 }
 
 .toggle-btn:focus-visible {
