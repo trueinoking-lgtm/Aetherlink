@@ -27,7 +27,15 @@ function computeCvScore(profile: Profile): number {
 function CvScoreRing({ score }: { score: number }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
+  const [offset, setOffset] = useState(circumference);
+
+  useEffect(() => {
+    const t = requestAnimationFrame(() => {
+      setOffset(circumference - (score / 100) * circumference);
+    });
+    return () => cancelAnimationFrame(t);
+  }, [score, circumference]);
+
   return (
     <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
       <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">

@@ -10,7 +10,15 @@ import { computeMatchScore } from '@/lib/scoring';
 function ScoreCircle({ score }: { score: number }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
+  const [offset, setOffset] = useState(circumference);
+
+  useEffect(() => {
+    const t = requestAnimationFrame(() => {
+      setOffset(circumference - (score / 100) * circumference);
+    });
+    return () => cancelAnimationFrame(t);
+  }, [score, circumference]);
+
   const barColor =
     score >= 70
       ? 'high'
