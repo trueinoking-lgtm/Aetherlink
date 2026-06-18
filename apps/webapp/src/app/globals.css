@@ -599,6 +599,11 @@ hr {
   transform: translateY(-2px) scale(0.99);
 }
 
+/* Combined hover-lift with press for cards that also have pointer-active */
+.hover-lift:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
 /* Fade in on mount */
 .fade-in {
   animation: fadeIn 0.3s var(--ease-out) forwards;
@@ -865,10 +870,6 @@ body.onboarding-active main {
    ═══════════════════════════════════════════ */
 
 .focus-visible\:ring-offset-2:focus-visible {
-  outline-offset: 2px;
-}
-
-.focus-visible\:ring-offset-\[var\(--bg-base)\]:focus-visible {
   outline-offset: 2px;
 }
 
@@ -1359,6 +1360,15 @@ body.onboarding-active main {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ── Fix: accordion overflow clips focus ring ── */
+.accordion-card .glass-card {
+  overflow: visible;
+}
+
+.accordion-card .glass-card:has(.accordion-content) {
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════

@@ -377,6 +377,11 @@ export type DbSchema = {
         Args: {};
         Returns: number;
       };
+      update_aetherlink_profile: {
+        Params: { p_fields: Record<string, unknown> };
+        Args: {};
+        Returns: Profile;
+      };
       upsert_employer_signal: {
         Params: { p_email: string };
         Args: {};

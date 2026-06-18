@@ -22,9 +22,9 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`bottom-nav-link mobile-touch relative ${isActive ? 'active' : ''}`}
+              className={`bottom-nav-link mobile-touch relative hover-lift ${isActive ? 'active' : ''}`}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-5 w-5" aria-hidden="true" />
               <span className="mobile-text-lg">{item.label}</span>
             </Link>
           );

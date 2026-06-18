@@ -332,7 +332,7 @@ export default function OnboardingPage() {
 
         {/* Step 1: Tell us about you */}
         {step === 0 && (
-          <div className="glass-card animate-fade-in p-6 sm:p-8">
+          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Let&rsquo;s start with the basics</p>
@@ -370,6 +370,7 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => toggleJobType(type)}
                       className={`pill pointer-active ${step1.jobTypes.includes(type) ? 'active' : ''}`}
+                      aria-pressed={step1.jobTypes.includes(type)}
                     >
                       {type}
                     </button>
@@ -415,7 +416,7 @@ export default function OnboardingPage() {
 
         {/* Step 2: Your CV */}
         {step === 1 && (
-          <div className="glass-card animate-fade-in p-6 sm:p-8">
+          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Build your profile or upload a PDF</p>
@@ -597,7 +598,7 @@ export default function OnboardingPage() {
 
         {/* Step 3: Auto-apply settings */}
         {step === 2 && (
-          <div className="glass-card animate-fade-in p-6 sm:p-8">
+          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Configure how AetherLink works for you</p>
@@ -632,6 +633,7 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => toggleStep3JobType(type)}
                       className={`pill pointer-active ${step3.jobTypes.includes(type) ? 'active' : ''}`}
+                      aria-pressed={step3.jobTypes.includes(type)}
                     >
                       {type}
                     </button>

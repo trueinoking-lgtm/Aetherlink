@@ -221,38 +221,12 @@ export class AetherLinkSupabaseApi {
     const { data: { user } } = await this._supabase.auth.getUser()
     if (!user) throw new Error('Authentication required to update profile')
 
-    const profiles = this._supabase.from("profiles") as any
-
-    const { data: existing, error: existingError } = await profiles
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle()
-
-    if (existingError) throw existingError
-
-    if (existing) {
-      const { data, error } = await profiles
-        .update(fields)
-        .eq("user_id", user.id)
-        .select("*")
-        .maybeSingle()
-
-      if (error) throw error
-      if (!data) throw new Error('Unable to update profile')
-
-      return data as Profile
-    }
-
-    const { data, error } = await this._supabase
-      .from("profiles")
-      .insert({ user_id: user.id, ...fields } as never)
-      .select("*")
-      .maybeSingle()
+    const { data, error } = await this._supabase.rpc("update_aetherlink_profile", { p_fields: fields })
 
     if (error) throw error
-    if (!data) throw new Error('Unable to create profile')
+    if (!data) throw new Error('Unable to update profile')
 
-    return data as Profile
+    return data
   }
 
   async listFeedJobs({

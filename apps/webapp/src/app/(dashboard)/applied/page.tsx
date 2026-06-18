@@ -13,10 +13,10 @@ type ApplicationRow = {
   jobs?: { title: string; companyName: string };
 };
 
-const STATUS_CHIPS: Record<string, { label: string; color: string }> = {
-  sent: { label: 'Sent', color: 'text-[var(--accent)] bg-[var(--accent)]/10' },
-  opened: { label: 'Opened', color: 'text-[var(--match-mid)] bg-[var(--match-mid)]/10' },
-  responded: { label: 'Responded', color: 'text-[var(--match-high)] bg-[var(--match-high)]/10' },
+const STATUS_CHIPS: Record<string, { label: string; className: string }> = {
+  sent: { label: 'Sent', className: 'badge badge-mid' },
+  opened: { label: 'Opened', className: 'badge badge-high' },
+  responded: { label: 'Responded', className: 'badge badge-high' },
 };
 
 export default function AppliedPage() {
@@ -62,7 +62,7 @@ export default function AppliedPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="glass-card flex flex-col items-center gap-4 p-12 text-center">
+        <div className="glass-card hover-lift flex flex-col items-center gap-4 p-12 text-center">
           <div className="empty-state-icon mx-auto">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -114,7 +114,7 @@ export default function AppliedPage() {
                           })}
                         </p>
                       </div>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${status.color}`}>
+                      <span className={`shrink-0 ${status.className}`}>
                         {status.label}
                       </span>
                     </div>

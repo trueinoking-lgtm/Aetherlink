@@ -170,17 +170,17 @@ function AccordionCard({
   preview?: string;
 }) {
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="glass-card hover-lift overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between p-5 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
+        className="accordion-header flex w-full items-center justify-between p-5 text-left transition hover:bg-[var(--bg-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
       >
         <span className="flex items-center gap-3 min-w-0">
           {hasContent ? (
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shrink-0" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shrink-0" aria-hidden="true" />
           ) : (
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--border)] shrink-0" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--border)] shrink-0" aria-hidden="true" />
           )}
           <span className="font-display text-base font-bold text-[var(--text-primary)]">{title}</span>
           {preview && (
@@ -193,6 +193,8 @@ function AccordionCard({
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={2}
+          aria-hidden="true"
+
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
@@ -326,11 +328,14 @@ export default function CVPage() {
       </div>
 
       {/* Score card */}
-      <div className="glass-card p-6">
+      <div className="glass-card hover-lift p-6">
         <div className="flex items-center gap-6">
           <CvScoreRing score={cvScore} />
           <div className="flex-1">
-            <p className="font-display text-lg font-bold text-[var(--text-primary)]">CV Strength</p>
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">
+              CV Strength
+              <span className="sr-only">: {cvScore} out of 100</span>
+            </p>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">
               {cvScore < 40
                 ? 'Add your details to improve your match score.'
