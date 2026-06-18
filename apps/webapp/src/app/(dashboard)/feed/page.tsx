@@ -299,7 +299,7 @@ export default function FeedPage() {
                   <Link
                     key={job.id}
                     href={`/feed/${job.id}`}
-                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.04] group"
+                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.04] group hover:border-l-[var(--border-accent)] border-l-2 border-l-transparent"
                   >
                     <div className="flex items-start gap-3">
                       {/* Company avatar placeholder */}
