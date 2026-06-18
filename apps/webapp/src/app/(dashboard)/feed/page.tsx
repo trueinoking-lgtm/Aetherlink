@@ -148,7 +148,7 @@ export default function FeedPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="glass-card hover-lift p-4">
+      <div className="glass-card p-4">
         <div className="flex flex-col gap-3">
           {/* Search */}
           <div className="relative">
@@ -244,7 +244,7 @@ export default function FeedPage() {
           <SkeletonCard />
         </div>
       ) : filteredJobs.length === 0 ? (
-        <div className="glass-card hover-lift p-12 text-center">
+        <div className="glass-card p-12 text-center">
           <div className="empty-state-icon mx-auto">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -296,7 +296,7 @@ export default function FeedPage() {
               <Link
                 key={job.id}
                 href={`/feed/${job.id}`}
-                className="glass-card hover-lift relative overflow-hidden p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
+                className="glass-card hover-lift relative p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
               >
                 <h3 className="font-display text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
                   {job.title}

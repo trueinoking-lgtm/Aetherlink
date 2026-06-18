@@ -1041,6 +1041,19 @@ body.onboarding-active main {
   transform: translateY(-1px);
 }
 
+.google-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.google-btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: var(--shadow-glow), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 .google-btn:active {
   transform: translateY(0) scale(0.98);
 }

@@ -43,33 +43,39 @@ function computeCvStrength(step2: Step2Data): number {
 }
 
 function ProgressDots({ step }: { step: number }) {
+  const STEP_LABELS = ['About You', 'Your CV', 'Settings'];
   return (
-    <div className="mb-10 flex flex-col items-center gap-3">
-      <div className="flex items-center gap-3">
+    <div className="mb-10 flex flex-col items-center gap-2">
+      <div className="flex items-center">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="flex items-center gap-3">
+          <div key={i} className="flex items-center">
             {i > 0 && (
               <div className={`h-px w-10 rounded-full transition-colors duration-200 ${i <= step ? 'bg-[var(--accent)]/60' : 'bg-[var(--border)]'}`} />
             )}
-            <div
-              className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
-                i === step
-                  ? 'bg-[var(--accent)] text-[var(--text-primary)] scale-110 shadow-[var(--shadow-glow)]'
-                  : i < step
-                  ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
-                  : 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]'
-              }`}
-            >
-            {i < step ? (
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              i + 1
-            )}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
+                  i === step
+                    ? 'bg-[var(--accent)] text-[var(--text-primary)] scale-110 shadow-[var(--shadow-glow)]'
+                    : i < step
+                    ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                    : 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]'
+                }`}
+              >
+              {i < step ? (
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                i + 1
+              )}
+            </div>
+              <span className={`text-[10px] font-medium text-center ${i === step ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
+                {STEP_LABELS[i]}
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
       </div>
       <span className="text-xs font-medium text-[var(--text-muted)]" aria-live="polite">
         Step {step + 1} of 3
@@ -332,7 +338,7 @@ export default function OnboardingPage() {
 
         {/* Step 1: Tell us about you */}
         {step === 0 && (
-          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Tell us about you</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Let&rsquo;s start with the basics</p>
@@ -416,7 +422,7 @@ export default function OnboardingPage() {
 
         {/* Step 2: Your CV */}
         {step === 1 && (
-          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Your CV</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Build your profile or upload a PDF</p>
@@ -590,7 +596,7 @@ export default function OnboardingPage() {
 
         {/* Step 3: Auto-apply settings */}
         {step === 2 && (
-          <div className="glass-card hover-lift animate-fade-in p-6 sm:p-8">
+          <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
               <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Configure how AetherLink works for you</p>

@@ -170,7 +170,7 @@ function AccordionCard({
   preview?: string;
 }) {
   return (
-    <div className="glass-card hover-lift overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
@@ -328,7 +328,7 @@ export default function CVPage() {
       </div>
 
       {/* Score card */}
-      <div className="glass-card hover-lift p-6">
+      <div className="glass-card p-6">
         <div className="flex items-center gap-6">
           <CvScoreRing score={cvScore} />
           <div className="flex-1">
@@ -550,9 +550,7 @@ export default function CVPage() {
                       </span>
                     </div>
                   </div>
-                  <span className={`job-card-match-badge ${barColor} shrink-0`}>
-                    {j.score}%
-                  </span>
+
                 </Link>
               );
             })}

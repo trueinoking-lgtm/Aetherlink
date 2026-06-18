@@ -126,7 +126,7 @@ export default function LoginPage() {
             onClick={handleGoogleSignIn}
             disabled={isLoading}
             aria-label="Sign in with Google"
-            className="google-btn disabled:opacity-50 disabled:cursor-not-allowed"
+            className="google-btn google-btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

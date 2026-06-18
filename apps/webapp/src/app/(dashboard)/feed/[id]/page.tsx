@@ -195,7 +195,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
         <div className="lg:col-span-1">
           <div className="sticky top-6 space-y-5">
             {/* Match score */}
-            <div className="glass-card hover-lift flex flex-col items-center gap-3 p-6">
+            <div className="glass-card flex flex-col items-center gap-3 p-6">
               <p className="text-sm font-medium text-[var(--text-secondary)]">
                 Match Score
               </p>
@@ -210,7 +210,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
             {/* Skills breakdown */}
             {requirements.length > 0 && (
-              <div className="glass-card hover-lift p-5">
+              <div className="glass-card p-5">
                 <h3 className="mb-3 text-sm font-medium text-[var(--text-primary)]">
                   Skills Breakdown
                 </h3>
@@ -269,7 +269,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             )}
 
             {/* Company info */}
-            <div className="glass-card hover-lift p-5">
+            <div className="glass-card p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-dim)] text-sm font-bold text-[var(--text-primary)]">
                   {job.companyName.charAt(0).toUpperCase()}

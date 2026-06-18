@@ -62,7 +62,7 @@ export default function AppliedPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="glass-card hover-lift flex flex-col items-center gap-4 p-12 text-center">
+        <div className="glass-card flex flex-col items-center gap-4 p-12 text-center">
           <div className="empty-state-icon mx-auto">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -82,18 +82,18 @@ export default function AppliedPage() {
           </div>
         </div>
       ) : (
-        <div className="relative pl-8">
+        <div className="relative pl-10">
           {/* Vertical line */}
-          <div className="absolute left-[11px] top-3 bottom-3 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
+          <div className="absolute left-[15px] top-4 bottom-4 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/20 to-transparent" />
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             {applications.map((app) => {
               const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
               return (
                 <div key={app.id} className="relative">
                   {/* Dot */}
-                  <div className="absolute -left-8 top-4 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
-                    <div className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
+                  <div className="absolute -left-10 top-5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--accent)] bg-[var(--bg-base)]">
+                    <div className="h-2 w-2 rounded-full bg-[var(--accent)]" />
                   </div>
 
                   {/* Card */}
@@ -106,7 +106,7 @@ export default function AppliedPage() {
                         <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
                           {app.jobs?.companyName ?? 'Unknown Company'}
                         </p>
-                        <p className="mt-1.5 text-xs text-[var(--text-muted)]">
+                        <p className="mt-2 text-xs text-[var(--text-muted)]">
                           {new Date(app.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
