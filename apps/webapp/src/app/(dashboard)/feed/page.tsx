@@ -299,15 +299,23 @@ export default function FeedPage() {
                   <Link
                     key={job.id}
                     href={`/feed/${job.id}`}
-                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/5 group"
+                    className="glass-card hover-lift relative flex flex-col p-5 transition hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.04] group"
                   >
-                    <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14">
-                      {job.title}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
-                      {job.companyName}
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">
+                    <div className="flex items-start gap-3">
+                      {/* Company avatar placeholder */}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/5 border border-[var(--border)] text-sm font-bold text-[var(--accent)]">
+                        {job.companyName?.charAt(0)?.toUpperCase() ?? '?'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors pr-14 truncate">
+                          {job.title}
+                        </h3>
+                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                          {job.companyName}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-xs text-[var(--text-muted)]">
                       {job.location ?? 'Remote'}
                       {job.created_at && (
                         <>
@@ -318,9 +326,9 @@ export default function FeedPage() {
                     </p>
 
                     {/* Score bar */}
-                    <div className="mt-2.5 mb-1 flex items-center gap-2">
+                    <div className="mt-3 mb-1 flex items-center gap-2">
                       <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${Math.max(score ?? 0, 0)}%` }} />
+                        <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${Math.max(score ?? 0, 0)}%` } as React.CSSProperties} />
                       </div>
                       <span className={`font-mono text-xs font-bold ${scoreColor}`}>
                         {score !== null && score > 0 ? `${score}% match` : <span className="no-match-text">Not scored</span>}
@@ -346,8 +354,8 @@ export default function FeedPage() {
                     </div>
 
                     {/* View button */}
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent)]">
+                    <div className="mt-3 flex items-center gap-2 border-t border-[var(--border)] pt-3">
+                      <span className="premium-btn premium-btn-secondary text-xs py-2 px-4 pointer-active group-hover:bg-[var(--accent-glow)] group-hover:text-[var(--accent-hover)] group-hover:border-[var(--border-accent)]">
                         View details
                       </span>
                       <svg className="h-4 w-4 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

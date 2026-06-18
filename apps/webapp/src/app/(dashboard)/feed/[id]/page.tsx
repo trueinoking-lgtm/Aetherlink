@@ -11,7 +11,7 @@ function ScoreCircle({ score }: { score: number }) {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
-  const color =
+  const colorVar =
     score >= 70
       ? 'var(--match-high)'
       : score >= 40
@@ -38,14 +38,14 @@ function ScoreCircle({ score }: { score: number }) {
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             className="score-ring-circle"
-            style={{ stroke: color }}
+            style={{ '--score-color': colorVar } as React.CSSProperties}
           />
         </svg>
         <span className="absolute font-display text-2xl font-bold text-[var(--text-primary)] animate-fade-in">
           {score}%
         </span>
       </div>
-      <span className="text-xs font-medium" style={{ color }}>
+      <span className="text-xs font-medium" style={{ color: colorVar }}>
         {label}
       </span>
     </div>
@@ -175,12 +175,14 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           {job.description ? (
             <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
               {job.description.replace(/<[^>]+>/g, '').split('\n').filter(line => line.trim()).map((line, i) => (
-                <p key={i} className="mb-2 last:mb-0">{line}</p>
+                <p key={i} className="mb-2.5 last:mb-0">{line}</p>
               ))}
             </div>
           ) : job.raw_text ? (
             <div className="job-description-md rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 text-sm leading-relaxed text-[var(--text-secondary)]">
-              <p className="whitespace-pre-wrap">{job.raw_text}</p>
+              {job.raw_text.split('\n').filter(line => line.trim()).map((line, i) => (
+                <p key={i} className="mb-2.5 last:mb-0">{line}</p>
+              ))}
             </div>
           ) : (
             <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
@@ -189,7 +191,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
           )}
 
           {/* Salary and metadata */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {job.salary && (
               <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Salary</p>
@@ -199,8 +201,8 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             {job.jobType && (
               <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-5 py-4">
                 <p className="text-xs font-medium text-[var(--text-muted)]">Job Type</p>
-                <p className="mt-1 font-display text-lg font-semibold text-[var(--text-primary)]">
-                  {job.jobType.charAt(0).toUpperCase() + job.jobType.slice(1)}
+                <p className="mt-1 font-display text-lg font-semibold capitalize text-[var(--text-primary)]">
+                  {job.jobType}
                 </p>
               </div>
             )}

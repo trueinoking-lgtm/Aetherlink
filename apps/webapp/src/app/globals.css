@@ -1527,12 +1527,14 @@ body.onboarding-active main {
 .score-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
+  width: var(--score-width, 0%);
   transition: width 0.6s var(--ease-out);
   animation: scoreBarFill 0.6s var(--ease-out) forwards;
 }
 
 @keyframes scoreBarFill {
   from { width: 0%; }
+  to { width: var(--score-width, 0%); }
 }
 
 .score-bar-fill.high {

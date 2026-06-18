@@ -75,7 +75,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="login-card glass-card p-8 login-card-glow">
+        <div className="login-card glass-card p-8 login-card-glow animate-fade-in">
           {/* Feature highlights */}
           <div className="mb-10 space-y-6">
             <div className="flex items-start gap-4 group hover-lift p-2 -m-2 rounded-lg transition-all duration-200">

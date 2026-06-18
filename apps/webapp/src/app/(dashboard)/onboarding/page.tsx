@@ -675,39 +675,43 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg bg-[var(--bg-surface)] p-4">
-                <div>
-                  <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match score &gt; X%</p>
-                  <p className="text-xs text-[var(--text-muted)]">Currently: {step3.autoApplyThreshold}%</p>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={step3.autoApplyEnabled}
-                    onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
-                  />
-                  <span className="slider" />
-                </label>
-              </div>
-
-              {step3.autoApplyEnabled && (
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Match threshold: {step3.autoApplyThreshold}%</label>
-                  <input
-                    type="range"
-                    min={50}
-                    max={100}
-                    step={5}
-                    value={step3.autoApplyThreshold}
-                    onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                    className="premium-range w-full cursor-pointer"
-                  />
-                  <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                    <span>50%</span>
-                    <span>100%</span>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match &gt; {step3.autoApplyThreshold}%</p>
+                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">Automatically apply to high-match jobs</p>
                   </div>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={step3.autoApplyEnabled}
+                      onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
+                    />
+                    <span className="slider" />
+                  </label>
                 </div>
-              )}
+
+                {step3.autoApplyEnabled && (
+                  <div className="mt-4 pt-4 border-t border-[var(--border)]">
+                    <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)]">
+                      Match threshold: <span className="text-[var(--accent)] font-semibold">{step3.autoApplyThreshold}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={50}
+                      max={100}
+                      step={5}
+                      value={step3.autoApplyThreshold}
+                      onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
+                      className="premium-range w-full cursor-pointer"
+                    />
+                    <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
+                      <span>50% (More applications)</span>
+                      <span>100% (Only perfect matches)</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Navigation */}

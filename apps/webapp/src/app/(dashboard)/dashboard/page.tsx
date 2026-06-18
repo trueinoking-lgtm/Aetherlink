@@ -93,11 +93,11 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Greeting */}
-      <div>
+      <div className="mb-2">
         <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
           {getGreeting()}, {firstName}
         </h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">{getSubtitle()}</p>
+        <p className="mt-1.5 text-sm text-[var(--text-secondary)]">{getSubtitle()}</p>
       </div>
 
       {/* Stats row */}
@@ -164,54 +164,58 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-3 stagger-children">
-            {jobs.slice(0, 5).map((job) => {
-              const score = computeMatchScore(job.title, job.raw_text, skills);
-              const scoreColor =
-                score >= 80
-                  ? 'text-[var(--match-high)]'
-                  : score >= 50
-                  ? 'text-[var(--match-mid)]'
+          {jobs.slice(0, 5).map((job) => {
+            const score = computeMatchScore(job.title, job.raw_text, skills);
+            const scoreColor =
+              score >= 80
+                ? 'text-[var(--match-high)]'
+                : score >= 50
+                ? 'text-[var(--match-mid)]'
+                : score > 0
+                ? 'text-[var(--match-low)]'
+                : 'text-[var(--text-muted)]';
+            const barColor =
+              score >= 80
+                ? 'high'
+                : score >= 50
+                  ? 'mid'
                   : score > 0
-                  ? 'text-[var(--match-low)]'
-                  : 'text-[var(--text-secondary)]';
-              const barColor =
-                score >= 80
-                  ? 'high'
-                  : score >= 50
-                    ? 'mid'
-                    : score > 0
-                      ? 'low'
-                      : 'none';
-              const barWidth = Math.max(score, 0);
-              return (
-                <Link
-                  key={job.id}
-                  href={`/feed/${job.id}`}
-                  className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.02] group"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</p>
-                    <p className="text-sm text-[var(--text-secondary)]">
-                      {job.companyName}
-                      {job.location && (
-                        <span className="ml-2 text-xs text-[var(--text-muted)]">
-                          · {job.location}
-                        </span>
-                      )}
-                    </p>
-                    {/* Score bar */}
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-                        <div className={`score-bar-fill ${barColor}`} style={{ width: `${barWidth}%` }} />
-                      </div>
-                      <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-                        {score > 0 ? `${score}%` : <span className="no-match-text">Not scored</span>}
+                    ? 'low'
+                    : 'none';
+            const barWidth = Math.max(score, 0);
+            const hasScore = score > 0 && skills.length > 0;
+            return (
+              <Link
+                key={job.id}
+                href={`/feed/${job.id}`}
+                className="glass-card hover-lift flex items-center justify-between gap-4 p-4 transition-all hover:border-[var(--border-accent)] hover:bg-[var(--accent)]/[0.03] group"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</p>
+                  <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                    {job.companyName}
+                    {job.location && (
+                      <span className="ml-2 text-xs text-[var(--text-muted)]">
+                        · {job.location}
                       </span>
+                    )}
+                  </p>
+                  {/* Score bar */}
+                  <div className="mt-2.5 flex items-center gap-2.5">
+                    <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
+                      <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${barWidth}%` } as React.CSSProperties} />
                     </div>
+                    <span className={`font-mono text-xs font-bold ${scoreColor}`}>
+                      {hasScore ? `${score}%` : <span className="no-match-text">Add skills to score</span>}
+                    </span>
                   </div>
-                </Link>
-              );
-            })}
+                </div>
+                <svg className="h-4 w-4 shrink-0 text-[var(--text-muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            );
+          })}
           </div>
         )}
       </div>

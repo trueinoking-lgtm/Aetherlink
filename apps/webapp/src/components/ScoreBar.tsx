@@ -36,7 +36,7 @@ export function ScoreBar({ result }: { result: ScoreResult }) {
       <div className="h-2 overflow-hidden rounded-full bg-[var(--bg-raised)]">
         <div
           className={`score-bar-fill h-full rounded-full transition-all duration-[600ms] ease-out ${barClass}`}
-          style={{ width: `${width}%` }}
+          style={{ '--score-width': `${width}%` } as React.CSSProperties}
         />
       </div>
       <p className="text-sm text-[var(--text-secondary)]">
