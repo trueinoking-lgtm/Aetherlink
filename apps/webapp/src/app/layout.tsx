@@ -19,8 +19,16 @@ export const metadata: Metadata = {
   description: 'Find jobs. Apply instantly.',
   manifest: '/manifest.json',
   icons: {
-    icon: [{ url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
-    apple: [{ url: '/icon-192.png', sizes: '192x192' }],
+    icon: [{ url: '/favicons/favicon.ico', sizes: 'any' }],
+    apple: [{ url: '/favicons/apple-touch-icon.png', sizes: '180x180' }],
+    shortcut: [{ url: '/favicons/favicon.ico' }],
+    other: [
+      { rel: 'icon', type: 'image/png', sizes: '16x16', url: '/favicons/favicon-16x16.png' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', url: '/favicons/favicon-32x32.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', url: '/favicons/apple-touch-icon.png' },
+      { rel: 'mask-icon', url: '/favicons/safari-pinned-tab.svg', color: '#6366f1' },
+      { rel: 'manifest', url: '/favicons/site.webmanifest' },
+    ],
   },
 };
 

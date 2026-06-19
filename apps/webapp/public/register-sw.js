@@ -1,6 +1,7 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=3').then((registration) => {
+    navigator.serviceWorker.register('/sw.js?v=5').then((registration) => {
+      console.log('ServiceWorker registered:', registration.scope);
       if (registration.waiting) {
         registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
       }
@@ -14,9 +15,13 @@ if ('serviceWorker' in navigator) {
           });
         }
       });
-    }).catch(() => undefined);
+    }).catch((err) => {
+      console.warn('ServiceWorker registration failed:', err);
+    });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      // New SW took control - could reload if needed
+      console.log('New ServiceWorker took control');
+      // Optionally reload the page
+      // window.location.reload();
     });
   });
 }
