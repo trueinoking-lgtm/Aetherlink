@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSdk } from '@aetherlink/ui/hooks/useSdk';
 import { AetherLinkSupabaseApi } from '@aetherlink/ui/lib/supabaseApi';
-import type { Profile } from '@aetherlink/core';
+import type { Profile, Job } from '@aetherlink/core';
 import { createClient } from '@/lib/supabase/client';
-import { computeMatchScore } from '@/lib/scoring';
+import { computeLegacyMatchScore, computeMatchScore } from '@/lib/scoring';
 
 type CvSection = 'personal' | 'experience' | 'skills' | 'education' | 'certifications';
 
@@ -220,7 +220,7 @@ export default function CVPage() {
   const router = useRouter();
 
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [jobs, setJobs] = useState<{ id: number; title: string; companyName: string; raw_text?: string }[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [openSection, setOpenSection] = useState<CvSection | null>(null);
@@ -306,7 +306,22 @@ export default function CVPage() {
   }
 
   const matchedJobs = jobs
-    .map((j) => ({ ...j, score: computeMatchScore(j.title, j.raw_text, skills) }))
+    .map((j) => { 
+      const hasStructuredContent = j.requirements?.length || j.responsibilities?.length;
+      let score = 0;
+      if (hasStructuredContent && j.parser_version === 2) {
+        const structuredScore = computeMatchScore(
+          j.requirements ?? [],
+          skills,
+          profile?.certifications ?? [],
+          [],
+        );
+        score = structuredScore ?? 0;
+      } else {
+        score = computeLegacyMatchScore(j.title, j.description, skills);
+      }
+      return { ...j, score };
+    })
     .filter((j) => j.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 10);

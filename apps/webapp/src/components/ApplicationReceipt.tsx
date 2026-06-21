@@ -18,26 +18,38 @@ export function ApplicationReceipt({
   jobTitle: string;
   companyName: string;
   hrEmail: string;
-  matchScore: number;
+  matchScore: number | null;
   coverLetter: string;
-  sentAt: string;
+  sentAt: number;
   startedAt: number;
 }) {
-  const [showLetter, setShowLetter] = useState(false);
   const [checkVisible, setCheckVisible] = useState(false);
+  const [showLetter, setShowLetter] = useState(false);
 
   useEffect(() => {
     if (open) {
-      requestAnimationFrame(() => setCheckVisible(true));
+      const timer = setTimeout(() => {
+        setCheckVisible(true);
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [open]);
 
+  const [minutesSpent, setMinutesSpent] = useState(0);
+
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        setMinutesSpent(Math.max(1, Math.round((Date.now() - startedAt) / 60000)));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [open, startedAt]);
+
   if (!open) return null;
 
-  const minutesSpent = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
   const timeSaved = Math.max(20, 45 - minutesSpent);
-  const firstParagraph = coverLetter.split('\n\n')[0] ?? coverLetter.slice(0, 280);
-
+  const firstParagraph = coverLetter.split('\\n\\n')[0] ?? coverLetter.slice(0, 280);
   const shareText = `Just applied to ${jobTitle} at ${companyName} via AetherLink in under 3 minutes 🔥`;
 
   return (

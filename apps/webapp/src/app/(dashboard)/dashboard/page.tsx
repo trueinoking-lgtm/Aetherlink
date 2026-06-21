@@ -59,7 +59,7 @@ export default function DashboardPage() {
   const avgMatch =
     jobs.length > 0
       ? Math.round(
-          jobs.reduce((sum, j) => sum + computeMatchScore(j.title, j.raw_text, skills), 0) /
+          jobs.reduce((sum, j) => sum + ((j.requirements?.length ?? 0) ? (computeMatchScore(j.requirements ?? [], skills) ?? 0) : 0), 0) /
             jobs.length,
         )
       : 0;
@@ -171,7 +171,7 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-3 stagger-children">
           {jobs.slice(0, 5).map((job) => {
-            const score = computeMatchScore(job.title, job.raw_text, skills);
+            const score = job.requirements?.length ? (computeMatchScore(job.requirements, skills) ?? 0) : 0;
             const scoreColor =
               score >= 80
                 ? 'text-[var(--match-high)]'

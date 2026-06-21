@@ -95,9 +95,23 @@ export type Job = {
 
   exclude_reason?: string;
 
-  // AetherLink extensions
+  // Structured parsing fields (Jobs Zimbabwe format)
+  summary?: string;
+  responsibilities: string[];
+  requirements: string[];
+  how_to_apply?: string;
+  application_email?: string;
+  application_phone?: string;
+  application_url?: string;
+  employment_type?: string;
+  category?: string;
+  posted_at?: string;
+  closing_date?: string;
+  parser_status: string;
+  parser_version: number;
+
+  // Legacy AetherLink extensions
   hr_email?: string;
-  requirements?: string[];
   source_group?: string;
   post_hash?: string;
   repost_count?: number;

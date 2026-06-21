@@ -1,41 +1,52 @@
 'use client';
 
 import Link from 'next/link';
-import { getRelativeTimeString, scoreMatch, type FeedJob, type CvDraft } from '@aetherlink/core';
+import { scoreMatch, type FeedJob } from '@aetherlink/core';
 
-export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | null }) {
+function getEmployerName(companyName?: string | null): string {
+  const value = companyName?.trim();
+
+  if (
+    !value ||
+    value.toLowerCase() === "unknown employer" ||
+    value.toLowerCase() === "companies"
+  ) {
+    return "Employer not disclosed";
+  }
+
+  return value;
+}
+
+function formatClosingDate(dateStr?: string | null): string {
+  if (!dateStr) return '';
+  
+  try {
+    const date = new Date(dateStr);
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '';
+    
+    return `Closes ${date.toLocaleDateString('en-GB', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    })}`;
+  } catch {
+    return '';
+  }
+}
+
+export default function JobCard({ job }: { job: FeedJob }) {
+
   const requirements = job.requirements ?? [];
-  const score = profile
-    ? scoreMatch(
-        requirements,
-        profile.skills,
-        profile.certifications,
-        profile.experience.flatMap((e) => e.bullets),
-      )
-    : null;
+  const matchScore = scoreMatch(requirements, [], [], []);
 
-  const scoreColor =
-    score && score.score >= 70
-      ? 'text-[var(--match-high)]'
-      : score && score.score >= 40
-        ? 'text-[var(--match-mid)]'
-        : 'text-[var(--match-low)]';
+  const employerName = getEmployerName(job.companyName);
+  const closingDateDisplay = formatClosingDate(job.closing_date);
+  const location = job.location || '';
+  const employmentType = job.employment_type || '';
+  const category = job.category || '';
 
-  const barColor =
-    score && score.score >= 70
-      ? 'high'
-      : score && score.score >= 40
-        ? 'mid'
-        : 'low';
-
-  const windowLeft = job.opportunity_window_expires_at
-    ? Math.max(
-        0,
-        Math.round(
-          (new Date(job.opportunity_window_expires_at).getTime() - Date.now()) / (1000 * 60 * 60),
-        ),
-      )
-    : null;
+  const hasScorableContent = Boolean(job.requirements?.length) || Boolean(job.responsibilities?.length);
 
   return (
     <Link
@@ -44,54 +55,56 @@ export function JobCard({ job, profile }: { job: FeedJob; profile: CvDraft | nul
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="font-display text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</h3>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {job.companyName}
+          <h3 className="line-clamp-2 text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">
+            {job.title || "Untitled position"}
+          </h3>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            {employerName}
             {job.employer_verified && (
               <span className="ml-1.5 text-[var(--success)]" title="Verified employer" aria-label="Verified employer">
                 ✓
               </span>
             )}
           </p>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-            {job.location && <span>{job.location} · </span>}
-            {getRelativeTimeString(new Date(job.created_at))}
-          </p>
-        </div>
-        {score && (
-          <div className="flex flex-col items-end gap-1 shrink-0">
-            <span className={`job-card-match-badge ${barColor}`}>
-              {score.score}%
-            </span>
+
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[var(--text-secondary)]">
+            {location && <span>{location}</span>}
+            {employmentType && <span>{employmentType}</span>}
+            {category && <span>{category}</span>}
+            {closingDateDisplay && <span>{closingDateDisplay}</span>}
           </div>
-        )}
-      </div>
-      {/* Score bar */}
-      {score && (
-        <div className="mt-3 flex items-center gap-2">
-          <div className="score-bar score-bar-sm flex-1 max-w-[120px] overflow-hidden rounded-full">
-            <div className={`score-bar-fill ${barColor}`} style={{ '--score-width': `${Math.max(score.score, 0)}%` } as React.CSSProperties} />
-          </div>
-          <span className={`font-mono text-xs font-bold ${scoreColor}`}>
-            {score.score >= 70 ? 'Strong match' : score.score >= 40 ? 'Good match' : 'Low match'}
-          </span>
         </div>
-      )}
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {(job.repost_count ?? 0) > 1 && (
-          <span className="badge badge-mid">
-            Reposted {job.repost_count}×
-          </span>
-        )}
-        {windowLeft != null && windowLeft > 0 && (
-          <span className="badge badge-high">
-            {windowLeft}h left
-          </span>
-        )}
+
+        <div className="text-right">
+          {!hasScorableContent || !matchScore?.score ? (
+            <span className="text-xs text-[var(--text-tertiary)]">Not scored</span>
+          ) : (
+            <div className="inline-flex flex-col items-end">
+              <span className={`text-sm font-semibold ${
+                matchScore.score >= 70
+                  ? 'text-[var(--match-high)]'
+                  : matchScore.score >= 40
+                  ? 'text-[var(--match-mid)]'
+                  : 'text-[var(--match-low)]'
+              }`}>
+                {matchScore.score}%
+              </span>
+              <div className="h-1 w-12 rounded-full bg-[var(--match-empty)] mt-1">
+                <div
+                  className={`h-full rounded-full ${
+                    matchScore.score >= 70
+                      ? 'bg-[var(--match-high)]'
+                      : matchScore.score >= 40
+                      ? 'bg-[var(--match-mid)]'
+                      : 'bg-[var(--match-low)]'
+                  }`}
+                  style={{ width: `${matchScore.score}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <svg className="absolute right-4 bottom-4 h-4 w-4 text-[var(--text-muted)] opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-      </svg>
     </Link>
   );
 }

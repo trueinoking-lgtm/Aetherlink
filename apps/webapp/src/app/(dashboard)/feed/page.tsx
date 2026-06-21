@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSdk } from '@aetherlink/ui/hooks/useSdk';
 import { AetherLinkSupabaseApi } from '@aetherlink/ui/lib/supabaseApi';
 import type { Job, Profile } from '@aetherlink/core';
-import { computeMatchScore } from '@/lib/scoring';
+import { computeLegacyMatchScore, computeMatchScore } from '@/lib/scoring';
 import { createClient } from '@/lib/supabase/client';
 
 const JOB_TYPES = ['remote', 'hybrid', 'onsite'] as const;
@@ -122,17 +122,41 @@ export default function FeedPage() {
 
     if (suitedForMe && skills.length > 0) {
       result = result.filter((j) => {
-        const score = computeMatchScore(j.title, j.raw_text, skills);
-        return score >= autoThreshold;
+        // Use structured scoring if available, otherwise legacy
+        const hasStructuredContent = j.requirements?.length || j.responsibilities?.length;
+        
+        if (hasStructuredContent && j.parser_version === 2) {
+          const structuredScore = computeMatchScore(
+            j.requirements ?? [],
+            skills,
+            profile?.certifications ?? [],
+            [],
+          );
+          return (structuredScore ?? 0) >= autoThreshold;
+        } else {
+          const legacyScore = computeLegacyMatchScore(j.title, j.description, skills);
+          return legacyScore >= autoThreshold;
+        }
       });
     }
 
     setFilteredJobs(result);
-  }, [jobs, search, jobType, salaryRange, datePosted, suitedForMe, skills, autoThreshold]);
+  }, [jobs, search, jobType, salaryRange, datePosted, suitedForMe, skills, autoThreshold, profile?.certifications]);
 
   function getMatchScore(job: Job): number | null {
     if (!skills.length) return null;
-    return computeMatchScore(job.title, job.raw_text, skills);
+    const hasStructuredContent = job.requirements?.length || job.responsibilities?.length;
+    if (hasStructuredContent && job.parser_version === 2) {
+    const structuredScore = computeMatchScore(
+      job.requirements ?? [],
+      skills,
+      profile?.certifications ?? [],
+      []
+    );
+    return structuredScore;
+    } else {
+    return computeLegacyMatchScore(job.title, job.description, skills);
+    }
   }
 
   const activeFilterCount = [jobType, salaryRange, datePosted, suitedForMe].filter(Boolean).length;
