@@ -162,4 +162,67 @@ Some text.
     const result = parseJobsZimbabweMarkdown(md);
     expect(result.companyName).toBe('Pty. Ltd');
   });
+
+  // === New rejection patterns (Phase 3) ===
+
+  test('rejects "Companies" navigation link text', () => {
+    const md = makeMarkdown('[Companies](/companies/)');
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.companyName).toBeNull();
+  });
+
+  test('rejects "Name Withheld" placeholder', () => {
+    const md = makeMarkdown('[Name Withheld](/companies/withheld)');
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.companyName).toBeNull();
+  });
+
+  test('rejects "Home" navigation link text', () => {
+    const md = makeMarkdown('[Home](/companies/home)');
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.companyName).toBeNull();
+  });
+
+  test('rejects "Jobs" navigation link text', () => {
+    const md = makeMarkdown('[Jobs](/companies/jobs)');
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.companyName).toBeNull();
+  });
+
+  test('rejects address + WhatsApp + phone pollution', () => {
+    const md = makeMarkdown('[Address: 115 ED Mnangagwa Rd, Highlands, Harare Whatsapp ONLY for CV Making: +263****4514](/companies/polluted)');
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.companyName).toBeNull();
+  });
+
+  // === Closing date with bold prefix ===
+
+  test('parses closing date with bold markdown prefix', () => {
+    const md = `# Test Job 123 views
+
+[TestCo](/companies/testco)
+
+### Job Summary
+
+* **Type:** full-time
+* **Location:** Harare
+* **Category:** Sales
+* **Closing Date:** ** 2026-07-03
+`;
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.closingDate).toBe('2026-07-03');
+  });
+
+  test('parses closing date without bold prefix', () => {
+    const md = `# Test Job 123 views
+
+[TestCo](/companies/testco)
+
+### Job Summary
+
+Closing Date: 2026-06-19
+`;
+    const result = parseJobsZimbabweMarkdown(md);
+    expect(result.closingDate).toBe('2026-06-19');
+  });
 });

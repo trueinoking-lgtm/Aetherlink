@@ -81,6 +81,10 @@ const COMPANY_NAME_REJECT_PATTERNS = [
   /P\.?\s*O\.?\s*Box/i,
   // Building/floor patterns
   /(?:Building|Floor|Suite|Unit|Block)\s*\d/i,
+  // Generic navigation link text that isn't a company name
+  /^(?:companies|companies\/|home|jobs|about|contact|login|register|post a job|job alerts|tender watch)$/i,
+  // "Name Withheld" — website placeholder when company doesn't disclose
+  /^name withheld$/i,
 ];
 
 // Maximum length for a legitimate company name
@@ -149,12 +153,13 @@ export function parseJobsZimbabweMarkdown(rawMarkdown: string): ParsedJob {
   const jobSummarySection = getSection(mainContent, 'Job Summary');
 
   // Extract closing date from summary or application section
+  // Handles "** 2026-07-03", "2026-07-03", "**Closing Date:** ** 2026-07-03"
   const closingDate =
     jobSummarySection?.match(
-      /Closing Date:\s*(\d{4}-\d{2}-\d{2})/i
+      /(?:Closing Date|Deadline)\s*:\s*\*{0,2}\s*\*{0,2}\s*(\d{4}-\d{2}-\d{2})/i
     )?.[1] ??
     applicationSection?.match(
-      /(?:deadline|closing date):?\s*([^\n]+)/i
+      /(?:deadline|closing date)\s*:\s*\*{0,2}\s*([^\n]+)/i
     )?.[1] ??
     null;
 
