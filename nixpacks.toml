@@ -1,5 +1,5 @@
 [phases.install]
-cmds = ["npm install -g pnpm@9 && export PATH=$PATH:$(npm root -g)/.bin && pnpm install --frozen-lockfile"]
+cmds = ["npm install -g pnpm@10 && export PATH=$PATH:$(npm root -g)/.bin && pnpm install --frozen-lockfile"]
 
 [phases.build]
 cmds = [
