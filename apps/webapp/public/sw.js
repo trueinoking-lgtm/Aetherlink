@@ -1,5 +1,5 @@
-const CACHE_SHELL = 'aetherlink-shell-v5';
-const CACHE_ASSETS = 'aetherlink-assets-v5';
+const CACHE_SHELL = 'aetherlink-shell-v6';
+const CACHE_ASSETS = 'aetherlink-assets-v6';
 
 // Only cache static assets and public shell - NOT auth-protected routes
 const STATIC_ASSETS = ['/manifest.json', '/favicon.ico'];

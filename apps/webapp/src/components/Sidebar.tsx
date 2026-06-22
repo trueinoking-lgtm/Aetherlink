@@ -91,6 +91,14 @@ export function Sidebar({
           )}
         </div>
       </div>
+      {/* Footer links */}
+      <div className={`border-t border-[var(--border)] p-3 ${collapsed ? 'flex flex-col items-center' : ''}`}>
+        <div className={`flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-[var(--text-muted)] ${collapsed ? 'flex-col items-center' : ''}`}>
+          <Link href="/privacy" className="hover:text-[var(--text-secondary)] transition-colors">Privacy</Link>
+          <Link href="/terms" className="hover:text-[var(--text-secondary)] transition-colors">Terms</Link>
+          <Link href="/privacy#contact" className="hover:text-[var(--text-secondary)] transition-colors">Contact</Link>
+        </div>
+      </div>
     </aside>
   );
 }

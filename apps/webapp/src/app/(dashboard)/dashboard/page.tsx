@@ -56,13 +56,13 @@ export default function DashboardPage() {
   }, [sdk, router]);
 
   const skills = profile?.skills ?? [];
-  const avgMatch =
-    jobs.length > 0
-      ? Math.round(
-          jobs.reduce((sum, j) => sum + ((j.requirements?.length ?? 0) ? (computeMatchScore(j.requirements ?? [], skills) ?? 0) : 0), 0) /
-            jobs.length,
-        )
-      : 0;
+  const hasEnoughSkills = skills.length >= 3;
+  const avgMatch = hasEnoughSkills && jobs.length > 0
+    ? Math.round(
+        jobs.reduce((sum, j) => sum + ((j.requirements?.length ?? 0) ? (computeMatchScore(j.requirements ?? [], skills) ?? 0) : 0), 0) /
+          jobs.length,
+      )
+    : null;
 
   if (loading) {
     return (
@@ -84,7 +84,7 @@ export default function DashboardPage() {
     if (applications.length === 0) {
       return `We found ${jobs.length} jobs for you. Start applying!`;
     }
-    if (avgMatch > 0) {
+    if (avgMatch !== null && avgMatch > 0) {
       return `${applications.length} applications sent · ${avgMatch}% avg match rate.`;
     }
     return `${applications.length} applications sent. Keep going!`;
@@ -134,7 +134,9 @@ export default function DashboardPage() {
           </div>
           <div className="stat-card-body">
             <p className="stat-card-label">Avg match score</p>
-            <p className={`stat-card-value ${avgMatch >= 50 ? 'highlight' : ''}`}>{avgMatch > 0 ? `${avgMatch}%` : '—'}</p>
+            <p className={`stat-card-value ${avgMatch !== null && avgMatch >= 50 ? 'highlight' : ''}`}>
+              {avgMatch !== null ? `${avgMatch}%` : '—'}
+            </p>
           </div>
         </div>
       </div>

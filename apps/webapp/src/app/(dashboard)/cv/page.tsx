@@ -374,18 +374,48 @@ export default function CVPage() {
             </div>
           </div>
         </div>
-        {/* Tips */}
-        {cvScore < 70 && (
-          <div className="mt-4 glass-card p-3">
-            <p className="text-xs font-medium text-[var(--text-secondary)]">💡 Tips to improve:</p>
-            <ul className="mt-1.5 space-y-1 text-xs text-[var(--text-muted)]">
-              {!fullName && <li>• Add your full name</li>}
-              {!headline && <li>• Write a professional headline</li>}
-              {skills.length === 0 && <li>• Add relevant skills</li>}
-              {skills.length > 0 && skills.length <= 3 && <li>• Add more skills (aim for 5+)</li>}
-              {experience.length === 0 && <li>• Add work experience</li>}
-              {education.length === 0 && <li>• Add education details</li>}
-              {certifications.length === 0 && <li>• Add certifications</li>}
+        {/* Actionable checklist */}
+        {cvScore < 90 && (
+          <div className="mt-4 glass-card p-4">
+            <p className="text-xs font-semibold text-[var(--text-primary)] mb-2">✅ Complete your profile</p>
+            <ul className="space-y-1.5 text-xs">
+              <li className={`flex items-center gap-2 ${fullName ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {fullName ? '✓' : '○'}
+                </span>
+                {fullName ? 'Name added' : 'Add your name'}
+              </li>
+              <li className={`flex items-center gap-2 ${headline ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {headline ? '✓' : '○'}
+                </span>
+                {headline ? 'Headline added' : 'Add a professional headline'}
+              </li>
+              <li className={`flex items-center gap-2 ${skills.length > 0 ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {skills.length > 0 ? '✓' : '○'}
+                </span>
+                {skills.length > 0 ? `${skills.length} skill(s) added` : 'Add relevant skills'}
+                {skills.length > 0 && skills.length <= 3 && <span className="text-[var(--text-secondary)] ml-1">(aim for 5+)</span>}
+              </li>
+              <li className={`flex items-center gap-2 ${experience.length > 0 ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {experience.length > 0 ? '✓' : '○'}
+                </span>
+                {experience.length > 0 ? `${experience.length} experience(s) added` : 'Add work experience'}
+              </li>
+              <li className={`flex items-center gap-2 ${education.length > 0 ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {education.length > 0 ? '✓' : '○'}
+                </span>
+                {education.length > 0 ? `${education.length} education(s) added` : 'Add education details'}
+              </li>
+              <li className={`flex items-center gap-2 ${certifications.length > 0 ? 'text-[var(--success)]' : 'text-[var(--text-muted)]'}`}>
+                <span className="w-4 h-4 rounded border flex items-center justify-center text-[10px]">
+                  {certifications.length > 0 ? '✓' : '○'}
+                </span>
+                {certifications.length > 0 ? `${certifications.length} certification(s) added` : 'Add certifications'}
+              </li>
             </ul>
           </div>
         )}

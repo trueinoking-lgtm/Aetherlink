@@ -232,7 +232,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
   const employerName = getEmployerName(job.companyName);
   const closingDateDisplay = formatDate(job.closing_date);
-  const postedDateDisplay = formatDate(job.created_at?.toISOString());
+  const postedDateDisplay = formatDate(typeof job.created_at === 'string' ? job.created_at : job.created_at?.toISOString());
   
   const applicationAction = getApplicationAction(job);
   const hasScorableContent = Boolean(job.requirements?.length) || Boolean(job.responsibilities?.length);
