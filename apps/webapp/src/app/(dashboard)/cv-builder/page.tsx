@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+
+const supabase = createClient();
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -146,16 +149,56 @@ export default function CvBuilderPage() {
   const [saved, setSaved] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Load saved data
+  // Load saved data (localStorage first, then Supabase)
   useEffect(() => {
     setMounted(true);
+    let loaded = false;
+    // 1. Load from localStorage (instant)
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         setData({ ...EMPTY_DATA, ...parsed });
+        loaded = true;
       }
     } catch { /* ignore */ }
+    // 2. Load from Supabase (async, overrides if newer)
+    void (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Direct fetch to bypass generated type system for tables not yet migrated
+          const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/cv_profiles?user_id=eq.${user.id}&select=*`;
+          const res = await fetch(url, {
+            headers: {
+              apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            },
+          });
+          if (res.ok) {
+            const profiles = await res.json();
+            if (profiles && profiles.length > 0) {
+              const p = profiles[0];
+              const supabaseData: CvBuilderData = {
+                careerGoal: p.career_goal ?? EMPTY_DATA.careerGoal,
+                personalDetails: p.personal_details ?? EMPTY_DATA.personalDetails,
+                education: p.education ?? [],
+                certifications: p.certifications ?? [],
+                experience: p.experience ?? [],
+                skills: p.skills ?? EMPTY_DATA.skills,
+                achievements: p.achievements ?? [],
+                references: p.references ?? [],
+              };
+              const supabaseScore = computeStrengthScore(supabaseData);
+              const localScore = computeStrengthScore(loaded ? data : EMPTY_DATA);
+              if (supabaseScore > localScore) {
+                setData(supabaseData);
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(supabaseData)); } catch { /* */ }
+              }
+            }
+          }
+        }
+      } catch { /* table may not exist yet */ }
+    })();
   }, []);
 
   // Auto-save
@@ -174,8 +217,39 @@ export default function CvBuilderPage() {
     if (step >= 0 && step < STEPS.length) setCurrentStep(step);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaved(true);
+    // Save to localStorage
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch { /* ignore */ }
+    // Save to Supabase (best-effort, don't block UI)
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/cv_profiles`;
+        await fetch(url, {
+          method: 'POST',
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal,resolution=merge-duplicates',
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            career_goal: data.careerGoal,
+            personal_details: data.personalDetails,
+            education: data.education,
+            certifications: data.certifications,
+            experience: data.experience,
+            skills: data.skills,
+            achievements: data.achievements,
+            references: data.references,
+            strength_score: computeStrengthScore(data),
+          }),
+        });
+      }
+    } catch { /* ignore network errors */ }
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -326,14 +400,20 @@ function CareerStep({ data, update }: { data: CareerGoal; update: (v: CareerGoal
 }
 
 function PersonalStep({ data, update }: { data: PersonalDetails; update: (v: PersonalDetails) => void }) {
+  const emailValid = !data.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+  const phoneValid = !data.phone || /^[\d+\-() ]{7,20}$/.test(data.phone);
+
   return (
     <div>
       <StepHeader title="Tell us about yourself" subtitle="This information goes at the top of your CV." />
       <div className="space-y-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Full name *</label>
-          <input className="premium-input" placeholder="John Doe" value={data.fullName}
+          <input className={`premium-input ${data.fullName.trim().length > 0 && data.fullName.trim().length <= 2 ? 'border-[var(--warning)]' : ''}`} placeholder="John Doe" value={data.fullName}
             onChange={(e) => update({ ...data, fullName: e.target.value })} />
+          {data.fullName.trim().length > 0 && data.fullName.trim().length <= 2 && (
+            <p className="mt-1 text-xs text-[var(--warning)]">Name seems short — please enter your full name.</p>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -343,14 +423,16 @@ function PersonalStep({ data, update }: { data: PersonalDetails; update: (v: Per
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Phone</label>
-            <input className="premium-input" placeholder="+263 77 123 4567" value={data.phone}
+            <input className={`premium-input ${!phoneValid ? 'border-[var(--warning)]' : ''}`} placeholder="+263 77 123 4567" value={data.phone}
               onChange={(e) => update({ ...data, phone: e.target.value })} />
+            {!phoneValid && <p className="mt-1 text-xs text-[var(--warning)]">Enter a valid phone number (7-20 digits).</p>}
           </div>
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Email</label>
-          <input className="premium-input" type="email" placeholder="john@example.com" value={data.email}
+          <input className={`premium-input ${!emailValid ? 'border-[var(--warning)]' : ''}`} type="email" placeholder="john@example.com" value={data.email}
             onChange={(e) => update({ ...data, email: e.target.value })} />
+          {!emailValid && <p className="mt-1 text-xs text-[var(--warning)]">Enter a valid email address.</p>}
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Professional headline</label>
@@ -467,6 +549,20 @@ function ExperienceStep({ data, update }: { data: ExperienceEntry[]; update: (v:
   return (
     <div>
       <StepHeader title="Tell us about your experience" subtitle="Include work, volunteer roles, or significant projects. Don't worry if you're just starting out — we'll help you frame it." />
+      {data.length === 0 && (
+        <div className="mb-3 p-3 rounded-lg bg-[var(--accent)]/[0.06] border border-[var(--border-accent)]">
+          <p className="text-xs text-[var(--text-secondary)]">
+            <strong className="text-[var(--text-primary)]">No experience yet?</strong> That's okay! Consider adding:
+          </p>
+          <ul className="mt-1.5 space-y-1 text-xs text-[var(--text-muted)]">
+            <li>• School projects or university assignments</li>
+            <li>• Volunteer work or community involvement</li>
+            <li>• Personal projects (websites, apps, blogs)</li>
+            <li>• Informal work (helping at a family business, tutoring)</li>
+            <li>• Extracurricular activities or club leadership</li>
+          </ul>
+        </div>
+      )}
       {data.map((exp) => (
         <div key={exp.id} className="mb-3 glass-card p-4">
           <div className="flex items-start justify-between">
@@ -754,7 +850,15 @@ function generateCvHtml(data: CvBuilderData): string {
   ul { padding-left: 20px; }
   li { font-size: 13px; margin-bottom: 4px; }
   .footer { margin-top: 30px; font-size: 10px; color: #999; text-align: center; }
-  @media print { body { padding: 20px; } }
+  @media print {
+    body { padding: 15px 20px; font-size: 11px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 13px; margin: 14px 0 6px; page-break-after: avoid; }
+    .entry { page-break-inside: avoid; }
+    .skills { gap: 4px; }
+    .skill { font-size: 10px; padding: 1px 8px; }
+    .footer { display: none; }
+  }
 </style></head><body>
   <h1>${data.personalDetails.fullName || 'Your Name'}</h1>
   ${data.personalDetails.headline ? `<p class="headline">${data.personalDetails.headline}</p>` : ''}

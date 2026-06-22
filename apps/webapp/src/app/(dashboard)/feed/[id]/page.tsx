@@ -139,12 +139,16 @@ function getApplicationAction(job: Job) {
   // 3. WhatsApp — check how_to_apply for WhatsApp mentions
   const howToApply = (job.how_to_apply || '').toLowerCase();
   if (job.application_phone && (howToApply.includes('whatsapp') || howToApply.includes('wa.me'))) {
-    const normalizedPhone = job.application_phone.replace(/[^\d+]/g, "");
-    // Ensure +263 format for wa.me
-    const waPhone = normalizedPhone.startsWith('+') ? normalizedPhone : `+${normalizedPhone}`;
+    let normalizedPhone = job.application_phone.replace(/[^\d]/g, "");
+    // Normalize Zimbabwe numbers: 0xx... → +263xx...
+    if (normalizedPhone.startsWith('0') && normalizedPhone.length >= 9) {
+      normalizedPhone = '263' + normalizedPhone.substring(1);
+    } else if (!normalizedPhone.startsWith('263') && !normalizedPhone.startsWith('+263')) {
+      normalizedPhone = '263' + normalizedPhone;
+    }
     return {
       label: "Apply via WhatsApp",
-      href: `https://wa.me/${waPhone.replace('+', '')}`,
+      href: `https://wa.me/${normalizedPhone}`,
       kind: "link" as const,
       icon: "whatsapp",
     };
