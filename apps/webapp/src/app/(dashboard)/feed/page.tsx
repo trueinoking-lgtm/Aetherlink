@@ -16,11 +16,19 @@ const PAGE_SIZE = 50;
 function cleanSummary(job: Job): string {
   if (job.summary) return job.summary;
   const raw = (job.description || '')
-    .replace(/[#*_~`>\[\]()#!|\\]/g, '')
+    // Remove markdown
+    .replace(/[#*_~`>\[\]()#!|\\-]/g, ' ')
+    // Remove common scraped navigation artifacts
+    .replace(/\b(Swops|Search for CVs|Jobseeker Register CV|Employer Register|Post Jobs|Login|Candidate Sign Up|Employer Sign Up|Similar Jobs|Copy Job Link|Job Categories|Add Resume|Premium|Browse Jobs|Browse Candidates|About VacancyMail|Contact Us|Terms and Privacy|Cookies Policy|Disclaimer|Account|Log In|Register as a Job Seeker|Register as an Employer|Partner Sites|VacancyMail Blog|Savanna News|© Vacancy Mail)\b/gi, '')
+    // Remove "Jobs" section headers
+    .replace(/\n(Jobs|Categories|For Candidates|For Employers)\n/g, '\n')
+    // Collapse whitespace
     .replace(/\n{3,}/g, '\n\n')
     .replace(/\s+/g, ' ')
     .trim();
-  return raw.length > 150 ? raw.slice(0, 150) + '…' : raw;
+  // Remove trailing navigation noise
+  const cleaned = raw.replace(/\s*(Search for CVs|Jobseeker Register|Employer Register|Post Jobs|Login).*/i, '');
+  return cleaned.length > 200 ? cleaned.slice(0, 200) + '…' : cleaned || 'No description available.';
 }
 
 function getAvatarGradient(name: string): string {

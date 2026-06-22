@@ -109,51 +109,85 @@ function formatDate(dateStr?: string | null): string {
 }
 
 function getApplicationAction(job: Job) {
-  // Helper to clean URLs
   const cleanUrl = (url: string | undefined) => {
     if (!url) return '';
     const trimmed = url.trim();
     return trimmed !== '#' && /^https?:\/\//i.test(trimmed) ? trimmed : '';
   };
 
+  // 1. Email — highest priority
   if (job.application_email) {
     return {
       label: "Apply by email",
       href: `mailto:${job.application_email}`,
       kind: "link" as const,
+      icon: "email",
     };
   }
 
+  // 2. External URL
   const cleanAppUrl = cleanUrl(job.application_url);
   if (cleanAppUrl) {
     return {
       label: "Apply on employer site",
       href: cleanAppUrl,
       kind: "link" as const,
+      icon: "external",
     };
   }
 
+  // 3. WhatsApp — check how_to_apply for WhatsApp mentions
+  const howToApply = (job.how_to_apply || '').toLowerCase();
+  if (job.application_phone && (howToApply.includes('whatsapp') || howToApply.includes('wa.me'))) {
+    const normalizedPhone = job.application_phone.replace(/[^\d+]/g, "");
+    // Ensure +263 format for wa.me
+    const waPhone = normalizedPhone.startsWith('+') ? normalizedPhone : `+${normalizedPhone}`;
+    return {
+      label: "Apply via WhatsApp",
+      href: `https://wa.me/${waPhone.replace('+', '')}`,
+      kind: "link" as const,
+      icon: "whatsapp",
+    };
+  }
+
+  // 4. Phone (non-WhatsApp)
   if (job.application_phone) {
     const normalizedPhone = job.application_phone.replace(/[^\d+]/g, "");
     return {
-      label: "Contact employer",
+      label: "Call employer",
       href: `tel:${normalizedPhone}`,
       kind: "link" as const,
+      icon: "phone",
     };
   }
 
+  // 5. Hand delivery or other instructions
   if (job.how_to_apply?.trim()) {
+    const isHandDelivery = howToApply.includes('deliver') || howToApply.includes('drop off') || howToApply.includes('hand deliver');
     return {
-      label: "View application instructions",
+      label: isHandDelivery ? "View delivery instructions" : "View application instructions",
       href: null,
       kind: "instructions" as const,
+      icon: isHandDelivery ? "delivery" : "instructions",
     };
   }
 
+  // 6. Fallback to external listing
+  if (job.externalUrl) {
+    return {
+      label: "View original listing",
+      href: job.externalUrl,
+      kind: "link" as const,
+      icon: "external",
+    };
+  }
+
+  // 7. Nothing available
   return {
-    label: "View original listing",
-    href: job.externalUrl,
-    kind: "link" as const,
+    label: "Application instructions unavailable",
+    href: null,
+    kind: "unavailable" as const,
+    icon: "unavailable",
   };
 }
 
