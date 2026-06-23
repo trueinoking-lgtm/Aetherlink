@@ -31,6 +31,18 @@ function cleanSummary(job: Job): string {
   return cleaned.length > 200 ? cleaned.slice(0, 200) + '…' : cleaned || 'No description available.';
 }
 
+function getCompanyDisplayName(job: Job): string {
+  const name = job.companyName?.trim();
+  if (
+    !name ||
+    name.toLowerCase() === 'unknown employer' ||
+    name.toLowerCase() === 'employer not disclosed'
+  ) {
+    return 'Company not disclosed';
+  }
+  return name;
+}
+
 function getAvatarGradient(name: string): string {
   const palettes = [
     'from-indigo-500 to-purple-600',
@@ -246,7 +258,7 @@ function PremiumJobCard({
               {job.title}
             </h3>
             <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
-              {job.companyName}
+              {getCompanyDisplayName(job)}
             </p>
           </div>
         </div>

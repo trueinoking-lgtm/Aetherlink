@@ -129,7 +129,7 @@ function getApplicationAction(job: Job) {
   const cleanAppUrl = cleanUrl(job.application_url);
   if (cleanAppUrl) {
     return {
-      label: "Apply on employer site",
+      label: "Apply on company site",
       href: cleanAppUrl,
       kind: "link" as const,
       icon: "external",
@@ -158,7 +158,7 @@ function getApplicationAction(job: Job) {
   if (job.application_phone) {
     const normalizedPhone = job.application_phone.replace(/[^\d+]/g, "");
     return {
-      label: "Call employer",
+      label: "Contact employer",
       href: `tel:${normalizedPhone}`,
       kind: "link" as const,
       icon: "phone",
@@ -176,7 +176,18 @@ function getApplicationAction(job: Job) {
     };
   }
 
-  // 6. Fallback to external listing
+  // 6. Fallback to source_group listing
+  const cleanSourceUrl = cleanUrl(job.source_group);
+  if (cleanSourceUrl) {
+    return {
+      label: "View original listing",
+      href: cleanSourceUrl,
+      kind: "link" as const,
+      icon: "external",
+    };
+  }
+
+  // 7. Fallback to external listing
   if (job.externalUrl) {
     return {
       label: "View original listing",
@@ -186,7 +197,7 @@ function getApplicationAction(job: Job) {
     };
   }
 
-  // 7. Nothing available
+  // 8. Nothing available
   return {
     label: "Application instructions unavailable",
     href: null,
@@ -275,11 +286,42 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   const applicationAction = getApplicationAction(job);
   const hasScorableContent = Boolean(job.requirements?.length) || Boolean(job.responsibilities?.length);
 
+  // Check if job has minimum useful content
+  const hasStructuredContent = 
+    (job.responsibilities && job.responsibilities.length > 0) ||
+    (job.requirements && job.requirements.length > 0) ||
+    (job.application_email && job.application_email.trim()) ||
+    (job.application_url && job.application_url.trim()) ||
+    (job.how_to_apply && job.how_to_apply.trim());
+
+  const hasCompany = job.companyName && 
+    job.companyName !== 'Unknown Employer' && 
+    job.companyName !== 'Employer not disclosed';
+
+  const isIncomplete = !hasStructuredContent && !hasCompany;
+
   // Determine if we should show score
   const showScore = matchScore != null && hasScorableContent;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {isIncomplete && (
+        <div className="glass-card mb-6 border-[var(--warning)]/30 bg-[var(--warning-bg)] p-4">
+          <p className="text-sm text-[var(--warning)]">
+            ⚠️ This listing is being refreshed. Some details may be incomplete. Please check back later or view the original listing.
+          </p>
+          {job.source_group && (
+            <a 
+              href={job.source_group} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-sm text-[var(--accent)] underline"
+            >
+              View original listing →
+            </a>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left column */}
         <div className="lg:col-span-2 space-y-8">
@@ -377,7 +419,11 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               Apply for this position
             </h3>
             
-            {applicationAction.kind === 'instructions' ? (
+            {applicationAction.kind === 'unavailable' ? (
+              <p className="text-sm text-[var(--text-muted)]">
+                No application method available
+              </p>
+            ) : applicationAction.kind === 'instructions' ? (
               <button
                 onClick={() => {
                   // Scroll to How to Apply section
