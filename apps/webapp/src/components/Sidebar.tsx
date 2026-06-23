@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Home', icon: HomeIcon },
   { href: '/feed', label: 'Jobs', icon: JobsIcon },
   { href: '/cv', label: 'CV', icon: CVIcon },
-  { href: '/applied', label: 'Applied', icon: AppliedIcon },
+  { href: '/applied', label: 'Tracker', icon: AppliedIcon },
 ];
 
 export function Sidebar({

@@ -2,51 +2,53 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSdk } from '@aetherlink/ui/hooks/useSdk';
-import { AetherLinkSupabaseApi } from '@aetherlink/ui/lib/supabaseApi';
 
-type ApplicationRow = {
-  id: string;
-  created_at: string;
-  status: string;
-  outcome?: string;
-  jobs?: { title: string; companyName: string };
-};
-
-const STATUS_CHIPS: Record<string, { label: string; className: string }> = {
-  sent: { label: 'Sent', className: 'badge badge-mid' },
-  opened: { label: 'Opened', className: 'badge badge-high' },
-  responded: { label: 'Responded', className: 'badge badge-high' },
+type AppliedJob = {
+  id: number;
+  title: string;
+  companyName: string;
+  appliedAt: string;
 };
 
 export default function AppliedPage() {
-  const sdk = useSdk() as AetherLinkSupabaseApi;
-  const [applications, setApplications] = useState<ApplicationRow[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<AppliedJob[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const apps = (await sdk.listApplications()) as unknown[];
-        setApplications(
-          (apps as ApplicationRow[]).sort(
-            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-          ),
-        );
-      } catch (e) {
-        console.error('Applications load error:', e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [sdk]);
+    try {
+      const stored = JSON.parse(localStorage.getItem('aetherlink_appliedJobs') || '[]');
+      // For now just show IDs — in future, fetch job details from Supabase
+      setAppliedJobs(
+        stored.map((id: number) => ({
+          id,
+          title: `Job #${id}`,
+          companyName: '',
+          appliedAt: new Date().toISOString(),
+        }))
+      );
+    } catch {
+      /* ignore */
+    }
+    setLoading(false);
+  }, []);
+
+  const removeJob = (jobId: number) => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('aetherlink_appliedJobs') || '[]');
+      const next = stored.filter((id: number) => id !== jobId);
+      localStorage.setItem('aetherlink_appliedJobs', JSON.stringify(next));
+      setAppliedJobs((prev) => prev.filter((j) => j.id !== jobId));
+    } catch {
+      /* ignore */
+    }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
-          <p className="text-sm text-[var(--text-muted)]">Loading applications…</p>
+          <p className="text-sm text-[var(--text-muted)]">Loading tracker…</p>
         </div>
       </div>
     );
@@ -55,13 +57,13 @@ export default function AppliedPage() {
   return (
     <div className="space-y-6 page-enter">
       <div>
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Applications</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Application tracker</h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          {applications.length} {applications.length === 1 ? 'application' : 'applications'} sent
+          {appliedJobs.length} {appliedJobs.length === 1 ? 'job' : 'jobs'} marked as applied
         </p>
       </div>
 
-      {applications.length === 0 ? (
+      {appliedJobs.length === 0 ? (
         <div className="glass-card flex flex-col items-center gap-4 p-10 text-center">
           <div className="empty-state-icon mx-auto shrink-0">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -69,9 +71,9 @@ export default function AppliedPage() {
             </svg>
           </div>
           <div>
-            <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications yet</p>
+            <p className="font-display text-lg font-bold text-[var(--text-primary)]">No applications tracked yet</p>
             <p className="mt-1 text-sm text-[var(--text-secondary)] max-w-sm">
-              Start applying to jobs and track them here. Your application history will appear as a timeline.
+              Browse jobs and use the &quot;Mark as applied&quot; button to track your applications here.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 mt-2">
@@ -84,47 +86,45 @@ export default function AppliedPage() {
           </div>
         </div>
       ) : (
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-[11px] sm:left-[15px] top-6 bottom-6 w-px bg-gradient-to-b from-[var(--accent)]/40 via-[var(--accent)]/15 to-transparent" aria-hidden="true" />
-
-          <div className="space-y-4 pl-8 sm:pl-10">
-            {applications.map((app) => {
-              const status = STATUS_CHIPS[app.status ?? 'sent'] ?? STATUS_CHIPS.sent;
-              return (
-                <div key={app.id} className="relative">
-                  {/* Dot */}
-                  <div className="absolute -left-8 sm:-left-10 top-5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--bg-base)]">
-                    <div className="h-3 w-3 rounded-full bg-[var(--accent)] ring-2 ring-[var(--accent)]/20" />
-                  </div>
-
-                  {/* Card */}
-                  <div className="glass-card hover-lift p-5 transition-all hover:border-[var(--border-accent)]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-[var(--text-primary)]">
-                          {app.jobs?.title ?? 'Unknown Job'}
-                        </p>
-                        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
-                          {app.jobs?.companyName ?? 'Unknown Company'}
-                        </p>
-                        <p className="mt-2 text-xs text-[var(--text-muted)]">
-                          {new Date(app.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                      <span className={`shrink-0 ${status.className}`}>
-                        {status.label}
-                      </span>
-                    </div>
-                  </div>
+        <div className="space-y-3">
+          {appliedJobs.map((job) => (
+            <div key={job.id} className="glass-card hover-lift p-5 transition-all hover:border-[var(--border-accent)]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-[var(--text-primary)]">
+                    {job.title}
+                  </p>
+                  {job.companyName && (
+                    <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
+                      {job.companyName}
+                    </p>
+                  )}
+                  <p className="mt-2 text-xs text-[var(--text-muted)]">
+                    Marked on {new Date(job.appliedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/feed/${job.id}`}
+                    className="text-xs text-[var(--accent)] hover:underline"
+                  >
+                    View
+                  </Link>
+                  <button
+                    onClick={() => removeJob(job.id)}
+                    className="text-xs text-[var(--text-muted)] hover:text-[var(--danger)] transition-colors"
+                    aria-label="Remove from tracker"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

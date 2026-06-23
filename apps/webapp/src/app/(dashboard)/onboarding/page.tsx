@@ -27,8 +27,6 @@ type Step3Data = {
   salaryFloor: number;
   jobTypes: string[];
   blacklist: string[];
-  autoApplyEnabled: boolean;
-  autoApplyThreshold: number;
 };
 
 function computeCvStrength(step2: Step2Data): number {
@@ -105,8 +103,6 @@ export default function OnboardingPage() {
     salaryFloor: 0,
     jobTypes: [],
     blacklist: [],
-    autoApplyEnabled: true,
-    autoApplyThreshold: 80,
   });
   const [skillInput, setSkillInput] = useState('');
   const [blacklistInput, setBlacklistInput] = useState('');
@@ -149,8 +145,7 @@ export default function OnboardingPage() {
             salaryFloor: prof.salary_floor ?? storedPrefs.salaryFloor,
             jobTypes: prof.preferred_job_types ?? storedPrefs.preferredJobTypes,
             blacklist: persistedBlacklist,
-            autoApplyEnabled: prof.auto_apply_enabled ?? storedPrefs.autoApplyEnabled,
-            autoApplyThreshold: prof.auto_apply_threshold ?? storedPrefs.autoApplyThreshold,
+
           });
         } else {
           setStep1((prev) => ({
@@ -162,8 +157,7 @@ export default function OnboardingPage() {
             salaryFloor: storedPrefs.salaryFloor,
             jobTypes: storedPrefs.preferredJobTypes,
             blacklist: persistedBlacklist,
-            autoApplyEnabled: storedPrefs.autoApplyEnabled,
-            autoApplyThreshold: storedPrefs.autoApplyThreshold,
+
           });
         }
       } catch (e) {
@@ -194,8 +188,7 @@ export default function OnboardingPage() {
         location: step1.location,
         preferred_job_types: step3.jobTypes,
         salary_floor: step3.salaryFloor,
-        auto_apply_enabled: step3.autoApplyEnabled,
-        auto_apply_threshold: step3.autoApplyThreshold,
+
       };
 
       if (isDebug) {
@@ -203,8 +196,6 @@ export default function OnboardingPage() {
           location: step1.location,
           preferredJobTypes: step3.jobTypes,
           salaryFloor: step3.salaryFloor,
-          autoApplyEnabled: step3.autoApplyEnabled,
-          autoApplyThreshold: step3.autoApplyThreshold,
           blacklistedCompanies: step3.blacklist,
         });
         router.push('/feed');
@@ -249,8 +240,6 @@ export default function OnboardingPage() {
         location: step1.location,
         preferredJobTypes: step3.jobTypes,
         salaryFloor: step3.salaryFloor,
-        autoApplyEnabled: step3.autoApplyEnabled,
-        autoApplyThreshold: step3.autoApplyThreshold,
         blacklistedCompanies: step3.blacklist,
       });
 
@@ -617,11 +606,11 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 3: Auto-apply settings */}
+        {/* Step 3: Job preferences */}
         {step === 2 && (
           <div className="glass-card animate-fade-in p-6 sm:p-8">
             <div className="mb-6">
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Auto-apply settings</h1>
+              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Job preferences</h1>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Configure how AetherLink works for you</p>
             </div>
 
@@ -703,49 +692,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-[var(--text-primary)]">Auto-apply when match &gt; {step3.autoApplyThreshold}%</p>
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">Automatically apply to high-match jobs</p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={step3.autoApplyEnabled}
-                      onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyEnabled: e.target.checked }))}
-                      aria-label={`Auto-apply when match exceeds ${step3.autoApplyThreshold}%`}
-                    />
-                    <span className="slider" />
-                  </label>
-                </div>
 
-                {step3.autoApplyEnabled && (
-                  <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                    <label htmlFor="onboarding-threshold" className="form-label">
-                      Match threshold: <span className="text-[var(--accent)] font-semibold">{step3.autoApplyThreshold}%</span>
-                    </label>
-                    <input
-                      id="onboarding-threshold"
-                      type="range"
-                      min={50}
-                      max={100}
-                      step={5}
-                      value={step3.autoApplyThreshold}
-                      onChange={(e) => setStep3((prev) => ({ ...prev, autoApplyThreshold: Number(e.target.value) }))}
-                      className="premium-range w-full cursor-pointer"
-                      aria-valuemin={50}
-                      aria-valuemax={100}
-                      aria-valuenow={step3.autoApplyThreshold}
-                      aria-valuetext={`${step3.autoApplyThreshold}% match threshold`}
-                    />
-                    <div className="mt-1 flex justify-between text-xs text-[var(--text-muted)]">
-                      <span>50% (More applications)</span>
-                      <span>100% (Only perfect matches)</span>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Navigation */}

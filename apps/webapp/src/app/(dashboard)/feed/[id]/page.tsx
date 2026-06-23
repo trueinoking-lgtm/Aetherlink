@@ -108,64 +108,115 @@ function formatDate(dateStr?: string | null): string {
   }
 }
 
-function getApplicationAction(job: Job) {
-  const cleanUrl = (url: string | undefined) => {
-    if (!url) return '';
-    const trimmed = url.trim();
-    return trimmed !== '#' && /^https?:\/\//i.test(trimmed) ? trimmed : '';
+// ─── CTA Analytics ───────────────────────────────────────────
+function trackCtaClick(ctaType: string, jobId: number) {
+  // Log to console for now — replace with Supabase analytics insert later
+  console.log('[CTA]', { ctaType, jobId, clicked_at: new Date().toISOString() });
+}
+
+// ─── Mark as Applied Button ──────────────────────────────────
+function MarkAsAppliedButton({ jobId, jobTitle }: { jobId: number; jobTitle: string }) {
+  const [applied, setApplied] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // Check if already applied
+    try {
+      const stored = JSON.parse(localStorage.getItem('aetherlink_appliedJobs') || '[]');
+      if (stored.includes(jobId)) setApplied(true);
+    } catch { /* ignore */ }
+  }, [jobId]);
+
+  const toggle = () => {
+    setSaving(true);
+    try {
+      const stored = JSON.parse(localStorage.getItem('aetherlink_appliedJobs') || '[]');
+      if (applied) {
+        const next = stored.filter((id: number) => id !== jobId);
+        localStorage.setItem('aetherlink_appliedJobs', JSON.stringify(next));
+        setApplied(false);
+      } else {
+        stored.push(jobId);
+        localStorage.setItem('aetherlink_appliedJobs', JSON.stringify(stored));
+        setApplied(true);
+      }
+    } catch { /* ignore */ }
+    setSaving(false);
   };
 
-  // 1. Email — highest priority
-  if (job.application_email) {
-    return {
-      label: "Apply by email",
-      href: `mailto:${job.application_email}`,
-      kind: "link" as const,
-      icon: "email",
-    };
+  if (applied) {
+    return (
+      <button
+        onClick={toggle}
+        disabled={saving}
+        className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--success)]/30 bg-[var(--success)]/10 px-4 py-2.5 text-sm font-medium text-[var(--success)] transition-all hover:bg-[var(--success)]/20 pointer-active"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Marked as applied
+      </button>
+    );
   }
 
-  // 2. External URL
+  return (
+    <button
+      onClick={toggle}
+      disabled={saving}
+      className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--glass-bg-hover)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)] pointer-active"
+    >
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      Mark as applied
+    </button>
+  );
+}
+
+function getApplicationAction(job: Job) {
+  const cleanUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    const trimmed = url.trim();
+    if (trimmed === '#' || !/^https?:\/\//i.test(trimmed)) return undefined;
+    return trimmed;
+  };
+
+  // 1. Source URL — PRIMARY for website-scraped jobs
+  const cleanSourceUrl = cleanUrl(job.source_group);
+  if (cleanSourceUrl) {
+    return { label: "View original listing", href: cleanSourceUrl, kind: "link" as const, icon: "external" };
+  }
+
+  // 2. Application URL (direct app link, no source_url)
   const cleanAppUrl = cleanUrl(job.application_url);
   if (cleanAppUrl) {
-    return {
-      label: "Apply on company site",
-      href: cleanAppUrl,
-      kind: "link" as const,
-      icon: "external",
-    };
+    return { label: "Open application link", href: cleanAppUrl, kind: "link" as const, icon: "external" };
   }
 
-  // 3. WhatsApp — check how_to_apply for WhatsApp mentions
+  // 3. Email
+  if (job.application_email) {
+    return { label: "Email employer", href: `mailto:${job.application_email}`, kind: "link" as const, icon: "email" };
+  }
+
+  // 4. WhatsApp
   const howToApply = (job.how_to_apply || '').toLowerCase();
   if (job.application_phone && (howToApply.includes('whatsapp') || howToApply.includes('wa.me'))) {
-    let normalizedPhone = job.application_phone.replace(/[^\d]/g, "");
-    // Normalize Zimbabwe numbers: 0xx... → +263xx...
+    let normalizedPhone = job.application_phone.replace(/[^\d]/g, '');
     if (normalizedPhone.startsWith('0') && normalizedPhone.length >= 9) {
       normalizedPhone = '263' + normalizedPhone.substring(1);
     } else if (!normalizedPhone.startsWith('263') && !normalizedPhone.startsWith('+263')) {
       normalizedPhone = '263' + normalizedPhone;
     }
-    return {
-      label: "Apply via WhatsApp",
-      href: `https://wa.me/${normalizedPhone}`,
-      kind: "link" as const,
-      icon: "whatsapp",
-    };
+    return { label: "Contact via WhatsApp", href: `https://wa.me/${normalizedPhone}`, kind: "link" as const, icon: "whatsapp" };
   }
 
-  // 4. Phone (non-WhatsApp)
+  // 5. Phone (non-WhatsApp)
   if (job.application_phone) {
-    const normalizedPhone = job.application_phone.replace(/[^\d+]/g, "");
-    return {
-      label: "Contact employer",
-      href: `tel:${normalizedPhone}`,
-      kind: "link" as const,
-      icon: "phone",
-    };
+    const normalizedPhone = job.application_phone.replace(/[^\d+]/g, '');
+    return { label: "Contact employer", href: `tel:${normalizedPhone}`, kind: "link" as const, icon: "phone" };
   }
 
-  // 5. Hand delivery or other instructions
+  // 6. Hand delivery or other instructions
   if (job.how_to_apply?.trim()) {
     const isHandDelivery = howToApply.includes('deliver') || howToApply.includes('drop off') || howToApply.includes('hand deliver');
     return {
@@ -176,34 +227,14 @@ function getApplicationAction(job: Job) {
     };
   }
 
-  // 6. Fallback to source_group listing
-  const cleanSourceUrl = cleanUrl(job.source_group);
-  if (cleanSourceUrl) {
-    return {
-      label: "View original listing",
-      href: cleanSourceUrl,
-      kind: "link" as const,
-      icon: "external",
-    };
-  }
-
   // 7. Fallback to external listing
-  if (job.externalUrl) {
-    return {
-      label: "View original listing",
-      href: job.externalUrl,
-      kind: "link" as const,
-      icon: "external",
-    };
+  const cleanExternalUrl = cleanUrl(job.externalUrl);
+  if (cleanExternalUrl) {
+    return { label: "View original listing", href: cleanExternalUrl, kind: "link" as const, icon: "external" };
   }
 
-  // 8. Nothing available
-  return {
-    label: "Application instructions unavailable",
-    href: null,
-    kind: "unavailable" as const,
-    icon: "unavailable",
-  };
+  // 8. Nothing available — no button
+  return { label: "No application method", href: null, kind: "none" as const, icon: "unavailable" };
 }
 
 export default function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -413,22 +444,21 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
         {/* Right column */}
         <div className="space-y-6">
-          {/* Application action button */}
+          {/* Primary CTA */}
           <div className="glass-card p-6">
             <h3 className="font-display text-lg font-bold text-[var(--text-primary)] mb-4">
-              Apply for this position
+              Original application
             </h3>
             
-            {applicationAction.kind === 'unavailable' ? (
+            {applicationAction.kind === 'none' ? (
               <p className="text-sm text-[var(--text-muted)]">
-                No application method available
+                Application details are currently unavailable. This listing may be refreshed later.
               </p>
             ) : applicationAction.kind === 'instructions' ? (
               <button
                 onClick={() => {
-                  // Scroll to How to Apply section
-                  const howToApplyElement = document.querySelector('[data-section="how-to-apply"]');
-                  howToApplyElement?.scrollIntoView({ behavior: 'smooth' });
+                  const el = document.querySelector('[data-section="how-to-apply"]');
+                  el?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="w-full premium-btn-primary py-3"
               >
@@ -440,17 +470,16 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                 target={applicationAction.href?.startsWith('http') ? '_blank' : undefined}
                 rel={applicationAction.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className="w-full premium-btn-primary py-3 inline-block text-center"
+                onClick={() => trackCtaClick(applicationAction.icon, jobId)}
               >
                 {applicationAction.label}
               </a>
             )}
-            
-            {/* Score info */}
-            {!showScore && job.parser_version === 2 && (
-              <div className="mt-4 text-center text-sm text-[var(--text-muted)]">
-                Not scored
-              </div>
-            )}
+
+            {/* Mark as applied */}
+            <div className="mt-4 pt-4 border-t border-[var(--border)]">
+              <MarkAsAppliedButton jobId={jobId} jobTitle={job.title || ''} />
+            </div>
           </div>
 
           {/* Additional details */}

@@ -2,8 +2,6 @@ export type OnboardingPreferences = {
   location: string;
   preferredJobTypes: string[];
   salaryFloor: number;
-  autoApplyEnabled: boolean;
-  autoApplyThreshold: number;
   blacklistedCompanies: string[];
 };
 
@@ -11,8 +9,6 @@ export const DEFAULT_ONBOARDING_PREFERENCES: OnboardingPreferences = {
   location: '',
   preferredJobTypes: [],
   salaryFloor: 0,
-  autoApplyEnabled: true,
-  autoApplyThreshold: 80,
   blacklistedCompanies: [],
 };
 
@@ -46,14 +42,6 @@ export function readOnboardingPreferences(): OnboardingPreferences {
         typeof parsed.salaryFloor === 'number' && Number.isFinite(parsed.salaryFloor)
           ? parsed.salaryFloor
           : DEFAULT_ONBOARDING_PREFERENCES.salaryFloor,
-      autoApplyEnabled:
-        typeof parsed.autoApplyEnabled === 'boolean'
-          ? parsed.autoApplyEnabled
-          : DEFAULT_ONBOARDING_PREFERENCES.autoApplyEnabled,
-      autoApplyThreshold:
-        typeof parsed.autoApplyThreshold === 'number' && Number.isFinite(parsed.autoApplyThreshold)
-          ? parsed.autoApplyThreshold
-          : DEFAULT_ONBOARDING_PREFERENCES.autoApplyThreshold,
       blacklistedCompanies: sanitizeArray(parsed.blacklistedCompanies),
     };
   } catch {

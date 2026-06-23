@@ -27,8 +27,6 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           location: 'Harare',
           preferred_job_types: ['Tech'],
           salary_floor: 0,
-          auto_apply_enabled: false,
-          auto_apply_threshold: 80,
           skills: ['JavaScript', 'TypeScript', 'React'],
           headline: 'Full Stack Developer',
           subscription_end_date: new Date().toISOString(),

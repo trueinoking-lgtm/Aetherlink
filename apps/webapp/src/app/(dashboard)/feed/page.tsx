@@ -440,7 +440,7 @@ export default function FeedPage() {
   const [jobType, setJobType] = useState<string>('');
   const [salaryRange, setSalaryRange] = useState<string>('');
   const [datePosted, setDatePosted] = useState<string>('');
-  const [suitedForMe, setSuitedForMe] = useState(false);
+  const [suitedForMe, setSuitedForMe] = useState(false); // eslint-disable-line
 
   // Saved jobs
   const { savedJobs, toggleSave } = useSavedJobs();
@@ -520,7 +520,6 @@ export default function FeedPage() {
   }, [hasMore, loadingMore, loadMore]);
 
   const skills = profile?.skills ?? [];
-  const autoThreshold = 80;
 
   // Apply client-side filters
   useEffect(() => {
@@ -577,14 +576,14 @@ export default function FeedPage() {
             profile?.certifications ?? [],
             [],
           );
-          return (structuredScore ?? 0) >= autoThreshold;
+          return (structuredScore ?? 0) >= 80;
         } else {
           const legacyScore = computeLegacyMatchScore(
             j.title,
             j.description,
             skills,
           );
-          return legacyScore >= autoThreshold;
+          return legacyScore >= 80;
         }
       });
     }
@@ -598,7 +597,6 @@ export default function FeedPage() {
     datePosted,
     suitedForMe,
     skills,
-    autoThreshold,
     profile?.certifications,
   ]);
 

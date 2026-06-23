@@ -50,7 +50,7 @@ export function ApplicationReceipt({
 
   const timeSaved = Math.max(20, 45 - minutesSpent);
   const firstParagraph = coverLetter.split('\\n\\n')[0] ?? coverLetter.slice(0, 280);
-  const shareText = `Just applied to ${jobTitle} at ${companyName} via AetherLink in under 3 minutes 🔥`;
+  const shareText = `Applying to ${jobTitle} at ${companyName} — prepping my CV with AetherLink 🔥`;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--bg-overlay)] p-4">
