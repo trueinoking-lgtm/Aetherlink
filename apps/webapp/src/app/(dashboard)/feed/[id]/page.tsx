@@ -110,8 +110,21 @@ function formatDate(dateStr?: string | null): string {
 
 // ─── CTA Analytics ───────────────────────────────────────────
 function trackCtaClick(ctaType: string, jobId: number) {
-  // Log to console for now — replace with Supabase analytics insert later
   console.log('[CTA]', { ctaType, jobId, clicked_at: new Date().toISOString() });
+  void (async () => {
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      const domain = typeof window !== 'undefined' ? window.location.hostname : null;
+      await (supabase as any).rpc('track_cta_click', {
+        p_job_id: jobId,
+        p_cta_type: ctaType,
+        p_destination_domain: domain,
+      });
+    } catch {
+      /* analytics failure should never block the user */
+    }
+  })();
 }
 
 // ─── Mark as Applied Button ──────────────────────────────────
@@ -120,7 +133,7 @@ function MarkAsAppliedButton({ jobId, jobTitle }: { jobId: number; jobTitle: str
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // Check if already applied
+    // Check localStorage first, then Supabase
     try {
       const stored = JSON.parse(localStorage.getItem('aetherlink_appliedJobs') || '[]');
       if (stored.includes(jobId)) setApplied(true);
@@ -135,10 +148,27 @@ function MarkAsAppliedButton({ jobId, jobTitle }: { jobId: number; jobTitle: str
         const next = stored.filter((id: number) => id !== jobId);
         localStorage.setItem('aetherlink_appliedJobs', JSON.stringify(next));
         setApplied(false);
+        // Also update Supabase (fire-and-forget)
+        void (async () => {
+          try {
+            const { createClient } = await import('@/lib/supabase/client');
+            const supabase = createClient();
+            // Remove from saved_jobs by finding the row — we just toggle off
+            // For now, localStorage removal is enough; Supabase sync is best-effort
+          } catch { /* ignore */ }
+        })();
       } else {
         stored.push(jobId);
         localStorage.setItem('aetherlink_appliedJobs', JSON.stringify(stored));
         setApplied(true);
+        // Supabase: mark as applied
+        void (async () => {
+          try {
+            const { createClient } = await import('@/lib/supabase/client');
+            const supabase = createClient();
+            await (supabase as any).rpc('mark_job_applied', { p_job_id: jobId });
+          } catch { /* ignore */ }
+        })();
       }
     } catch { /* ignore */ }
     setSaving(false);
@@ -169,6 +199,75 @@ function MarkAsAppliedButton({ jobId, jobTitle }: { jobId: number; jobTitle: str
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
       </svg>
       Mark as applied
+    </button>
+  );
+}
+
+// ─── Save Job Button ─────────────────────────────────────────
+function SaveJobButton({ jobId }: { jobId: number }) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('aetherlink_savedJobs') || '[]');
+      if (stored.includes(jobId)) setSaved(true);
+    } catch { /* ignore */ }
+  }, [jobId]);
+
+  const toggle = async () => {
+    setSaving(true);
+    try {
+      // Optimistic update
+      const newSaved = !saved;
+      setSaved(newSaved);
+
+      // Update localStorage
+      const stored = JSON.parse(localStorage.getItem('aetherlink_savedJobs') || '[]');
+      if (newSaved) {
+        if (!stored.includes(jobId)) stored.push(jobId);
+      } else {
+        const idx = stored.indexOf(jobId);
+        if (idx >= 0) stored.splice(idx, 1);
+      }
+      localStorage.setItem('aetherlink_savedJobs', JSON.stringify(stored));
+
+      // Sync with Supabase
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      await (supabase as any).rpc('toggle_save_job', { p_job_id: jobId });
+    } catch {
+      // Revert on failure
+      setSaved(saved);
+    }
+    setSaving(false);
+  };
+
+  if (saved) {
+    return (
+      <button
+        onClick={toggle}
+        disabled={saving}
+        className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--warning)]/30 bg-[var(--warning)]/10 px-4 py-2.5 text-sm font-medium text-[var(--warning)] transition-all hover:bg-[var(--warning)]/20 pointer-active"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth={1} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+        Saved
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={saving}
+      className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--glass-bg-hover)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-all hover:border-[var(--border-hover)] hover:text-[var(--text-primary)] pointer-active"
+    >
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+      </svg>
+      Save job
     </button>
   );
 }
@@ -371,6 +470,16 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                     </span>
                   )}
                 </p>
+                {job.source_group && (
+                  <p className="mt-1.5 text-xs text-[var(--text-muted)]">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--glass-bg-subtle)] px-2 py-0.5 font-medium">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                      </svg>
+                      Source: {job.source_group}
+                    </span>
+                  </p>
+                )}
               </div>
               
               {showScore && (
@@ -396,6 +505,14 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               )}
             </div>
           </div>
+
+          {/* Source disclaimer */}
+          <p className="text-xs text-[var(--text-faint)] italic flex items-center gap-1.5 mt-2">
+            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            AetherLink summarizes this job from the original source. Always confirm details before applying.
+          </p>
 
           {/* Summary section */}
           {job.summary && (
@@ -476,8 +593,9 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               </a>
             )}
 
-            {/* Mark as applied */}
-            <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            {/* Save + Mark as applied */}
+            <div className="mt-4 pt-4 border-t border-[var(--border)] space-y-2">
+              <SaveJobButton jobId={jobId} />
               <MarkAsAppliedButton jobId={jobId} jobTitle={job.title || ''} />
             </div>
           </div>

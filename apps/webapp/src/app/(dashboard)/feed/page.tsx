@@ -441,6 +441,7 @@ export default function FeedPage() {
   const [salaryRange, setSalaryRange] = useState<string>('');
   const [datePosted, setDatePosted] = useState<string>('');
   const [suitedForMe, setSuitedForMe] = useState(false); // eslint-disable-line
+  const [trustFilter, setTrustFilter] = useState<string>('');
 
   // Saved jobs
   const { savedJobs, toggleSave } = useSavedJobs();
@@ -564,6 +565,28 @@ export default function FeedPage() {
       result = result.filter((j) => new Date(j.created_at) >= cutoff);
     }
 
+    // Trust filters
+    if (trustFilter === 'newest') {
+      result = [...result].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+    } else if (trustFilter === 'closing_soon') {
+      result = result
+        .filter((j) => j.closing_date && new Date(j.closing_date) > new Date())
+        .sort((a, b) => new Date(a.closing_date!).getTime() - new Date(b.closing_date!).getTime());
+    } else if (trustFilter === 'best_match' && skills.length > 0) {
+      result = result
+        .filter((j) => {
+          const s = getMatchScore(j);
+          return s !== null && s >= 50;
+        })
+        .sort((a, b) => (getMatchScore(b) ?? 0) - (getMatchScore(a) ?? 0));
+    } else if (trustFilter === 'has_source') {
+      result = result.filter((j) => j.source_group && j.source_group.trim() !== '');
+    } else if (trustFilter === 'has_deadline') {
+      result = result.filter((j) => j.closing_date && j.closing_date.trim() !== '');
+    }
+
     if (suitedForMe && skills.length > 0) {
       result = result.filter((j) => {
         const hasStructuredContent =
@@ -617,7 +640,7 @@ export default function FeedPage() {
     }
   }
 
-  const activeFilterCount = [jobType, salaryRange, datePosted, suitedForMe].filter(Boolean).length;
+  const activeFilterCount = [jobType, salaryRange, datePosted, suitedForMe, trustFilter].filter(Boolean).length;
 
   const clearFilters = useCallback(() => {
     setSearch('');
@@ -625,6 +648,7 @@ export default function FeedPage() {
     setSalaryRange('');
     setDatePosted('');
     setSuitedForMe(false);
+    setTrustFilter('');
   }, []);
 
   // ── Section grouping logic ──
@@ -747,6 +771,29 @@ export default function FeedPage() {
                 Clear ({activeFilterCount})
               </button>
             )}
+          </div>
+
+          {/* Trust filter chips */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              { key: 'newest', label: 'Newest' },
+              { key: 'closing_soon', label: 'Closing soon' },
+              { key: 'best_match', label: 'Best match' },
+              { key: 'has_source', label: 'Has source link' },
+              { key: 'has_deadline', label: 'Has deadline' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setTrustFilter((prev) => prev === key ? '' : key)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all pointer-active ${
+                  trustFilter === key
+                    ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent)]'
+                    : 'border-[var(--border)] bg-[var(--glass-bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {/* Suited for me toggle */}

@@ -369,6 +369,53 @@ export type DbSchema = {
         Update: Partial<Pick<Application, 'outcome' | 'outcome_recorded_at' | 'response_days'>>;
         Relationships: [];
       };
+      saved_jobs: {
+        Row: {
+          id: number;
+          user_id: string;
+          job_id: number;
+          saved_at: string;
+          applied_at: string | null;
+          notes: string | null;
+        };
+        Insert: Pick<{
+          id: number;
+          user_id: string;
+          job_id: number;
+          saved_at: string;
+          applied_at: string | null;
+          notes: string | null;
+        }, 'job_id' | 'notes'>;
+        Update: Partial<Pick<{
+          id: number;
+          user_id: string;
+          job_id: number;
+          saved_at: string;
+          applied_at: string | null;
+          notes: string | null;
+        }, 'applied_at' | 'notes'>>;
+        Relationships: [];
+      };
+      job_cta_clicks: {
+        Row: {
+          id: number;
+          job_id: number;
+          user_id: string | null;
+          cta_type: string;
+          destination_domain: string | null;
+          created_at: string;
+        };
+        Insert: Pick<{
+          id: number;
+          job_id: number;
+          user_id: string | null;
+          cta_type: string;
+          destination_domain: string | null;
+          created_at: string;
+        }, 'job_id' | 'cta_type' | 'destination_domain'>;
+        Update: never;
+        Relationships: [];
+      };
     };
     Views: {};
     Functions: {
@@ -440,6 +487,47 @@ export type DbSchema = {
         };
         Args: {};
         Returns: {};
+      };
+
+      // ── Trust & Launch Polish (2026-06-23) ──
+
+      track_cta_click: {
+        Params: {
+          p_job_id: number;
+          p_cta_type: string;
+          p_destination_domain?: string | null;
+        };
+        Returns: number;
+      };
+      get_job_click_stats: {
+        Params: { p_job_id: number };
+        Returns: Array<{
+          cta_type: string;
+          click_count: number;
+          last_clicked_at: string;
+        }>;
+      };
+      toggle_save_job: {
+        Params: { p_job_id: number };
+        Returns: boolean;
+      };
+      mark_job_applied: {
+        Params: { p_job_id: number };
+        Returns: void;
+      };
+      list_saved_jobs: {
+        Params: {};
+        Returns: Array<{
+          job_id: number;
+          saved_at: string;
+          applied_at: string | null;
+          notes: string | null;
+          job_title: string;
+          job_company: string;
+          job_location: string;
+          job_closing_date: string;
+          job_source_group: string;
+        }>;
       };
     };
   };
