@@ -369,6 +369,87 @@ export type DbSchema = {
         Update: Partial<Pick<Application, 'outcome' | 'outcome_recorded_at' | 'response_days'>>;
         Relationships: [];
       };
+      cv_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          full_name: string | null;
+          phone: string | null;
+          email: string | null;
+          location: string | null;
+          career_goal: string | null;
+          target_roles: string[] | null;
+          professional_summary: string | null;
+          skills: unknown;
+          education: unknown;
+          experience: unknown;
+          projects: unknown;
+          certifications: unknown;
+          languages: unknown;
+          references_text: string | null;
+          raw_conversation_summary: string | null;
+          missing_info: unknown;
+          cv_strength_score: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Pick<{
+          id: string; user_id: string; full_name: string; phone: string; email: string;
+          location: string; career_goal: string; target_roles: string[];
+          professional_summary: string; skills: unknown; education: unknown;
+          experience: unknown; projects: unknown; certifications: unknown;
+          languages: unknown; references_text: string; raw_conversation_summary: string;
+          missing_info: unknown; cv_strength_score: number;
+        }, 'user_id' | 'full_name' | 'phone' | 'email' | 'location' | 'career_goal' | 'target_roles' | 'professional_summary' | 'skills' | 'education' | 'experience' | 'projects' | 'certifications' | 'languages' | 'references_text' | 'raw_conversation_summary' | 'missing_info' | 'cv_strength_score'>;
+        Update: Partial<Pick<{
+          id: string; user_id: string; full_name: string; phone: string; email: string;
+          location: string; career_goal: string; target_roles: string[];
+          professional_summary: string; skills: unknown; education: unknown;
+          experience: unknown; projects: unknown; certifications: unknown;
+          languages: unknown; references_text: string; raw_conversation_summary: string;
+          missing_info: unknown; cv_strength_score: number;
+        }, 'full_name' | 'phone' | 'email' | 'location' | 'career_goal' | 'target_roles' | 'professional_summary' | 'skills' | 'education' | 'experience' | 'projects' | 'certifications' | 'languages' | 'references_text' | 'raw_conversation_summary' | 'missing_info' | 'cv_strength_score'>>;
+        Relationships: [];
+      };
+      cv_conversations: {
+        Row: {
+          id: string;
+          user_id: string;
+          cv_profile_id: string | null;
+          messages: unknown;
+          current_stage: string | null;
+          completed_stages: string[] | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Pick<{
+          id: string; user_id: string; cv_profile_id: string; messages: unknown;
+          current_stage: string; completed_stages: string[];
+        }, 'user_id' | 'cv_profile_id' | 'messages' | 'current_stage' | 'completed_stages'>;
+        Update: Partial<Pick<{
+          id: string; user_id: string; cv_profile_id: string; messages: unknown;
+          current_stage: string; completed_stages: string[];
+        }, 'messages' | 'current_stage' | 'completed_stages'>>;
+        Relationships: [];
+      };
+      generated_cvs: {
+        Row: {
+          id: string;
+          user_id: string;
+          cv_profile_id: string | null;
+          job_id: number | null;
+          cv_type: string;
+          content_markdown: string;
+          content_json: unknown;
+          created_at: string;
+        };
+        Insert: Pick<{
+          id: string; user_id: string; cv_profile_id: string; job_id: number;
+          cv_type: string; content_markdown: string; content_json: unknown;
+        }, 'user_id' | 'cv_profile_id' | 'job_id' | 'cv_type' | 'content_markdown' | 'content_json'>;
+        Update: never;
+        Relationships: [];
+      };
       saved_jobs: {
         Row: {
           id: number;
@@ -527,6 +608,27 @@ export type DbSchema = {
           job_location: string;
           job_closing_date: string;
           job_source_group: string;
+        }>;
+      };
+      save_generated_cv: {
+        Params: {
+          p_cv_profile_id: string;
+          p_job_id?: number | null;
+          p_cv_type: string;
+          p_content_markdown: string;
+          p_content_json?: unknown;
+        };
+        Returns: string;
+      };
+      get_latest_generated_cv: {
+        Params: { p_job_id?: number | null };
+        Returns: Array<{
+          id: string;
+          cv_type: string;
+          content_markdown: string;
+          content_json: unknown;
+          job_id: number | null;
+          created_at: string;
         }>;
       };
     };

@@ -598,6 +598,22 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               <SaveJobButton jobId={jobId} />
               <MarkAsAppliedButton jobId={jobId} jobTitle={job.title || ''} />
             </div>
+
+            {/* Tailor CV to this job */}
+            <div className="mt-3 pt-3 border-t border-[var(--border)]">
+              <a
+                href={`/cv-builder/tailor/${jobId}`}
+                className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-2.5 text-sm font-medium text-[var(--accent)] transition-all hover:bg-[var(--accent)]/20 pointer-active"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+                Tailor my CV for this job
+              </a>
+              <p className="mt-1.5 text-[0.625rem] text-[var(--text-muted)] text-center">
+                Generate a custom CV matching this job&apos;s requirements
+              </p>
+            </div>
           </div>
 
           {/* Additional details */}

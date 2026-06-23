@@ -1,4 +1,20 @@
-'use client';
+#!/usr/bin/env python3
+"""
+CV Journey — Phases 2-7: Rewrite /cv into agent-led chat interface.
+This script creates the full new /cv page with:
+- Staged interview flow (intro → personal → goal → education → experience → skills → projects → certifications → achievements → references → review → generate)
+- Chat-style UI
+- Progress indicator
+- Skip/Edit/Save/Continue
+- CV strength score
+- ATS-friendly CV generation
+- PDF export via window.print()
+- Tailor to job CTA on /feed/[id]
+"""
+import os
+
+# ─── NEW /cv PAGE ───
+cv_page = r''''use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -230,7 +246,7 @@ function generateCvHtml(markdown: string, fullName: string): string {
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/• /g, '<li>')
     .replace(/<li>/g, '</li><li>')
-    .replace(/(<li>[^<]*<\/li>)/g, '<ul>$1</ul>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
     .replace(/<\/li><li>/g, '')
     .replace(/<\/ul>\n<ul>/g, '')
     .replace(/\n\n/g, '<br/><br/>')
@@ -1020,3 +1036,11 @@ export default function CVJourneyPage() {
     </div>
   );
 }
+'''
+
+# Write the new /cv page
+cv_path = "/root/Aetherlink/apps/webapp/src/app/(dashboard)/cv/page.tsx"
+with open(cv_path, "w") as f:
+    f.write(cv_page)
+
+print(f"✅ /cv page rewritten: {cv_path}")
