@@ -17,6 +17,7 @@
 
   /* ── Accent Colors ── */
   --accent:        #6366f1;
+  --accent-btn:    #4f46e5;
   --accent-dim:    #4338ca;
   --accent-hover:  #818cf8;
   --accent-active: #a5b4fc;
@@ -26,7 +27,7 @@
   /* ── Text Hierarchy ── */
   --text-primary:    #f4f4f5;
   --text-secondary:  #a1a1aa;
-  --text-muted:      #71717a;
+  --text-muted:      #7a7a84;
   --text-faint:      #52525b;
 
   /* ── Semantic Colors ── */
@@ -56,6 +57,11 @@
 
   /* ── Login card ── */
   --login-card-border: rgba(255, 255, 255, 0.08);
+
+  /* ── Surface (alias for bg-surface, used by landing page) ── */
+  --surface: var(--bg-surface);
+  --surface-raised: var(--bg-raised);
+  --surface-elevated: var(--bg-raised);
 
   /* ── Glass surfaces ── */
   --glass-bg: rgba(255, 255, 255, 0.025);
@@ -171,8 +177,8 @@ hr {
 }
 
 .premium-btn-primary {
-  background: var(--accent);
-  color: var(--text-primary);
+  background: var(--accent-btn);
+  color: #ffffff;
   padding: 0.625rem 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -324,9 +330,9 @@ hr {
 }
 
 .pill.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--text-primary);
+  background: var(--accent-btn);
+  border-color: var(--accent-btn);
+  color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -1109,9 +1115,9 @@ body.onboarding-active main {
 }
 
 .google-btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--text-primary);
+  background: var(--accent-btn);
+  border-color: var(--accent-btn);
+  color: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
