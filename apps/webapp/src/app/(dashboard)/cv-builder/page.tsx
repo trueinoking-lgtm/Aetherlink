@@ -412,7 +412,7 @@ function PersonalStep({ data, update }: { data: PersonalDetails; update: (v: Per
           <input className={`premium-input ${data.fullName.trim().length > 0 && data.fullName.trim().length <= 2 ? 'border-[var(--warning)]' : ''}`} placeholder="John Doe" value={data.fullName}
             onChange={(e) => update({ ...data, fullName: e.target.value })} />
           {data.fullName.trim().length > 0 && data.fullName.trim().length <= 2 && (
-            <p className="mt-1 text-xs text-[var(--warning)]">Name seems short — please enter your full name.</p>
+            <p className="mt-1 text-xs text-[var(--warning)]">Name seems short - please enter your full name.</p>
           )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -548,7 +548,7 @@ function ExperienceStep({ data, update }: { data: ExperienceEntry[]; update: (v:
 
   return (
     <div>
-      <StepHeader title="Tell us about your experience" subtitle="Include work, volunteer roles, or significant projects. Don't worry if you're just starting out — we'll help you frame it." />
+      <StepHeader title="Tell us about your experience" subtitle="Include work, volunteer roles, or significant projects. Don't worry if you're just starting out - we'll help you frame it." />
       {data.length === 0 && (
         <div className="mb-3 p-3 rounded-lg bg-[var(--accent)]/[0.06] border border-[var(--border-accent)]">
           <p className="text-xs text-[var(--text-secondary)]">
@@ -629,7 +629,7 @@ function SkillsStep({ data, update }: { data: SkillsData; update: (v: SkillsData
 
   return (
     <div>
-      <StepHeader title="What are you great at?" subtitle="Skills help employers find you. Add as many as you can — we'll help you organize them." />
+      <StepHeader title="What are you great at?" subtitle="Skills help employers find you. Add as many as you can - we'll help you organize them." />
       <div className="flex gap-2 mb-4">
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -713,7 +713,7 @@ function ReferenceStep({ data, update }: { data: ReferenceEntry[]; update: (v: R
 
   return (
     <div>
-      <StepHeader title="Who can vouch for you?" subtitle="Add professional references — managers, professors, or colleagues who can speak to your work." />
+      <StepHeader title="Who can vouch for you?" subtitle="Add professional references - managers, professors, or colleagues who can speak to your work." />
       {data.map((ref) => (
         <div key={ref.id} className="mb-3 glass-card p-4">
           <div className="flex items-start justify-between">
@@ -797,7 +797,7 @@ function ReviewStep({ data, score, onGeneratePdf, onSave }: { data: CvBuilderDat
             <p className="text-sm font-semibold text-[var(--text-primary)] mb-2">Experience</p>
             {data.experience.map(exp => (
               <div key={exp.id} className="mb-2">
-                <p className="text-sm text-[var(--text-primary)]">{exp.role} — {exp.company}</p>
+                <p className="text-sm text-[var(--text-primary)]">{exp.role} - {exp.company}</p>
                 <p className="text-xs text-[var(--text-muted)]">{exp.duration}</p>
               </div>
             ))}

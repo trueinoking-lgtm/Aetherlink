@@ -639,13 +639,13 @@ export default function CVJourneyPage() {
       if (!res.ok) throw new Error(`API error ${res.status}`);
 
       const data = await res.json();
-      const question: string = data.question || 'Hey! 👋 Let\'s get your CV started. Tell me about yourself — what kind of role are you looking for?';
+      const question: string = data.question || 'Hey! Let\'s get your CV started. Tell me about yourself - what kind of role are you looking for?';
 
       setCurrentQuestion(question);
       setInterviewMessages([{ role: 'assistant', content: question }]);
       setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
     } catch {
-      const fallbackQ = 'Hey! 👋 Let\'s get your CV started. Tell me about yourself — what kind of role are you looking for?';
+      const fallbackQ = 'Hey! Let\'s get your CV started. Tell me about yourself - what kind of role are you looking for?';
       setCurrentQuestion(fallbackQ);
       setInterviewMessages([{ role: 'assistant', content: fallbackQ }]);
       setDebugInfo({
@@ -809,7 +809,7 @@ export default function CVJourneyPage() {
         // If brief answer with no drafted bullets, add a reassuring message
         if (trimmed.length >= 10 && trimmed.length <= 25 && !complete) {
           const casualReplies = [
-            "Got it — I'll work with that!",
+            "Got it - I'll work with that!",
             "Nice, I have what I need there.",
             "That works! Let's keep going.",
             "Great, I can work with that. On to the next thing."
@@ -827,7 +827,7 @@ export default function CVJourneyPage() {
 
       setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
     } catch {
-      const fallbackQ = 'Got it! Let\'s keep going — what else should I know?';
+      const fallbackQ = 'Got it! Let\'s keep going - what else should I know?';
       setCurrentQuestion(fallbackQ);
       setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
       setDebugInfo({
@@ -1690,7 +1690,7 @@ export default function CVJourneyPage() {
                 <div className="glass-card p-4">
                   {editingSection === 'education' ? (
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-[var(--text-secondary)]">Education (one per line: Degree — Institution Year)</label>
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Education (one per line: Degree - Institution Year)</label>
                       <textarea
                         className="premium-input w-full min-h-[80px] resize-none"
                         value={editValue}
@@ -1710,7 +1710,7 @@ export default function CVJourneyPage() {
                           <p key={i} className="text-sm text-[var(--text-primary)]">
                             {edu.degree || edu.qualification || ''}
                             {edu.field ? ` in ${edu.field}` : ''}
-                            {edu.institution ? ` — ${edu.institution}` : ''}
+                            {edu.institution ? ` - ${edu.institution}` : ''}
                             {edu.year ? ` (${edu.year})` : ''}
                           </p>
                         ))}
@@ -1763,7 +1763,7 @@ export default function CVJourneyPage() {
                 <div className="glass-card p-4">
                   {editingSection === 'certifications' ? (
                     <div className="space-y-2">
-                      <label className="text-xs font-medium text-[var(--text-secondary)]">Certifications (one per line: Name — Issuer Year)</label>
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Certifications (one per line: Name - Issuer Year)</label>
                       <textarea
                         className="premium-input w-full min-h-[80px] resize-none"
                         value={editValue}
@@ -1781,7 +1781,7 @@ export default function CVJourneyPage() {
                         <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Certifications</p>
                         {(Array.isArray(generatedCv.certifications) ? generatedCv.certifications : []).map((cert: any, i: number) => (
                           <p key={i} className="text-sm text-[var(--text-primary)]">
-                            {cert.name}{cert.issuer ? ` — ${cert.issuer}` : ''}{cert.year ? ` (${cert.year})` : ''}
+                            {cert.name}{cert.issuer ? ` - ${cert.issuer}` : ''}{cert.year ? ` (${cert.year})` : ''}
                           </p>
                         ))}
                         {(!generatedCv.certifications || (Array.isArray(generatedCv.certifications) && generatedCv.certifications.length === 0)) && (
@@ -2010,8 +2010,8 @@ export default function CVJourneyPage() {
                   <span>Route: <span className="text-[var(--text-secondary)]">{debugInfo.route}</span></span>
                 </div>
                 <div className="flex gap-4 flex-wrap">
-                  <span>Input tokens: <span className="text-[var(--text-secondary)]">{debugInfo.inputTokens ?? '—'}</span></span>
-                  <span>Output tokens: <span className="text-[var(--text-secondary)]">{debugInfo.outputTokens ?? '—'}</span></span>
+                  <span>Input tokens: <span className="text-[var(--text-secondary)]">{debugInfo.inputTokens ?? '-'}</span></span>
+                  <span>Output tokens: <span className="text-[var(--text-secondary)]">{debugInfo.outputTokens ?? '-'}</span></span>
                   <span>Status: <span className={debugInfo.fallback ? 'text-[var(--warning)]' : 'text-[var(--success)]'}>
                     {debugInfo.fallback ? '⚠ Fallback used' : '✓ AI generated'}
                   </span></span>

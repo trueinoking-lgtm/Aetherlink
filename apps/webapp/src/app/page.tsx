@@ -94,7 +94,7 @@ export default function LoginPage() {
                   href="/pricing"
                   className="premium-btn text-sm font-semibold pointer-active !py-2.5 !px-5"
                 >
-                  Go Pro — $9.99/mo
+                  Go Pro - $9.99/mo
                 </a>
               </div>
 

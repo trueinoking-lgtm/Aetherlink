@@ -297,7 +297,7 @@ function PremiumJobCard({
             </span>
           )}
           {postedDate && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--glass-bg-subtle)] px-2.5 py-0.5 text-[0.6875rem] font-medium text-[var(--text-faint)]">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--glass-bg-subtle)] px-2.5 py-0.5 text-[0.6875rem] font-medium text-[var(--text-muted)]">
               <CalendarIcon className="w-3 h-3" />
               {postedDate}
             </span>
@@ -321,7 +321,7 @@ function PremiumJobCard({
           </div>
         )}
         {!showScore && (
-          <p className="mt-2 text-[0.625rem] text-[var(--text-faint)] italic">
+          <p className="mt-2 text-[0.625rem] text-[var(--text-muted)] italic">
             Add 3+ skills in your profile to see match scores
           </p>
         )}
@@ -945,7 +945,7 @@ export default function FeedPage() {
       {/* All loaded indicator */}
       {!loading && !hasMore && totalLoaded > PAGE_SIZE && (
         <p className="text-center text-xs text-[var(--text-muted)] py-4">
-          All {totalLoaded} jobs loaded — you&apos;re all caught up 🎉
+          All {totalLoaded} jobs loaded - you&apos;re all caught up🎉
         </p>
       )}
     </div>

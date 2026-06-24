@@ -240,7 +240,7 @@ function computeMatch(cv: CvBuilderData, job: Job): MatchResult {
   }
 
   if (cv.certifications.length === 0 && reqTexts.some((r) => /certif|license|credential/i.test(r))) {
-    suggestions.push('Consider adding relevant certifications — the job mentions certification/licensing requirements');
+    suggestions.push('Consider adding relevant certifications - the job mentions certification/licensing requirements');
   }
 
   if (cv.education.length === 0) {
@@ -335,14 +335,14 @@ function generateTailoredCv(cv: CvBuilderData, job: Job, match: MatchResult): Ta
   const cvKeywords = [...new Set([cv.summary, ...getAllSkills(cv)].join(' ').toLowerCase().split(' '))];
   const overlap = jobKeywords.filter((t) => cvKeywords.includes(t));
 
-  let tailoredSummary = cv.summary || cv.headline || `${cv.fullName} — Professional`;
+  let tailoredSummary = cv.summary || cv.headline || `${cv.fullName} - Professional`;
   if (cv.summary && overlap.length > 2) {
     tailoredSummary = cv.summary;
   } else if (cv.headline) {
     // Enrich headline with matching job keywords
     const extra = overlap.slice(0, 3).join(', ');
     tailoredSummary = extra
-      ? `${cv.headline} — Skilled in ${extra}`
+      ? `${cv.headline} - Skilled in ${extra}`
       : cv.headline;
   }
 
@@ -1024,7 +1024,7 @@ export default function CvTailorPage({ params }: { params: Promise<{ jobId: stri
                     <div key={i} className="mb-2 last:mb-0">
                       <p className="text-sm font-medium text-[var(--text-primary)]">{edu.qualification}</p>
                       <p className="text-xs text-[var(--text-secondary)]">
-                        {edu.institution}{edu.honors ? ` — ${edu.honors}` : ''}{edu.year ? ` (${edu.year})` : ''}
+                        {edu.institution}{edu.honors ? ` - ${edu.honors}` : ''}{edu.year ? ` (${edu.year})` : ''}
                       </p>
                     </div>
                   ))}
@@ -1036,7 +1036,7 @@ export default function CvTailorPage({ params }: { params: Promise<{ jobId: stri
                   <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">Certifications</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {cv.certifications.map((c, i) => (
-                      <span key={i} className="skill-tag text-xs">{c.name}{c.issuingBody ? ` — ${c.issuingBody}` : ''}</span>
+                      <span key={i} className="skill-tag text-xs">{c.name}{c.issuingBody ? ` - ${c.issuingBody}` : ''}</span>
                     ))}
                   </div>
                 </div>
@@ -1118,7 +1118,7 @@ export default function CvTailorPage({ params }: { params: Promise<{ jobId: stri
                 <div>
                   <h3 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                     Experience
-                    <span className="ml-2 text-[10px] font-normal text-[var(--text-faint)]">(ordered by relevance)</span>
+                    <span className="ml-2 text-[10px] font-normal text-[var(--text-muted)]">(ordered by relevance)</span>
                   </h3>
                   {tailored.experience.map((exp, i) => (
                     <div
