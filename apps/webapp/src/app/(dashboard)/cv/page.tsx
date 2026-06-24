@@ -86,7 +86,8 @@ function computeStrengthScore(data: CvData): { score: number; missing: string[] 
   const hasTypo = (s: string): boolean =>
     /\b(pythob|phython|javascrit|javasript|typescrit|typscript|communcation|teamwrok|leardership|managemetn|organisational|analytial|probelm|solv(e|ing)|htlm|htmll?|csss?|bootstrap)\b/i.test(s);
 
-  const skills = (data.skills || []).filter(s => s.trim().length > 0);
+  const rawSkills = normalizeSkills(data.skills);
+  const skills = rawSkills.filter(s => s.trim().length > 0);
   const hasLowercaseFrags = skills.some(s => /^[a-z]/.test(s.trim()));
   const hasTyposInSkills = skills.some(s => hasTypo(s.trim()));
 
@@ -198,7 +199,77 @@ function computeStrengthScore(data: CvData): { score: number; missing: string[] 
   return { score, missing };
 }
 
+/** Get a friendly label and color for a strength score. */
+function getScoreMeta(score: number): { label: string; color: string } {
+  if (score >= 80) return { label: 'Excellent', color: 'var(--success)' };
+  if (score >= 60) return { label: 'Strong', color: 'var(--success)' };
+  if (score >= 40) return { label: 'Good start', color: 'var(--warning)' };
+  if (score >= 20) return { label: 'Getting there', color: 'var(--warning)' };
+  return { label: 'Let\'s build!', color: 'var(--danger)' };
+}
+
+/** Identify what's strong in the CV so far. */
+function computeStrengths(data: CvData): string[] {
+  const strong: string[] = [];
+  if (data.personalDetails.fullName && (data.personalDetails.email || data.personalDetails.phone) && data.personalDetails.location) {
+    strong.push('Contact details');
+  }
+  if (data.careerGoal) strong.push('Career direction');
+  if (normalizeSkills(data.skills).length >= 3) strong.push('Skills');
+  if ((data.experience || []).length > 0 && data.experience.some(e => e.description?.trim().length > 5)) {
+    strong.push('Project experience');
+  }
+  if ((data.projects || []).length > 0) strong.push('Projects');
+  if ((data.education || []).length > 0) strong.push('Education');
+  if ((data.certifications || []).length > 0) strong.push('Certifications');
+  if (data.professionalSummary) strong.push('Professional summary');
+  return strong;
+}
+
 // ─── Helpers ─────────────────────────────────────────────
+
+/** Normalize skills to string[] — flattens object shapes like { technical, soft, tools }. */
+function normalizeSkills(skills: unknown): string[] {
+  if (!skills) return [];
+  if (Array.isArray(skills)) {
+    return skills.map(s => {
+      if (typeof s === 'string') return s;
+      if (s && typeof s === 'object') {
+        // Try common key names, then fall back to string
+        const obj = s as Record<string, unknown>;
+        return String(obj.name ?? obj.skill ?? obj.label ?? Object.values(obj).find(v => typeof v === 'string') ?? JSON.stringify(obj));
+      }
+      return String(s);
+    }).filter(Boolean);
+  }
+  if (typeof skills === 'object' && skills !== null) {
+    const obj = skills as Record<string, unknown>;
+    const flat: string[] = [];
+    for (const key of ['technical', 'soft', 'tools', 'skills', 'all']) {
+      if (Array.isArray(obj[key])) {
+        flat.push(...obj[key].map(String));
+      }
+    }
+    if (flat.length > 0) return [...new Set(flat)];
+    // Try all values that are strings
+    return Object.values(obj).filter(v => typeof v === 'string').map(String);
+  }
+  return [String(skills)];
+}
+
+/** Classify a question into a topic for loop detection. */
+function classifyQuestion(question: string): string {
+  const q = question.toLowerCase();
+  if (q.includes('skill')) return 'skills';
+  if (q.includes('experience') || q.includes('work history') || q.includes('previous job')) return 'experience';
+  if (q.includes('education') || q.includes('study') || q.includes('school') || q.includes('university') || q.includes('college') || q.includes('degree')) return 'education';
+  if (q.includes('project')) return 'projects';
+  if (q.includes('certif') || q.includes('license') || q.includes('credential')) return 'certifications';
+  if (q.includes('name') || q.includes('contact') || q.includes('email') || q.includes('phone')) return 'personal';
+  if (q.includes('goal') || q.includes('career') || q.includes('target role')) return 'career';
+  if (q.includes('generate') || q.includes('complete') || q.includes('ready')) return 'completion';
+  return 'other';
+}
 
 /** Merge AI-extracted fields into CvData. Supports both flat keys and nested shapes. */
 function mergeExtractedData(cvData: CvData, extracted: Record<string, unknown>): CvData {
@@ -228,9 +299,11 @@ function mergeExtractedData(cvData: CvData, extracted: Record<string, unknown>):
   if (extracted.professionalSummary && typeof extracted.professionalSummary === 'string') {
     next.professionalSummary = extracted.professionalSummary;
   }
-  if (Array.isArray(extracted.skills)) {
-    const merged = [...new Set([...next.skills, ...extracted.skills.map(String)])];
-    next.skills = merged;
+  if (extracted.skills) {
+    const normalized = normalizeSkills(extracted.skills);
+    if (normalized.length > 0) {
+      next.skills = [...new Set([...next.skills, ...normalized])];
+    }
   }
   if (Array.isArray(extracted.experience)) {
     next.experience = extracted.experience.map((e: any) => ({
@@ -365,11 +438,39 @@ export default function CVJourneyPage() {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
+  // ── AI Draft Preview state ──
+  const [draftBullets, setDraftBullets] = useState<string[] | null>(null);
+  const [draftQuestion, setDraftQuestion] = useState('');
+  const [isEditingDraft, setIsEditingDraft] = useState(false);
+  const [draftEditText, setDraftEditText] = useState('');
+  const [isRegeneratingDraft, setIsRegeneratingDraft] = useState(false);
+
+  // ── Short answer prompt state ──
+  const [shortAnswerPrompt, setShortAnswerPrompt] = useState<string | null>(null);
+  const [pendingShortAnswer, setPendingShortAnswer] = useState<string | null>(null);
+
+  // ── Loop detection state ──
+  const [recentQuestionTypes, setRecentQuestionTypes] = useState<string[]>([]);
+  const autoAcceptRef = useRef(false);
+
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const lastMessagesRef = useRef(interviewMessages);
+
+  // Keep ref in sync for regeneration use
+  lastMessagesRef.current = interviewMessages;
 
   const { score, missing } = computeStrengthScore(cvData);
+  const scoreMeta = getScoreMeta(score);
+  const strengths = computeStrengths(cvData);
+
+  // ─── Determine debug visibility ──
+  useEffect(() => {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const hasDebugParam = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
+    setShowDebug(isDev || hasDebugParam);
+  }, []);
 
   // ─── Load existing data ──────────────────────────────────
   useEffect(() => {
@@ -400,7 +501,7 @@ export default function CVJourneyPage() {
                 careerGoal: p.career_goal || '',
                 education: p.education || [],
                 experience: p.experience || [],
-                skills: Array.isArray(p.skills) ? p.skills : (p.skills?.technical || []),
+                skills: normalizeSkills(p.skills),
                 projects: p.projects || [],
                 certifications: p.certifications || [],
                 achievements: p.achievements || [],
@@ -458,7 +559,65 @@ export default function CVJourneyPage() {
   // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [interviewMessages, currentQuestion]);
+  }, [interviewMessages, currentQuestion, draftBullets]);
+
+  // ─── Loop detection: auto-accept repeated question types ──
+  useEffect(() => {
+    if (autoAcceptRef.current) {
+      autoAcceptRef.current = false;
+      // Auto-accept by sending a brief acknowledgement
+      const doAutoAccept = async () => {
+        setIsAsking(true);
+        const autoAnswer = 'Got it, let\'s move on.';
+        const updatedMessages = [...interviewMessages, { role: 'user' as const, content: autoAnswer }];
+        setInterviewMessages(updatedMessages);
+
+        try {
+          const res = await fetch('/api/cv/interview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: updatedMessages,
+              userProfile: extractedData,
+              targetRole: cvData.careerGoal || '',
+              stage: 'continue',
+            }),
+          });
+
+          if (!res.ok) throw new Error(`API error ${res.status}`);
+
+          const data = await res.json();
+          const question: string = data.question || 'Could you tell me more?';
+
+          if (data.extractedData && typeof data.extractedData === 'object') {
+            const newExtracted = { ...extractedData, ...data.extractedData };
+            setExtractedData(newExtracted);
+            setCvData(prev => mergeExtractedData(prev, data.extractedData));
+          }
+
+          const complete = isCompletionQuestion(question);
+          setCurrentQuestion(question);
+          setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
+          setIsInterviewComplete(complete);
+          setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+        } catch {
+          const fallbackQ = 'Alright, let\'s keep going. What else should I know about you?';
+          setCurrentQuestion(fallbackQ);
+          setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
+          setDebugInfo({
+            provider: 'fireworks',
+            model: 'deepseek-v4-flash',
+            route: 'api/cv/interview',
+            fallback: true,
+          });
+        } finally {
+          setIsAsking(false);
+          setTimeout(() => inputRef.current?.focus(), 100);
+        }
+      };
+      doAutoAccept();
+    }
+  }, [autoAcceptRef.current]);
 
   // ─── Interview: start ────────────────────────────────────
   const handleStart = useCallback(async () => {
@@ -480,14 +639,13 @@ export default function CVJourneyPage() {
       if (!res.ok) throw new Error(`API error ${res.status}`);
 
       const data = await res.json();
-      const question: string = data.question || 'Tell me about yourself and what kind of role you are looking for.';
+      const question: string = data.question || 'Hey! 👋 Let\'s get your CV started. Tell me about yourself — what kind of role are you looking for?';
 
       setCurrentQuestion(question);
       setInterviewMessages([{ role: 'assistant', content: question }]);
       setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
     } catch {
-      // Fallback question
-      const fallbackQ = 'Tell me about yourself and what kind of role you are looking for.';
+      const fallbackQ = 'Hey! 👋 Let\'s get your CV started. Tell me about yourself — what kind of role are you looking for?';
       setCurrentQuestion(fallbackQ);
       setInterviewMessages([{ role: 'assistant', content: fallbackQ }]);
       setDebugInfo({
@@ -507,6 +665,87 @@ export default function CVJourneyPage() {
     const trimmed = input.trim();
     if (!trimmed || isAsking) return;
 
+    // ─── Answer sufficiency check ──────────────────────────
+    // If we were prompting for more detail and user is responding
+    if (shortAnswerPrompt !== null) {
+      const combined = pendingShortAnswer
+        ? `${pendingShortAnswer} ${trimmed}`
+        : trimmed;
+      setShortAnswerPrompt(null);
+      setPendingShortAnswer(null);
+
+      // Proceed with the combined answer
+      setInput('');
+      setIsAsking(true);
+
+      const updatedMessages = [...interviewMessages, { role: 'user' as const, content: combined }];
+      setInterviewMessages(updatedMessages);
+
+      try {
+        const res = await fetch('/api/cv/interview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: updatedMessages,
+            userProfile: extractedData,
+            targetRole: cvData.careerGoal || '',
+            stage: 'continue',
+          }),
+        });
+
+        if (!res.ok) throw new Error(`API error ${res.status}`);
+
+        const data = await res.json();
+        const question: string = data.question || 'Could you tell me more?';
+
+        if (data.extractedData && typeof data.extractedData === 'object') {
+          const newExtracted = { ...extractedData, ...data.extractedData };
+          setExtractedData(newExtracted);
+          setCvData(prev => mergeExtractedData(prev, data.extractedData));
+        }
+
+        // Handle AI drafted bullets
+        if (data.aiDraftedBullets && Array.isArray(data.aiDraftedBullets) && data.aiDraftedBullets.length > 0) {
+          setDraftBullets(data.aiDraftedBullets);
+          setDraftEditText(data.aiDraftedBullets.join('\n'));
+          setDraftQuestion(question);
+          setIsEditingDraft(false);
+          // Don't add the question yet — wait for draft accept
+        } else {
+          const complete = isCompletionQuestion(question);
+          setCurrentQuestion(question);
+          setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
+          setIsInterviewComplete(complete);
+        }
+
+        setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+      } catch {
+        const fallbackQ = 'Thanks for that! Let\'s keep moving.';
+        setCurrentQuestion(fallbackQ);
+        setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
+        setDebugInfo({
+          provider: 'fireworks',
+          model: 'deepseek-v4-flash',
+          route: 'api/cv/interview',
+          fallback: true,
+        });
+      } finally {
+        setIsAsking(false);
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+      return;
+    }
+
+    // Check answer length
+    if (trimmed.length < 10) {
+      // Very short answer — gently ask once for more
+      setShortAnswerPrompt(trimmed);
+      setPendingShortAnswer(trimmed);
+      setInput('');
+      return;
+    }
+
+    // Brief answer (10-25 chars) or full answer (>25 chars)
     setInput('');
     setIsAsking(true);
 
@@ -537,15 +776,58 @@ export default function CVJourneyPage() {
         setCvData(prev => mergeExtractedData(prev, data.extractedData));
       }
 
-      // Check if interview is complete
-      const complete = isCompletionQuestion(question);
+      // ─── Loop detection ──────────────────────────────────
+      const qType = classifyQuestion(question);
+      setRecentQuestionTypes(prev => {
+        const next = [...prev, qType].slice(-3);
+        // Check for duplicate
+        const lastTwo = next.slice(-2);
+        if (lastTwo.length === 2 && lastTwo[0] === lastTwo[1] && lastTwo[0] !== 'completion' && lastTwo[0] !== 'other') {
+          autoAcceptRef.current = true;
+        }
+        return next;
+      });
 
-      setCurrentQuestion(question);
-      setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
-      setIsInterviewComplete(complete);
+      // Handle AI drafted bullets
+      if (data.aiDraftedBullets && Array.isArray(data.aiDraftedBullets) && data.aiDraftedBullets.length > 0) {
+        setDraftBullets(data.aiDraftedBullets);
+        setDraftEditText(data.aiDraftedBullets.join('\n'));
+        setDraftQuestion(question);
+        setIsEditingDraft(false);
+        // If it was a brief answer (10-25 chars), add an "I'll work with that" message
+        if (trimmed.length >= 10 && trimmed.length <= 25) {
+          setInterviewMessages(prev => [...prev, {
+            role: 'assistant',
+            content: "That's enough for me to work with. I'll polish this into something solid."
+          }]);
+        }
+        // Don't add next question yet
+      } else {
+        // Check if interview is complete
+        const complete = isCompletionQuestion(question);
+
+        // If brief answer with no drafted bullets, add a reassuring message
+        if (trimmed.length >= 10 && trimmed.length <= 25 && !complete) {
+          const casualReplies = [
+            "Got it — I'll work with that!",
+            "Nice, I have what I need there.",
+            "That works! Let's keep going.",
+            "Great, I can work with that. On to the next thing."
+          ];
+          setInterviewMessages(prev => [...prev, {
+            role: 'assistant',
+            content: casualReplies[Math.floor(Math.random() * casualReplies.length)]
+          }]);
+        }
+
+        setCurrentQuestion(question);
+        setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
+        setIsInterviewComplete(complete);
+      }
+
       setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
     } catch {
-      const fallbackQ = 'Thanks for that. Could you elaborate a bit more on your background?';
+      const fallbackQ = 'Got it! Let\'s keep going — what else should I know?';
       setCurrentQuestion(fallbackQ);
       setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
       setDebugInfo({
@@ -558,7 +840,137 @@ export default function CVJourneyPage() {
       setIsAsking(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [input, interviewMessages, extractedData, cvData.careerGoal, isAsking]);
+  }, [input, interviewMessages, extractedData, cvData.careerGoal, isAsking, shortAnswerPrompt, pendingShortAnswer]);
+
+  // ─── Draft: Accept ───────────────────────────────────────
+  const handleAcceptDraft = useCallback(() => {
+    if (!draftQuestion) return;
+    const complete = isCompletionQuestion(draftQuestion);
+    setCurrentQuestion(draftQuestion);
+    setInterviewMessages(prev => [...prev, { role: 'assistant', content: draftQuestion }]);
+    setIsInterviewComplete(complete);
+    setDraftBullets(null);
+    setDraftQuestion('');
+    setDraftEditText('');
+    setIsEditingDraft(false);
+  }, [draftQuestion]);
+
+  // ─── Draft: Edit toggle ──────────────────────────────────
+  const handleEditDraft = useCallback(() => {
+    setIsEditingDraft(prev => !prev);
+  }, []);
+
+  // ─── Draft: Save edited text ─────────────────────────────
+  const handleSaveDraftEdit = useCallback(() => {
+    const lines = draftEditText.split('\n').filter(l => l.trim());
+    setDraftBullets(lines);
+    setIsEditingDraft(false);
+    // Then accept
+    handleAcceptDraft();
+  }, [draftEditText, handleAcceptDraft]);
+
+  // ─── Draft: Regenerate ───────────────────────────────────
+  const handleRegenerateDraft = useCallback(async () => {
+    if (isRegeneratingDraft) return;
+    setIsRegeneratingDraft(true);
+
+    try {
+      // Re-call the interview API with the current messages to get new phrasing
+      // We use the same messages that produced the draft (without the draft question)
+      const res = await fetch('/api/cv/interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: interviewMessages,
+          userProfile: extractedData,
+          targetRole: cvData.careerGoal || '',
+          stage: 'continue',
+        }),
+      });
+
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+
+      const data = await res.json();
+
+      if (data.aiDraftedBullets && Array.isArray(data.aiDraftedBullets) && data.aiDraftedBullets.length > 0) {
+        setDraftBullets(data.aiDraftedBullets);
+        setDraftEditText(data.aiDraftedBullets.join('\n'));
+        setDraftQuestion(data.question || draftQuestion);
+      } else {
+        // No bullets this time — just accept with whatever we have
+        handleAcceptDraft();
+      }
+      setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+    } catch {
+      // Keep existing draft on error
+    } finally {
+      setIsRegeneratingDraft(false);
+    }
+  }, [interviewMessages, extractedData, cvData.careerGoal, draftQuestion, isRegeneratingDraft, handleAcceptDraft]);
+
+  // ─── Short answer: proceed with short answer ─────────────
+  const handleProceedWithShortAnswer = useCallback(async () => {
+    if (!pendingShortAnswer) return;
+    const short = pendingShortAnswer;
+    setShortAnswerPrompt(null);
+    setPendingShortAnswer(null);
+    setInput('');
+    setIsAsking(true);
+
+    const updatedMessages = [...interviewMessages, { role: 'user' as const, content: short }];
+    setInterviewMessages(updatedMessages);
+
+    try {
+      const res = await fetch('/api/cv/interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages,
+          userProfile: extractedData,
+          targetRole: cvData.careerGoal || '',
+          stage: 'continue',
+        }),
+      });
+
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+
+      const data = await res.json();
+      const question: string = data.question || 'Could you tell me more?';
+
+      if (data.extractedData && typeof data.extractedData === 'object') {
+        const newExtracted = { ...extractedData, ...data.extractedData };
+        setExtractedData(newExtracted);
+        setCvData(prev => mergeExtractedData(prev, data.extractedData));
+      }
+
+      if (data.aiDraftedBullets && Array.isArray(data.aiDraftedBullets) && data.aiDraftedBullets.length > 0) {
+        setDraftBullets(data.aiDraftedBullets);
+        setDraftEditText(data.aiDraftedBullets.join('\n'));
+        setDraftQuestion(question);
+        setIsEditingDraft(false);
+      } else {
+        const complete = isCompletionQuestion(question);
+        setCurrentQuestion(question);
+        setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
+        setIsInterviewComplete(complete);
+      }
+
+      setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+    } catch {
+      const fallbackQ = 'Alright, let\'s move on. What else?';
+      setCurrentQuestion(fallbackQ);
+      setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
+      setDebugInfo({
+        provider: 'fireworks',
+        model: 'deepseek-v4-flash',
+        route: 'api/cv/interview',
+        fallback: true,
+      });
+    } finally {
+      setIsAsking(false);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [pendingShortAnswer, interviewMessages, extractedData, cvData.careerGoal]);
 
   // ─── Generate CV ─────────────────────────────────────────
   const handleGenerateCv = useCallback(async () => {
@@ -616,6 +1028,22 @@ export default function CVJourneyPage() {
       setIsGenerating(false);
     }
   }, [extractedData, cvData]);
+
+  // ─── Generate with what I have ───────────────────────────
+  const [showGenerateWarning, setShowGenerateWarning] = useState(false);
+
+  const handleGenerateWithWhatIHave = useCallback(() => {
+    if (!interviewComplete) {
+      setShowGenerateWarning(true);
+    } else {
+      handleGenerateCv();
+    }
+  }, [interviewComplete, handleGenerateCv]);
+
+  const handleConfirmGenerateAnyway = useCallback(() => {
+    setShowGenerateWarning(false);
+    handleGenerateCv();
+  }, [handleGenerateCv]);
 
   // ─── Download PDF ────────────────────────────────────────
   const handleDownloadPdf = useCallback(async () => {
@@ -809,6 +1237,9 @@ export default function CVJourneyPage() {
     }
   }, [editingSection, handleSend, handleSaveEdit]);
 
+  // ─── Render helper: normalize skill for display ──────────
+  const displaySkills = (skills: unknown): string[] => normalizeSkills(skills);
+
   // ─── Loading state ──────────────────────────────────────
   if (loading) {
     return (
@@ -839,16 +1270,29 @@ export default function CVJourneyPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Strength score badge */}
-          <div className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
-            score >= 70 ? 'bg-[var(--success)]/15 text-[var(--success)]' :
-            score >= 40 ? 'bg-[var(--warning)]/15 text-[var(--warning)]' :
-            'bg-[var(--danger)]/15 text-[var(--danger)]'
-          }`}>
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          {/* Encouraging strength score ring */}
+          <div className="relative flex items-center justify-center group">
+            <svg className="h-10 w-10 -rotate-90" viewBox="0 0 36 36" aria-label={`CV strength: ${score} out of 100`}>
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--surface-elevated)" strokeWidth="2.5" />
+              <circle
+                cx="18" cy="18" r="15.5" fill="none"
+                stroke={score >= 60 ? 'var(--success)' : score >= 40 ? 'var(--warning)' : 'var(--danger)'}
+                strokeWidth="2.5"
+                strokeDasharray={`${(score / 100) * 97.4} 97.4`}
+                strokeLinecap="round"
+                className="transition-all duration-700 ease-out"
+              />
             </svg>
-            {score}/100
+            <span className={`absolute text-[10px] font-bold ${
+              score >= 60 ? 'text-[var(--success)]' :
+              score >= 40 ? 'text-[var(--warning)]' :
+              'text-[var(--danger)]'
+            }`}>{score}</span>
+            {/* Tooltip */}
+            <div className="absolute top-full mt-1 right-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-2 shadow-lg whitespace-nowrap">
+              <p className="text-xs font-medium text-[var(--text-primary)]">{scoreMeta.label}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">{score}/100</p>
+            </div>
           </div>
           <button
             onClick={handleSave}
@@ -877,8 +1321,8 @@ export default function CVJourneyPage() {
                   AI-Assisted CV Builder
                 </h2>
                 <p className="text-sm text-[var(--text-secondary)] mb-8 leading-relaxed">
-                  I&apos;ll interview you — one question at a time — to understand your background,
-                  skills, and goals. Then I&apos;ll generate a professional CV tailored to your target role.
+                  I&apos;ll chat with you one question at a time to understand your background,
+                  skills, and goals. Then I&apos;ll whip up a professional CV tailored to your target role.
                 </p>
                 <button
                   onClick={handleStart}
@@ -893,6 +1337,76 @@ export default function CVJourneyPage() {
           {/* ─── Interview mode ─── */}
           {hasStarted && !generatedCv && (
             <>
+              {/* AI Draft Preview Card */}
+              {draftBullets && draftBullets.length > 0 && (
+                <div className="px-4 pt-4">
+                  <div className="glass-card p-4 border border-[var(--accent)]/30 bg-[var(--accent)]/5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-semibold text-[var(--accent)] uppercase tracking-wider">✨ AI drafted this</span>
+                    </div>
+
+                    {isEditingDraft ? (
+                      <textarea
+                        className="premium-input w-full min-h-[100px] resize-none text-sm mb-3"
+                        value={draftEditText}
+                        onChange={(e) => setDraftEditText(e.target.value)}
+                        autoFocus
+                      />
+                    ) : (
+                      <div className="space-y-1 mb-3">
+                        {draftBullets.map((bullet, i) => (
+                          <p key={i} className="text-sm text-[var(--text-primary)] flex items-start gap-2">
+                            <span className="text-[var(--accent)] mt-0.5">•</span>
+                            <span>{bullet}</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      {isEditingDraft ? (
+                        <>
+                          <button
+                            onClick={handleSaveDraftEdit}
+                            className="premium-btn premium-btn-primary text-xs pointer-active"
+                          >
+                            Save & Accept
+                          </button>
+                          <button
+                            onClick={() => setIsEditingDraft(false)}
+                            className="premium-btn premium-btn-ghost text-xs pointer-active"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={handleAcceptDraft}
+                            className="premium-btn premium-btn-primary text-xs pointer-active"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={handleEditDraft}
+                            className="premium-btn premium-btn-secondary text-xs pointer-active"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={handleRegenerateDraft}
+                            disabled={isRegeneratingDraft}
+                            className="premium-btn premium-btn-ghost text-xs pointer-active"
+                          >
+                            {isRegeneratingDraft ? 'Regenerating…' : 'Regenerate'}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                 {interviewMessages.map((msg, i) => (
@@ -920,6 +1434,76 @@ export default function CVJourneyPage() {
                 <div ref={messagesEndRef} />
               </div>
 
+              {/* Short answer prompt */}
+              {shortAnswerPrompt !== null && (
+                <div className="px-4 py-2">
+                  <div className="glass-card p-3 border border-[var(--warning)]/40 bg-[var(--warning)]/5">
+                    <p className="text-xs text-[var(--text-secondary)] mb-2">
+                      Could you tell me a bit more about that? Even a sentence or two helps me build a stronger CV section.
+                    </p>
+                    <div className="flex gap-2">
+                      <input
+                        className="premium-input flex-1 text-sm"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSend();
+                          }
+                        }}
+                        placeholder="Add more detail..."
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleProceedWithShortAnswer}
+                        className="premium-btn premium-btn-ghost text-xs whitespace-nowrap pointer-active"
+                      >
+                        That&apos;s all I&apos;ve got
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Generate warning modal */}
+              {showGenerateWarning && (
+                <div className="px-4">
+                  <div className="glass-card p-3 border border-[var(--warning)]/40 bg-[var(--warning)]/5 mb-2">
+                    <p className="text-xs font-medium text-[var(--text-primary)] mb-1">
+                      ⚡ Generate with what you have?
+                    </p>
+                    <p className="text-[11px] text-[var(--text-secondary)] mb-2">
+                      The interview isn&apos;t complete yet. Some sections may be thin. You can always regenerate later.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleConfirmGenerateAnyway}
+                        className="premium-btn premium-btn-primary text-xs pointer-active"
+                      >
+                        Generate Anyway
+                      </button>
+                      <button
+                        onClick={() => setShowGenerateWarning(false)}
+                        className="premium-btn premium-btn-ghost text-xs pointer-active"
+                      >
+                        Keep Going
+                      </button>
+                    </div>
+                    {missing.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-[10px] text-[var(--text-muted)]">Missing info:</p>
+                        <ul className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
+                          {missing.slice(0, 4).map((m, i) => (
+                            <li key={i} className="text-[10px] text-[var(--text-muted)]">• {m}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Input area */}
               <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md">
                 <div className="flex gap-2">
@@ -930,12 +1514,12 @@ export default function CVJourneyPage() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={isAsking ? 'Waiting for AI response…' : 'Type your answer...'}
-                    disabled={isAsking}
+                    disabled={isAsking || shortAnswerPrompt !== null}
                     rows={1}
                   />
                   <button
                     onClick={handleSend}
-                    disabled={isAsking || !input.trim()}
+                    disabled={isAsking || !input.trim() || shortAnswerPrompt !== null}
                     className="premium-btn premium-btn-primary self-end h-11 w-11 flex items-center justify-center pointer-active disabled:opacity-40"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -944,9 +1528,22 @@ export default function CVJourneyPage() {
                   </button>
                 </div>
 
-                {/* Generate CV button (shown when interview is complete) */}
-                {interviewComplete && !isAsking && (
-                  <div className="mt-3">
+                {/* Generate with what I have button (always visible during interview) */}
+                {!isAsking && !draftBullets && interviewMessages.length > 0 && (
+                  <div className="mt-2">
+                    <button
+                      onClick={handleGenerateWithWhatIHave}
+                      disabled={isGenerating}
+                      className="w-full premium-btn premium-btn-secondary py-2.5 text-xs pointer-active"
+                    >
+                      {isGenerating ? '✨ Generating…' : '✨ Generate with what I have'}
+                    </button>
+                  </div>
+                )}
+
+                {/* Original Generate CV button (shown when interview is complete) */}
+                {interviewComplete && !isAsking && !draftBullets && (
+                  <div className="mt-2">
                     <button
                       onClick={handleGenerateCv}
                       className="w-full premium-btn premium-btn-primary py-3 pointer-active"
@@ -1039,16 +1636,9 @@ export default function CVJourneyPage() {
                       <div className="flex-1">
                         <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Skills</p>
                         <div className="flex flex-wrap gap-1">
-                          {(Array.isArray(generatedCv.skills) ? generatedCv.skills : []).map((s: any, i: number) => (
-                            <span key={i} className="skill-tag">{String(s)}</span>
+                          {displaySkills(generatedCv.skills).map((s, i) => (
+                            <span key={i} className="skill-tag">{s}</span>
                           ))}
-                          {(Array.isArray((generatedCv.skills as any)?.technical) || Array.isArray((generatedCv.skills as any)?.soft)) && (
-                            <>
-                              {[...((generatedCv.skills as any)?.technical || []), ...((generatedCv.skills as any)?.soft || []), ...((generatedCv.skills as any)?.tools || [])].map((s: string, i: number) => (
-                                <span key={`cat-${i}`} className="skill-tag">{s}</span>
-                              ))}
-                            </>
-                          )}
                         </div>
                       </div>
                       <button onClick={() => handleEditSection('skills')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
@@ -1265,17 +1855,52 @@ export default function CVJourneyPage() {
         <div className="hidden lg:block w-72 border-l border-[var(--border)] overflow-y-auto p-4 space-y-3 bg-[var(--bg-surface)]">
           <h3 className="font-display text-sm font-bold text-[var(--text-primary)]">Your Profile</h3>
 
-          {/* Strength score */}
+          {/* Encouraging strength score */}
           <div className="glass-card p-3">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-[var(--text-secondary)]">CV Strength</span>
-              <span className={`text-sm font-bold ${score >= 70 ? 'text-[var(--success)]' : score >= 40 ? 'text-[var(--warning)]' : 'text-[var(--danger)]'}`}>
-                {score}/100
+              <span className="text-xs font-semibold" style={{ color: scoreMeta.color }}>
+                {scoreMeta.label}
               </span>
             </div>
-            <div className="score-bar h-2 rounded-full overflow-hidden">
-              <div className={`score-bar-fill ${score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low'}`} style={{ '--score-width': `${score}%` } as React.CSSProperties} />
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-bold" style={{ color: scoreMeta.color }}>
+                {score}/100
+              </span>
+              {score < 80 && (
+                <span className="text-[10px] text-[var(--text-muted)]">
+                  {score < 40 ? 'Let\'s improve it together!' : score < 60 ? 'Making good progress!' : 'Almost there!'}
+                </span>
+              )}
             </div>
+            <div className="score-bar h-2 rounded-full overflow-hidden">
+              <div
+                className={`score-bar-fill ${score >= 60 ? 'high' : score >= 40 ? 'mid' : 'low'}`}
+                style={{ '--score-width': `${score}%` } as React.CSSProperties}
+              />
+            </div>
+            {/* What's strong */}
+            {strengths.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[10px] font-medium text-[var(--success)] mb-0.5">✓ What looks good</p>
+                <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                  {strengths.map((s, i) => (
+                    <span key={i} className="text-[10px] text-[var(--text-muted)]">✓ {s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* What's missing — shown in a friendly way */}
+            {missing.length > 0 && hasStarted && (
+              <div className="mt-1.5">
+                <p className="text-[10px] font-medium text-[var(--text-secondary)]">To round things out:</p>
+                <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                  {missing.slice(0, 4).map((m, i) => (
+                    <span key={i} className="text-[10px] text-[var(--text-muted)]">+ {m}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* AI-extracted data sections */}
@@ -1306,14 +1931,15 @@ export default function CVJourneyPage() {
             </div>
           )}
 
-          {cvData.skills.length > 0 && (
+          {/* Skills — normalized, never render [object Object] */}
+          {displaySkills(cvData.skills).length > 0 && (
             <div className="glass-card p-3">
-              <span className="text-xs font-medium text-[var(--text-secondary)]">Skills ({cvData.skills.length})</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Skills ({displaySkills(cvData.skills).length})</span>
               <div className="flex flex-wrap gap-1 mt-2">
-                {cvData.skills.slice(0, 8).map((s, i) => (
+                {displaySkills(cvData.skills).slice(0, 8).map((s, i) => (
                   <span key={i} className="skill-tag">{s}</span>
                 ))}
-                {cvData.skills.length > 8 && <span className="text-xs text-[var(--text-muted)]">+{cvData.skills.length - 8} more</span>}
+                {displaySkills(cvData.skills).length > 8 && <span className="text-xs text-[var(--text-muted)]">+{displaySkills(cvData.skills).length - 8} more</span>}
               </div>
             </div>
           )}
@@ -1369,37 +1995,13 @@ export default function CVJourneyPage() {
               <p className="text-xs text-[var(--text-primary)] mt-1 line-clamp-3">{cvData.professionalSummary}</p>
             </div>
           )}
-
-          {/* Missing items */}
-          {missing.length > 0 && hasStarted && (
-            <div className="glass-card p-3">
-              <p className="text-xs font-semibold text-[var(--text-primary)] mb-2">📋 To improve:</p>
-              <ul className="space-y-1">
-                {missing.slice(0, 4).map((m, i) => (
-                  <li key={i} className="text-xs text-[var(--text-muted)] flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)] shrink-0" />
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* ─── Debug Panel ─── */}
-      <div className="border-t border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
-        <button
-          onClick={() => setShowDebug(!showDebug)}
-          className="w-full px-4 py-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] flex items-center justify-center gap-1.5"
-        >
-          <svg className={`w-3 h-3 transition-transform ${showDebug ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-          Debug Info
-        </button>
-        {showDebug && (
-          <div className="px-4 py-2 text-[0.65rem] text-[var(--text-muted)] font-mono space-y-1 border-t border-[var(--border)]">
+      {/* ─── Debug Panel (only for devs / ?debug=true) ─── */}
+      {showDebug && (
+        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
+          <div className="px-4 py-2 text-[0.65rem] text-[var(--text-muted)] font-mono space-y-1">
             {debugInfo ? (
               <>
                 <div className="flex gap-4 flex-wrap">
@@ -1419,8 +2021,8 @@ export default function CVJourneyPage() {
               <span>No API calls yet.</span>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -8,18 +8,67 @@ const REQUIRED_FIELDS = ['name', 'phone', 'email', 'location', 'goal', 'educatio
 const FALLBACK_QUESTIONS = [
   "Great, let's start with your professional summary. Can you tell me your name, phone number, email address, and where you're located (city/region)?",
   "What kind of role are you targeting, and what makes you a strong fit for it?",
-  "Could you describe your key technical skills and how you've applied them in recent projects? Please elaborate on your proficiency level for each skill.",
+  "Could you describe your key technical skills and how you've applied them in recent projects?",
   "What are the most significant achievements in your career so far?",
-  "Can you walk me through your work history, starting with your most recent position? For each role, please share 2-3 bullet points covering your responsibilities and the impact you made.",
-  "Do you have any notable projects or portfolio pieces you'd like to highlight? What was the outcome or impact of those projects?",
+  "Can you walk me through your work history, starting with your most recent position?",
+  "Do you have any notable projects or portfolio pieces you'd like to highlight?",
   "What certifications or formal education would you like to include on your CV?",
   "Is there anything else about your background that you'd like to emphasize for this target role?",
 ];
 
-// Fields the system considers required before the interview can be marked complete
 export { REQUIRED_FIELDS };
 
-/** Build a system prompt for an AI CV interviewer that asks dynamic follow-up questions. */
+/**
+ * Detect question types already asked from conversation history.
+ * Prevents looping on the same question type.
+ */
+function detectAskedQuestionTypes(messages: Array<{ role: string; content: string }>): Set<string> {
+  const asked = new Set<string>();
+  const lower = messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
+
+  for (const msg of lower) {
+    if (msg.includes('name') || msg.includes('phone') || msg.includes('email') || msg.includes('location') || msg.includes('contact')) {
+      asked.add('contact');
+    }
+    if (msg.includes('role') || msg.includes('targeting') || msg.includes('position') || msg.includes('career goal')) {
+      asked.add('goal');
+    }
+    if (msg.includes('skill') || msg.includes('technical') || msg.includes('proficien')) {
+      asked.add('skills');
+    }
+    if (msg.includes('work history') || msg.includes('experience') || msg.includes('bullet point') || msg.includes('responsibilit') || msg.includes('role at')) {
+      asked.add('experience');
+    }
+    if (msg.includes('education') || msg.includes('school') || msg.includes('universit') || msg.includes('qualification') || msg.includes('degree')) {
+      asked.add('education');
+    }
+    if (msg.includes('project') || msg.includes('portfolio') || msg.includes('built')) {
+      asked.add('projects');
+    }
+    if (msg.includes('certif') || msg.includes('official') || msg.includes('training course')) {
+      asked.add('certifications');
+    }
+    if (msg.includes('reference') || msg.includes('anything else') || msg.includes('emphasize')) {
+      asked.add('references');
+    }
+  }
+  return asked;
+}
+
+/**
+ * Classify user answer sufficiency.
+ */
+function classifyAnswerSufficiency(
+  content: string,
+  questionType: string,
+): 'complete' | 'usable' | 'weak' | 'missing' {
+  const trimmed = content.trim();
+  if (trimmed.length === 0) return 'missing';
+  if (trimmed.length < 10) return 'weak';
+  if (trimmed.length < 25) return 'usable';
+  return 'complete';
+}
+
 function buildInterviewPrompt(
   messages: Array<{ role: string; content: string }>,
   userProfile: Record<string, unknown>,
@@ -33,6 +82,9 @@ function buildInterviewPrompt(
   const conversationHistory = messages
     .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
     .join('\n');
+
+  const askedTypes = Array.from(detectAskedQuestionTypes(messages));
+  const askedTypesStr = askedTypes.length > 0 ? askedTypes.join(', ') : 'none yet';
 
   const requiredFields = REQUIRED_FIELDS;
   const missingFields = requiredFields.filter(
@@ -50,7 +102,45 @@ function buildInterviewPrompt(
       (typeof userProfile[field] === 'string' && (userProfile[field] as string).trim() === ''),
   );
 
-  return `You are an expert AI CV interviewer for AetherLink. Your purpose is to conduct a dynamic CV-building interview, asking one focused question at a time to gather all the information needed to create a professional CV.
+  return `You are an expert AI CV interviewer for AetherLink. Your purpose is to conduct a friendly, natural CV-building interview. You ask ONE question at a time and transform rough user answers into professional CV content internally.
+
+## CRITICAL BEHAVIOR RULES
+
+1. **NEVER ask users to write professional CV language.** That is YOUR job.
+   - BAD: "Could you please provide 2-3 concise bullet points..."
+   - BAD: "Please describe your professional summary..."
+   - GOOD: "What have you worked on or built?"
+   - GOOD: "Tell me about your education — what did you study?"
+   - GOOD: "What tools or technologies do you use?"
+
+2. **Accept rough answers and transform them.**
+   - If a user says "I built AetherLink, it gathers jobs from WhatsApp and websites" → you turn that into professional bullets
+   - If a user says "taught classmates" → you expand to "Provided peer tutoring in computer science fundamentals"
+   - If a user gives one-word skills → you accept them and infer proficiency from context
+
+3. **NO LOOPING — do not ask the same question type twice.**
+   Question types already asked: ${askedTypesStr}
+   If a question type has been asked and the user gave ANY relevant answer, accept it and move on.
+   Track what has been covered. Never repeat.
+
+4. **Answer sufficiency scoring:**
+   - If user gives a complete answer → accept, move to next missing section
+   - If user gives a usable but weak answer → say "Great, I can turn that into CV bullets" and show a preview, then move on
+   - If user gives a very short answer → gently ask ONE follow-up, then accept whatever they give
+   - If user clearly doesn't want to answer → skip it, mark as optional
+
+5. **Show AI phrasing previews when user gives rough info.**
+   After a rough answer, include in your response:
+   "AI drafted this:" followed by 2-3 polished bullet points
+   Then ask: "Does this look accurate?" or just move on.
+
+6. **Friendly, encouraging tone.**
+   - "That's enough for me to work with."
+   - "Great, I'll turn that into a strong project section."
+   - "Nice, let's quickly cover your education next."
+   - "Perfect — I have what I need for skills."
+
+## DATA TO COLLECT
 
 TARGET ROLE: ${targetRole}
 INTERVIEW STAGE: ${stage}
@@ -64,23 +154,37 @@ MISSING OPTIONAL CONTACT FIELDS: ${JSON.stringify(missingOptional)}
 CONVERSATION SO FAR:
 ${conversationHistory}
 
-Rules:
-1. Ask ONE question at a time — do not list multiple questions.
-2. Base your next question on what information is still missing from the profile.
-3. Cover these areas over the course of the interview: contact details (phone, email, city/location — REQUIRED before completion), professional summary, skills (technical and soft), work experience (with bullet points), education, certifications, projects, and references.
-4. For contact details, phone, email, and city/location are REQUIRED. LinkedIn, GitHub, and portfolio URL are optional — only ask about them once if the user does not proactively share them.
-5. For certification entries: detect whether each certification is official or just training. Keywords indicating OFFICIAL certification include: 'certificate', 'certified', 'passed exam', 'earned'. Keywords indicating TRAINING/COURSEWORK include: 'course', 'training', 'studied', 'completed coursework', 'academy'. If unclear, ask a clarifying question like "Was this an official certification exam you passed, or a course/training program you completed?" Store the result as certificationAccuracy: 'official' | 'training' | 'unknown'.
-6. For work experience entries: always ask for 2-3 bullet points per role covering responsibilities AND the impact/outcome of your work — not just what you built, but what it achieved (e.g., performance gains, revenue growth, user adoption).
-7. For skills: when the user gives a one-word skill (e.g., "Python"), ask them to elaborate on their proficiency level (e.g., beginner, intermediate, advanced, expert) and how they've applied it.
-8. For projects: ask about the outcome or impact, not just what was built.
-9. Be conversational and professional — adapt to the user's language.
-10. Track progress against these required fields: ${JSON.stringify(requiredFields)}. Only mark interviewComplete: true when ALL are non-empty.
-11. If any required contact field (phone, email, location) is missing when the user indicates they are done or asks to generate, explicitly ask for the missing required field(s).
-12. Return ONLY a valid JSON object with no markdown formatting:
-    { "question": "...", "extractedData": { ... }, "missingRequired": [...], "interviewComplete": boolean }
-13. extractedData should only contain fields that were updated in the most recent user message.
-14. For any certification mentioned in extractedData, include a "certificationAccuracy" field set to "official", "training", or "unknown" based on keyword analysis.
-15. If this is the very first interaction (no conversation history), ask an opening question about their current role and what they'd like to highlight, starting with collecting their contact info (name, phone, email, location).`;
+## COVERAGE AREAS (cover these over the course of the interview):
+- contact details (name, phone, email, location — REQUIRED)
+- career goal / target role
+- skills (technical and soft)
+- work experience (any informal counts)
+- education
+- projects
+- certifications (detect official vs training)
+- references
+
+## RULES:
+1. Ask ONE question at a time — never list multiple questions
+2. Base your next question on what is STILL missing
+3. For contact details: phone, email, and city/location are REQUIRED. LinkedIn/GitHub/portfolio URL are optional — only ask once
+4. For certifications: detect official vs training. Keywords: 'certificate', 'certified', 'passed exam', 'earned' = official. 'course', 'training', 'studied', 'completed coursework' = training. If unclear, ask: "Was this an official certification exam you passed, or a course/training program?" Store as certificationAccuracy: 'official' | 'training' | 'unknown'
+5. Be conversational, warm, encouraging — adapt to the user's language
+6. Track progress against: ${JSON.stringify(requiredFields)}
+7. Only mark interviewComplete: true when ALL required fields are non-empty
+8. If required contact fields (phone, email, location) are missing when user asks to generate, explicitly ask for them
+9. Return ONLY a valid JSON object with no markdown formatting:
+   {
+     "question": "...",
+     "extractedData": { ... },
+     "missingRequired": [...],
+     "interviewComplete": boolean,
+     "aiDraftedBullets": ["...", "..."]  // optional: AI-polished bullets for a section
+   }
+10. extractedData should only contain fields updated in the most recent user message
+11. For any certification in extractedData, include "certificationAccuracy": 'official' | 'training' | 'unknown'
+12. If this is the first interaction, ask an opening question about their background and what they'd like to highlight, starting with collecting contact info (name, phone, email, location)
+13. If the user gives rough but usable info about a section, include "aiDraftedBullets" with 2-3 polished versions. The frontend will show these as editable previews.`;
 }
 
 export async function POST(req: Request) {
@@ -114,6 +218,7 @@ export async function POST(req: Request) {
     let extractedData: Record<string, unknown> = {};
     let missingRequired: string[] = [];
     let interviewComplete = false;
+    let aiDraftedBullets: string[] | undefined;
     let debug: {
       provider: string;
       model: string;
@@ -128,13 +233,12 @@ export async function POST(req: Request) {
         prompt,
         { responseFormat: 'json', maxTokens: 4096 },
       );
-
       const parsed = JSON.parse(text);
       question = parsed.question ?? FALLBACK_QUESTIONS[0];
       extractedData = parsed.extractedData ?? {};
-      // Accept missingRequired from AI, or compute from profile
       missingRequired = parsed.missingRequired ?? [];
       interviewComplete = parsed.interviewComplete ?? false;
+      aiDraftedBullets = parsed.aiDraftedBullets;
 
       debug = {
         provider: 'fireworks',
@@ -144,7 +248,6 @@ export async function POST(req: Request) {
         route: 'api/cv/interview',
       };
     } catch {
-      // On AI failure, pick a graceful fallback question based on stage
       const fallbackIndex = Math.min(
         FALLBACK_QUESTIONS.length - 1,
         Math.max(0, ['summary', 'skills', 'experience', 'education', 'projects', 'certs', 'references'].indexOf(stage)),
@@ -168,10 +271,8 @@ export async function POST(req: Request) {
       };
     }
 
-    // Ensure missingRequired includes contact fields if not present
-    // (server-side safety net in case AI misses them)
+    // Server-side safety net: merge missing fields
     {
-      // Check which required fields are still missing in both userProfile and extractedData
       const mergedProfile = { ...userProfile, ...extractedData };
       const clientMissing = REQUIRED_FIELDS.filter(
         (field) =>
@@ -179,17 +280,15 @@ export async function POST(req: Request) {
           (typeof mergedProfile[field] === 'string' && (mergedProfile[field] as string).trim() === '') ||
           (Array.isArray(mergedProfile[field]) && (mergedProfile[field] as unknown[]).length === 0),
       ) as unknown as string[];
-      // Merge any missing fields the AI didn't catch
       for (const f of clientMissing) {
         if (!missingRequired.includes(f)) {
           missingRequired.push(f);
         }
       }
-      // Re-check completeness
       interviewComplete = missingRequired.length === 0;
     }
 
-    return Response.json({ question, extractedData, debug, missingRequired, interviewComplete });
+    return Response.json({ question, extractedData, debug, missingRequired, interviewComplete, aiDraftedBullets });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'internal server error';
     return Response.json(
