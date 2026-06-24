@@ -82,7 +82,7 @@ export function Sidebar({
               <form action={async () => { await signOut(); }}>
                 <button
                   type="submit"
-                  className="mt-0.5 text-xs text-[var(--text-muted)] transition hover:text-[var(--accent)] pointer-active"
+                  className="mt-0.5 text-xs text-[var(--text-muted)] transition hover:text-[var(--accent-hover)] pointer-active"
                 >
                   Sign out
                 </button>
