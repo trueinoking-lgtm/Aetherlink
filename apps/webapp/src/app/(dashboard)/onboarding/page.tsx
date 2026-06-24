@@ -55,7 +55,7 @@ function ProgressDots({ step }: { step: number }) {
               <div
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold transition-all duration-200 ${
                   i === step
-                    ? 'bg-[var(--accent)] text-[var(--bg-base)] scale-110 shadow-[var(--shadow-glow)]'
+                    ? 'bg-[var(--accent-btn)] text-white scale-110 shadow-[var(--shadow-glow)]'
                     : i < step
                     ? 'bg-[var(--accent)]/20 text-[var(--accent-active)]'
                     : 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]'
