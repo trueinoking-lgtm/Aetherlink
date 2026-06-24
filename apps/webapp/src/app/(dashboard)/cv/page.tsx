@@ -1413,7 +1413,7 @@ export default function CVJourneyPage() {
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       msg.role === 'user'
-                        ? 'bg-[var(--accent)] text-white'
+                        ? 'bg-[var(--accent-btn)] text-white'
                         : 'bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-primary)]'
                     }`}>
                       <p className="text-sm whitespace-pre-line">{msg.content}</p>

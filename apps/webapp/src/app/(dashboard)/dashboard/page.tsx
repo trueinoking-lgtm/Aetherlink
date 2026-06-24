@@ -200,7 +200,7 @@ export default function DashboardPage() {
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/5 border border-[var(--border)] text-[10px] font-bold text-[var(--accent)]">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/5 border border-[var(--border)] text-[10px] font-bold text-[var(--accent-hover)]">
                       {job.companyName?.charAt(0)?.toUpperCase() ?? '?'}
                     </div>
                     <p className="truncate font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-hover)] transition-colors">{job.title}</p>

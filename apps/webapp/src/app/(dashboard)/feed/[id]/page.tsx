@@ -445,7 +445,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
               href={job.source_group} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="mt-2 inline-block text-sm text-[var(--accent)] underline"
+              className="mt-2 inline-block text-sm text-[var(--accent-hover)] underline"
             >
               View original listing →
             </a>

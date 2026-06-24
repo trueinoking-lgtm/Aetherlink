@@ -297,7 +297,7 @@ export default function CvBuilderPage() {
               onClick={() => goToStep(idx)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap pointer-active ${
                 idx === currentStep
-                  ? 'bg-[var(--accent)] text-white'
+                  ? 'bg-[var(--accent-btn)] text-white'
                   : idx < currentStep
                   ? 'bg-[var(--success)]/10 text-[var(--success)]'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'

@@ -112,7 +112,7 @@ export default function LoginPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className="h-6 w-6 rounded-md bg-[var(--accent)]/20 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-[var(--accent)]">A</span>
+                        <span className="text-[10px] font-bold text-[var(--accent-hover)]">A</span>
                       </div>
                       <span className="text-xs font-semibold text-[var(--text-primary)]">AetherLink</span>
                     </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
                     ].map((job, i) => (
                       <div key={i} className="flex items-center gap-2 rounded-lg bg-[var(--surface)] p-2">
                         <div className="h-7 w-7 shrink-0 rounded-md bg-[var(--accent)]/10 flex items-center justify-center">
-                          <span className="text-[9px] font-bold text-[var(--accent)]">{job.company.charAt(0)}</span>
+                          <span className="text-[9px] font-bold text-[var(--accent-hover)]">{job.company.charAt(0)}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-[11px] font-medium text-[var(--text-primary)] truncate">{job.title}</p>
@@ -237,7 +237,7 @@ export default function LoginPage() {
               <div className="glass-card p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-5 w-5 rounded bg-[var(--accent)]/20 flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-[var(--accent)]">A</span>
+                    <span className="text-[8px] font-bold text-[var(--accent-hover)]">A</span>
                   </div>
                   <span className="text-xs font-semibold text-[var(--text-primary)]">Dashboard</span>
                 </div>
@@ -263,7 +263,7 @@ export default function LoginPage() {
                   ].map((job, i) => (
                     <div key={i} className="flex items-center gap-3 rounded-lg bg-[var(--surface)] p-3">
                       <div className="h-8 w-8 shrink-0 rounded-md bg-[var(--accent)]/10 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-[var(--accent)]">{job.company.charAt(0)}</span>
+                        <span className="text-[10px] font-bold text-[var(--accent-hover)]">{job.company.charAt(0)}</span>
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium text-[var(--text-primary)]">{job.title}</p>
@@ -296,7 +296,7 @@ export default function LoginPage() {
               <div className="glass-card p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-5 w-5 rounded bg-[var(--accent)]/20 flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-[var(--accent)]">CV</span>
+                    <span className="text-[8px] font-bold text-[var(--accent-hover)]">CV</span>
                   </div>
                   <span className="text-xs font-semibold text-[var(--text-primary)]">AI CV Builder</span>
                 </div>
@@ -306,7 +306,7 @@ export default function LoginPage() {
                     <p className="text-xs text-[var(--text-secondary)]">Tell me about yourself and what kind of role you are looking for.</p>
                   </div>
                   <div className="rounded-lg bg-[var(--accent)]/10 p-3 border border-[var(--accent)]/20">
-                    <p className="text-[10px] text-[var(--accent)] mb-1">Your answer</p>
+                    <p className="text-[10px] text-[var(--accent-hover)] mb-1">Your answer</p>
                     <p className="text-xs text-[var(--text-secondary)]">I am a software developer with 3 years of experience in React and Node.js...</p>
                   </div>
                   <div className="flex items-center justify-between pt-2">
@@ -369,7 +369,7 @@ export default function LoginPage() {
               <div className="glass-card p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-5 w-5 rounded bg-[var(--accent)]/20 flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-[var(--accent)]">T</span>
+                    <span className="text-[8px] font-bold text-[var(--accent-hover)]">T</span>
                   </div>
                   <span className="text-xs font-semibold text-[var(--text-primary)]">Application Tracker</span>
                 </div>

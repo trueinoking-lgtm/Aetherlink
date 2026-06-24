@@ -212,7 +212,7 @@ export default function PricingPage() {
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[var(--accent)] px-4 py-1 text-xs font-semibold text-white">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[var(--accent-btn)] px-4 py-1 text-xs font-semibold text-white">
                   Most Popular
                 </div>
               )}
@@ -260,7 +260,7 @@ export default function PricingPage() {
                   onClick={handleUpgrade}
                   className={`w-full rounded-xl px-6 py-3 text-sm font-semibold transition-all pointer-active ${
                     plan.popular
-                      ? 'premium-btn bg-[var(--accent)] text-white hover:opacity-90'
+                      ? 'premium-btn bg-[var(--accent-btn)] text-white hover:opacity-90'
                       : 'premium-btn premium-btn-secondary'
                   }`}
                 >
@@ -350,7 +350,7 @@ export default function PricingPage() {
 
                 <button
                   onClick={initiatePayment}
-                  className="mt-6 w-full rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 pointer-active"
+                  className="mt-6 w-full rounded-xl bg-[var(--accent-btn)] px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 pointer-active"
                 >
                   Pay $9.99 via {selectedMethod === 'ecocash' ? 'EcoCash' : 'OneMoney'}
                 </button>

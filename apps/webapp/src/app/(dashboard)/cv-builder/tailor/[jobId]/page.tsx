@@ -559,7 +559,7 @@ function TabButton({
       onClick={onClick}
       className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
         active
-          ? 'bg-[var(--accent)] text-white shadow-sm'
+          ? 'bg-[var(--accent-btn)] text-white shadow-sm'
           : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg-hover)]'
       }`}
     >
@@ -1282,7 +1282,7 @@ export default function CvTailorPage({ params }: { params: Promise<{ jobId: stri
                         key={i}
                         className="flex items-start gap-2 p-2.5 rounded-lg bg-[var(--glass-bg-subtle)] border border-[var(--border)]"
                       >
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)] text-white text-[10px] font-bold shrink-0 mt-0.5">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent-btn)] text-white text-[10px] font-bold shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <span className="text-sm text-[var(--text-primary)]">{s}</span>

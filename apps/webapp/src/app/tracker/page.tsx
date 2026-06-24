@@ -96,7 +96,7 @@ export default function TrackerPage() {
                 <svg className="h-4 w-4 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-sm font-medium text-[var(--accent)]">Outcome: {app.outcome}</p>
+                <p className="text-sm font-medium text-[var(--accent-hover)]">Outcome: {app.outcome}</p>
               </div>
             )}
           </div>

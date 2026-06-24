@@ -69,7 +69,7 @@ function ProgressDots({ step }: { step: number }) {
                 i + 1
               )}
             </div>
-              <span className={`text-[11px] font-medium text-center ${i === step ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>
+              <span className={`text-[11px] font-medium text-center ${i === step ? 'text-[var(--accent-hover)]' : 'text-[var(--text-muted)]'}`}>
                 {STEP_LABELS[i]}
               </span>
             </div>
