@@ -135,7 +135,7 @@ export default function DashboardPage() {
           <div className="stat-card-body">
             <p className="stat-card-label">Avg match score</p>
             <p className={`stat-card-value ${avgMatch !== null && avgMatch >= 50 ? 'highlight' : ''}`}>
-              {avgMatch !== null ? `${avgMatch}%` : '—'}
+              {avgMatch !== null ? `${avgMatch}%` : '-'}
             </p>
           </div>
         </div>

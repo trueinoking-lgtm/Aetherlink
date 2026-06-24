@@ -50,7 +50,7 @@ export function ApplicationReceipt({
 
   const timeSaved = Math.max(20, 45 - minutesSpent);
   const firstParagraph = coverLetter.split('\\n\\n')[0] ?? coverLetter.slice(0, 280);
-  const shareText = `Applying to ${jobTitle} at ${companyName} — prepping my CV with AetherLink 🔥`;
+  const shareText = `Applying to ${jobTitle} at ${companyName} - prepping my CV with AetherLink 🔥`;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--bg-overlay)] p-4">
@@ -62,15 +62,15 @@ export function ApplicationReceipt({
         </div>
         <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Application Sent</h1>
         <p className="text-[var(--text-secondary)]">
-          {jobTitle} — {companyName}
+          {jobTitle} - {companyName}
         </p>
         <p className="text-sm text-[var(--text-muted)]">To: {hrEmail}</p>
         <p className="font-mono text-sm text-[var(--text-secondary)]">Match used: {matchScore}%</p>
-        <p className="text-[var(--accent)] font-medium">Time saved: ~{timeSaved} minutes</p>
+        <p className="text-[var(--accent-active)] font-medium">Time saved: ~{timeSaved} minutes</p>
         <div className="text-left">
           <button
             type="button"
-            className="text-sm text-[var(--accent)] hover:text-[var(--accent-hover)] transition pointer-active"
+            className="text-sm text-[var(--accent-active)] hover:text-[var(--accent-hover)] transition pointer-active"
             onClick={() => setShowLetter((s) => !s)}
           >
             {showLetter ? 'Hide' : 'Show'} cover letter preview
