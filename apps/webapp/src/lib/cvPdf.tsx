@@ -8,8 +8,11 @@ export interface CvPdfData {
   email: string;
   phone: string;
   location: string;
+  linkedin?: string;
+  github?: string;
+  portfolio?: string;
   professionalSummary: string;
-  skills: string[];
+  skills: string[] | { technical: string[]; soft: string[]; tools?: string[] };
   experience: Array<{
     role: string;
     company: string;
@@ -118,7 +121,14 @@ function estimateContentLines(data: CvPdfData): number {
   let n = 3; // name + headline + contact
 
   if (data.professionalSummary) n += 1 + lines(data.professionalSummary);
-  if (data.skills.length > 0) n += 1 + lines(data.skills.join(', '));
+
+  const skills = data.skills;
+  if (Array.isArray(skills)) {
+    if (skills.length > 0) n += 1 + lines(skills.join(', '));
+  } else if (skills) {
+    const groups = [skills.technical, skills.soft, skills.tools].filter(Boolean);
+    n += 1 + groups.length; // section header + lines per group
+  }
 
   if (data.experience.length > 0) {
     n += 1; // section header
@@ -131,7 +141,7 @@ function estimateContentLines(data: CvPdfData): number {
   if (data.projects.length > 0) {
     n += 1; // section header
     for (const p of data.projects) {
-      n += lines(`${p.name}: ${p.description} (${p.technologies})`);
+      n += 2; // project name + description
     }
   }
 
@@ -147,18 +157,18 @@ function estimateContentLines(data: CvPdfData): number {
  *
  * Usable height with 35 mm margins ≈ 227 mm.
  * At 10 pt with line-height 1.4 a line is ~4.94 mm → roughly 46 lines.
- * We budget 42 lines at full size (leaving room for margins & spacing) and
- * scale proportionally below that, down to a minimum of 70 % (7 pt body).
+ * We budget 45 lines at full size (leaving room for margins & spacing) and
+ * scale proportionally below that, down to a minimum of 75 % (7.5 pt body).
  */
 function computeFontScale(data: CvPdfData): FontScale {
-  const MAX_LINES = 42;
+  const MAX_LINES = 45;
   const estimated = estimateContentLines(data);
 
   if (estimated <= MAX_LINES) {
     return { body: 10, name: 18, headline: 11, contact: 9, section: 11 };
   }
 
-  const scale = Math.max(0.7, MAX_LINES / estimated);
+  const scale = Math.max(0.75, MAX_LINES / estimated);
   const r = (v: number) => Math.round(v * scale * 10) / 10;
 
   return { body: r(10), name: r(18), headline: r(11), contact: r(9), section: r(11) };
@@ -168,7 +178,7 @@ function computeFontScale(data: CvPdfData): FontScale {
 
 function createStyles(template: TemplateName, fs: FontScale) {
   const config = TEMPLATE_CONFIGS[template];
-  const sectionMarginTop = template === 'entry-level' ? 10 : 8;
+  const sectionMarginTop = 8;
 
   return StyleSheet.create({
     page: {
@@ -180,22 +190,24 @@ function createStyles(template: TemplateName, fs: FontScale) {
     },
     name: {
       fontSize: fs.name,
-      fontWeight: 'bold',
-      marginBottom: 2,
+      fontFamily: 'Helvetica-Bold',
+      marginBottom: 6,
     },
     headline: {
       fontSize: fs.headline,
+      fontFamily: 'Helvetica',
       color: config.headlineColor,
       marginBottom: 4,
     },
     contactLine: {
       fontSize: fs.contact,
+      fontFamily: 'Helvetica',
       color: config.headlineColor,
       marginBottom: 10,
     },
     sectionHeader: {
       fontSize: fs.section,
-      fontWeight: 'bold',
+      fontFamily: 'Helvetica-Bold',
       color: config.primaryColor,
       borderBottomWidth: 1,
       borderBottomColor: config.primaryColor,
@@ -206,49 +218,62 @@ function createStyles(template: TemplateName, fs: FontScale) {
     },
     bodyText: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
       marginBottom: 4,
     },
     experienceBlock: {
-      marginBottom: 4,
+      marginBottom: 8,
     },
     experienceRole: {
       fontSize: fs.body,
-      fontWeight: 'bold',
+      fontFamily: 'Helvetica-Bold',
       marginBottom: 1,
       marginTop: 2,
     },
     bullet: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
-      paddingLeft: 8,
-      marginBottom: 0,
+      paddingLeft: 12,
+      marginBottom: 1,
     },
     projectBlock: {
-      marginBottom: 4,
+      marginBottom: 6,
     },
     projectName: {
       fontSize: fs.body,
-      fontWeight: 'bold',
+      fontFamily: 'Helvetica-Bold',
       marginBottom: 0,
       marginTop: 2,
     },
+    projectTechnologies: {
+      fontSize: fs.body,
+      fontFamily: 'Helvetica',
+      lineHeight: 1.4,
+      fontStyle: 'italic',
+      color: '#888888',
+    },
     projectDetail: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
     },
     educationLine: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
       marginBottom: 1,
     },
     certLine: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
       marginBottom: 1,
     },
     skillsLine: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
       marginBottom: 4,
     },
@@ -257,6 +282,7 @@ function createStyles(template: TemplateName, fs: FontScale) {
     },
     referencesText: {
       fontSize: fs.body,
+      fontFamily: 'Helvetica',
       lineHeight: 1.4,
     },
   });
@@ -275,104 +301,159 @@ function CvDocument({
 }) {
   const config = TEMPLATE_CONFIGS[template];
   const styles = createStyles(template, fs);
+
+  // Build contact parts array, appending social links if present
   const contactParts = [data.email, data.phone, data.location].filter(Boolean);
+  if (data.linkedin) contactParts.push(data.linkedin);
+  if (data.github) contactParts.push(data.github);
+  if (data.portfolio) contactParts.push(data.portfolio);
 
-  // Build each possible section (keys match the template order entries).
-  const sections = {
-    summary: data.professionalSummary ? (
-      <View key="summary">
-        <Text style={styles.sectionHeader}>Professional Summary</Text>
-        <Text style={styles.bodyText}>{data.professionalSummary}</Text>
-      </View>
-    ) : null,
+  // Build a flat array of page children — avoids nested View/Text issues
+  const children: React.ReactNode[] = [];
 
-    skills: data.skills.length > 0 ? (
-      <View key="skills">
-        <Text style={styles.sectionHeader}>Skills</Text>
-        <Text style={styles.skillsLine}>{data.skills.join(', ')}</Text>
-      </View>
-    ) : null,
+  // ── Header block ──
+  children.push(
+    <Text key="name" style={styles.name}>{data.fullName}</Text>,
+  );
+  if (data.headline) {
+    children.push(
+      <Text key="headline" style={styles.headline}>{data.headline}</Text>,
+    );
+  }
+  if (contactParts.length > 0) {
+    children.push(
+      <Text key="contact" style={styles.contactLine}>{contactParts.join(' | ')}</Text>,
+    );
+  }
 
-    experience: data.experience.length > 0 ? (
-      <View key="experience">
-        <Text style={styles.sectionHeader}>Experience</Text>
-        {data.experience.map((exp, i) => (
-          <View key={i} style={styles.experienceBlock}>
-            <Text style={styles.experienceRole}>
-              {exp.role}
-              {exp.company ? ` — ${exp.company}` : ''}
-              {exp.duration ? ` | ${exp.duration}` : ''}
-            </Text>
-            {exp.bullets.map((bullet, j) => (
-              <Text key={j} style={styles.bullet}>
-                • {bullet}
-              </Text>
-            ))}
-          </View>
-        ))}
-      </View>
-    ) : null,
+  // ── Section renderer helpers ──
 
-    projects: data.projects.length > 0 ? (
-      <View key="projects">
-        <Text style={styles.sectionHeader}>Projects</Text>
-        {data.projects.map((proj, i) => (
-          <View key={i} style={styles.projectBlock}>
-            <Text style={styles.projectName}>{proj.name}</Text>
-            <Text style={styles.projectDetail}>
-              {[proj.description, proj.technologies].filter(Boolean).join(' | ')}
-            </Text>
-          </View>
-        ))}
-      </View>
-    ) : null,
-
-    education: data.education.length > 0 ? (
-      <View key="education">
-        <Text style={styles.sectionHeader}>Education</Text>
-        {data.education.map((edu, i) => (
-          <Text key={i} style={styles.educationLine}>
-            {[edu.qualification, edu.institution, edu.year].filter(Boolean).join(', ')}
-          </Text>
-        ))}
-      </View>
-    ) : null,
-
-    certifications: data.certifications.length > 0 ? (
-      <View key="certifications">
-        <Text style={styles.sectionHeader}>Certifications</Text>
-        {data.certifications.map((cert, i) => (
-          <Text key={i} style={styles.certLine}>
-            {cert.name}
-            {cert.issuer ? ` — ${cert.issuer}` : ''}
-            {cert.year ? ` (${cert.year})` : ''}
-          </Text>
-        ))}
-      </View>
-    ) : null,
-
-    references: data.references ? (
-      <View key="references" style={styles.referencesBlock}>
-        <Text style={styles.sectionHeader}>References</Text>
-        <Text style={styles.referencesText}>{data.references}</Text>
-      </View>
-    ) : null,
+  const addSectionHeader = (label: string) => {
+    children.push(
+      <Text key={`section-${label}`} style={styles.sectionHeader}>{label}</Text>,
+    );
   };
+
+  // Section order based on template
+  const sectionOrder = config.sectionOrder;
+
+  for (const sectionKey of sectionOrder) {
+    switch (sectionKey) {
+      case 'summary':
+        if (data.professionalSummary) {
+          addSectionHeader('Professional Summary');
+          children.push(
+            <Text key="summary-text" style={styles.bodyText}>{data.professionalSummary}</Text>,
+          );
+        }
+        break;
+
+      case 'skills': {
+        const skills = data.skills;
+        if (Array.isArray(skills)) {
+          if (skills.length > 0) {
+            addSectionHeader('Skills');
+            children.push(
+              <Text key="skills-line" style={styles.skillsLine}>{skills.join(', ')}</Text>,
+            );
+          }
+        } else if (skills) {
+          const obj = skills as { technical: string[]; soft: string[]; tools?: string[] };
+          if (obj.technical?.length) {
+            addSectionHeader('Skills');
+            children.push(
+              <Text key="skills-tech" style={styles.skillsLine}>{'Technical: ' + obj.technical.join(', ')}</Text>,
+            );
+          }
+          if (obj.soft?.length) {
+            children.push(
+              <Text key="skills-soft" style={styles.skillsLine}>{'Soft Skills: ' + obj.soft.join(', ')}</Text>,
+            );
+          }
+          if (obj.tools?.length) {
+            children.push(
+              <Text key="skills-tools" style={styles.skillsLine}>{'Tools: ' + obj.tools.join(', ')}</Text>,
+            );
+          }
+        }
+        break;
+      }
+
+      case 'experience':
+        if (data.experience.length > 0) {
+          addSectionHeader('Experience');
+          data.experience.forEach((exp, i) => {
+            const roleLine = [exp.role, exp.company ? `— ${exp.company}` : '', exp.duration ? `| ${exp.duration}` : ''].filter(Boolean).join(' ');
+            children.push(
+              <Text key={`exp-${i}`} style={styles.experienceRole}>{roleLine}</Text>,
+            );
+            exp.bullets.forEach((bullet, j) => {
+              children.push(
+                <Text key={`exp-${i}-b-${j}`} style={styles.bullet}>{'• ' + bullet}</Text>,
+              );
+            });
+          });
+        }
+        break;
+
+      case 'projects':
+        if (data.projects.length > 0) {
+          addSectionHeader('Projects');
+          data.projects.forEach((proj, i) => {
+            children.push(
+              <Text key={`proj-${i}`} style={styles.projectName}>{proj.name}</Text>,
+            );
+            children.push(
+              <Text key={`proj-${i}-desc`} style={styles.projectDetail}>{proj.description}</Text>,
+            );
+            if (proj.technologies) {
+              children.push(
+                <Text key={`proj-${i}-tech`} style={styles.projectTechnologies}>{'Technologies: ' + proj.technologies}</Text>,
+              );
+            }
+          });
+        }
+        break;
+
+      case 'education':
+        if (data.education.length > 0) {
+          addSectionHeader('Education');
+          data.education.forEach((edu, i) => {
+            const parts = [edu.qualification, edu.institution, edu.year].filter(Boolean);
+            children.push(
+              <Text key={`edu-${i}`} style={styles.educationLine}>{parts.join(', ')}</Text>,
+            );
+          });
+        }
+        break;
+
+      case 'certifications':
+        if (data.certifications.length > 0) {
+          addSectionHeader('Certifications');
+          data.certifications.forEach((cert, i) => {
+            const parts = [cert.name, cert.issuer ? `— ${cert.issuer}` : '', cert.year ? `(${cert.year})` : ''].filter(Boolean);
+            children.push(
+              <Text key={`cert-${i}`} style={styles.certLine}>{parts.join(' ')}</Text>,
+            );
+          });
+        }
+        break;
+
+      case 'references':
+        if (data.references) {
+          addSectionHeader('References');
+          children.push(
+            <Text key="references-text" style={styles.referencesText}>{data.references}</Text>,
+          );
+        }
+        break;
+    }
+  }
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* ── Header block ── */}
-        <View>
-          <Text style={styles.name}>{data.fullName}</Text>
-          {data.headline ? <Text style={styles.headline}>{data.headline}</Text> : null}
-          {contactParts.length > 0 ? (
-            <Text style={styles.contactLine}>{contactParts.join(' | ')}</Text>
-          ) : null}
-        </View>
-
-        {/* ── Sections in the template-defined order ── */}
-        {config.sectionOrder.map((key) => sections[key]).filter(Boolean)}
+        {children}
       </Page>
     </Document>
   );

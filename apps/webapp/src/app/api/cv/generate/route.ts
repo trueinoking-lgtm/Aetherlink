@@ -1,7 +1,49 @@
 import { createClient } from '@/lib/supabase/server';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rateLimit';
 import { executeAITask } from '@aetherlink/core';
 
 export const runtime = 'nodejs';
+
+/** Structure of a generated CV with the improved skills and contact fields. */
+interface CvPdfData {
+  headline: string;
+  professionalSummary: string;
+  skills: {
+    technical: string[];
+    soft: string[];
+    tools: string[];
+  };
+  linkedin?: string;
+  github?: string;
+  portfolio?: string;
+  experience: Array<{
+    company: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    bullets: string[];
+  }>;
+  projects: Array<{
+    name: string;
+    description: string;
+    technologies: string[];
+    url?: string;
+  }>;
+  education: Array<{
+    institution: string;
+    degree: string;
+    field: string;
+    startYear: string;
+    endYear: string;
+    gpa?: string;
+  }>;
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    year: string;
+  }>;
+  references: string;
+}
 
 /** Build a prompt that instructs the model to return structured CV JSON. */
 function buildGeneratePrompt(
@@ -28,7 +70,7 @@ ${profileStr}`;
 Required JSON structure:
 {
   "headline": "A strong one-line professional headline (e.g. 'Senior Full-Stack Engineer | React & Node.js Specialist')",
-  "professionalSummary": "A 3-4 sentence professional summary that highlights key strengths, years of experience, and what the candidate brings to the target role.",
+  "professionalSummary": "A 2-3 sentence professional summary that is specific to the candidate, not generic. Highlight key strengths, years of experience, and what the candidate brings to the target role.",
   "skills": {
     "technical": ["skill1", "skill2", ...],
     "soft": ["skill1", "skill2", ...],
@@ -40,13 +82,13 @@ Required JSON structure:
       "title": "Job Title",
       "startDate": "MM/YYYY",
       "endDate": "MM/YYYY or 'Present'",
-      "bullets": ["Achievement-focused bullet point", "Another bullet point"]
+      "bullets": ["Achievement-focused bullet point (2-3 per role)", "Another bullet point"]
     }
   ],
   "projects": [
     {
       "name": "Project Name",
-      "description": "Brief description",
+      "description": "Brief description using action verbs like 'Designed', 'Built', 'Developed', 'Implemented', 'Architected'",
       "technologies": ["tech1", "tech2"],
       "url": "optional url"
     }
@@ -71,13 +113,17 @@ Required JSON structure:
   "references": "Available upon request" or [{"name": "...", "contact": "..."}]
 
 CRITICAL RULES:
-1. NEVER fabricate experience, skills, or credentials. Only use information present in the candidate's profile.
+1. NEVER fabricate experience, skills, or credentials. Only use information present in the candidate's profile. Do NOT add skills, tools, or technologies the user did not explicitly mention.
 2. Infer professional wording from rough input — clean up grammar and phrasing, but do not invent fake claims.
 3. Use strong action verbs and quantifiable achievements where the data supports it.
-4. Group skills logically into technical, soft, and tools categories.
+4. Group skills logically into technical, soft, and tools categories. Only categorize skills the user actually provided — do NOT move skills into 'tools' unless they are explicitly tools/platforms (e.g., 'Git', 'VS Code', 'Docker').
 5. If a section has no data, include it as an empty array or null (do not omit it).
 6. Keep bullet points concise (under 20 words each) and impact-focused.
-7. The headline and professional summary should be tailored to the target role.`;
+7. The headline and professional summary should be tailored to the target role.
+8. For each experience entry, write 2-3 bullet points maximum. Each bullet should be rewritten professionally using strong action verbs. Expand brief descriptions into fuller bullets using context clues — but only elaborate on what the user actually did, do not invent new responsibilities.
+9. For each project, use action verbs like 'Designed', 'Built', 'Developed', 'Implemented', 'Architected' to describe what you accomplished. Make the project sound employable and relevant.
+10. Certification accuracy: If the user says 'CCNA certificate' or 'CCNA cert' or 'I have CCNA' → 'CCNA (Cisco Certified Network Associate)'. If they say 'CCNA course', 'CCNA training', 'studied CCNA', 'CCNA academy' → 'Cisco Networking Academy CCNA training'. Apply this pattern to all certifications — expand known acronyms with the full name in parentheses.
+11. The professional summary must be exactly 2-3 sentences, specific to the candidate's background and the target role. Avoid generic phrases like 'dedicated professional' or 'team player'.`;
 
   return prompt;
 }
@@ -166,7 +212,52 @@ function templateGenerate(
   };
 }
 
+/** Build a prompt that asks the AI to critique and polish the generated CV. */
+function buildCriticPrompt(cv: Record<string, unknown>): string {
+  const cvJson = JSON.stringify(cv, null, 2);
+
+  return `You are a CV quality critic and editor for AetherLink. Review the following CV JSON and identify potential issues.
+
+CV JSON:
+${cvJson}
+
+Check for these specific issues:
+1. **Missing contact details** — Are email, phone, or location fields empty or missing?
+2. **Weak wording** — Do bullet points use strong action verbs (e.g., 'Led', 'Developed', 'Implemented')?
+3. **Overclaimed certifications** — Do any certification names appear inflated or inaccurate?
+4. **Too much whitespace** — Are sections sparse or lacking sufficient content?
+5. **Generic summary** — Is the professional summary vague, clichéd, or not specific to the candidate?
+6. **ATS readability** — Would an ATS parser struggle with the structure or formatting?
+7. **One-page layout risk** — Is there too much content for a single page?
+
+Return ONLY a valid JSON object with this exact structure — no markdown, no code fences:
+{
+  "warnings": [
+    "Describe the issue and how to fix it"
+  ],
+  "polished_cv": {
+    ... the complete CV JSON with any improvements applied ...
+  }
+}
+
+Rules:
+- If a section has no issues, simply include it as-is in the polished_cv without changes.
+- Fix any issues you find in the polished_cv (e.g., improve weak wording, expand certification names, tighten the summary).
+- The polished_cv must be the COMPLETE CV object, not just the changed parts.
+- If no issues found at all, return an empty warnings array and the original CV unchanged.`;
+}
+
 export async function POST(req: Request) {
+  // Rate limiting
+  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const { allowed, remaining, resetAt } = checkRateLimit(`cv:${clientIp}`);
+  if (!allowed) {
+    return Response.json(
+      { error: 'rate_limit_exceeded', message: 'Too many requests. Please try again later.' },
+      { status: 429, headers: getRateLimitHeaders(allowed, remaining, resetAt) },
+    );
+  }
+
   try {
     const supabase = await createClient();
     const {
@@ -196,6 +287,7 @@ export async function POST(req: Request) {
       outputTokens?: number;
       route: string;
     };
+    let warnings: string[] = [];
 
     try {
       const { text, inputTokens, outputTokens } = await executeAITask(
@@ -213,6 +305,23 @@ export async function POST(req: Request) {
         outputTokens,
         route: 'api/cv/generate',
       };
+
+      // Second AI pass: CV critic — reviews and polishes the generated CV
+      try {
+        const criticPrompt = buildCriticPrompt(cv);
+        const { text: criticText } = await executeAITask(
+          'cv_critic',
+          criticPrompt,
+          { responseFormat: 'json', maxTokens: 4096 },
+        );
+        const criticResult = JSON.parse(criticText);
+        warnings = Array.isArray(criticResult.warnings) ? criticResult.warnings : [];
+        if (criticResult.polished_cv && typeof criticResult.polished_cv === 'object') {
+          cv = criticResult.polished_cv;
+        }
+      } catch {
+        // Critic pass is best-effort; keep original CV and empty warnings on failure
+      }
     } catch {
       // On AI failure, fall back to template-based generator
       cv = templateGenerate(profile, targetRole, template);
@@ -226,7 +335,7 @@ export async function POST(req: Request) {
       };
     }
 
-    return Response.json({ cv, debug });
+    return Response.json({ cv, debug, warnings });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'internal server error';
     return Response.json(

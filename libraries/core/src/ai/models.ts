@@ -9,4 +9,5 @@ export const TASK_MAX_TOKENS: Record<string, number> = {
   cover_letter: 600,
   cv_interview: 4096,
   cv_generate: 4096,
+  cv_critic: 4096,
 };

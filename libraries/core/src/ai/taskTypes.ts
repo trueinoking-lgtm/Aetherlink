@@ -4,6 +4,7 @@ export const AI_TASK_TYPES = {
   cover_letter: 'cover_letter',
   cv_interview: 'cv_interview',
   cv_generate: 'cv_generate',
+  cv_critic: 'cv_critic',
 } as const;
 
 export type AITaskType = (typeof AI_TASK_TYPES)[keyof typeof AI_TASK_TYPES];
