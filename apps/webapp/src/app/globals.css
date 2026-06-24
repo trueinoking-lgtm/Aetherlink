@@ -1122,8 +1122,8 @@ body.onboarding-active main {
 }
 
 .google-btn-primary:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
   box-shadow: var(--shadow-glow), 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 

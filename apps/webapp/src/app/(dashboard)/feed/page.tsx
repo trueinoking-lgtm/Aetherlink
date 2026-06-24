@@ -243,7 +243,7 @@ function PremiumJobCard({
       {/* Card body — clickable */}
       <Link
         href={`/feed/${job.id}`}
-        className="flex flex-col p-5 pb-3 focus:outline-none"
+        className="flex flex-col p-5 pb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)] rounded-xl"
         tabIndex={0}
       >
         {/* Avatar + title + company */}
