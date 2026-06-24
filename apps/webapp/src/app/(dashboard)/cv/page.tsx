@@ -3,29 +3,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { generateCvPdf, CvPdfData } from '@/lib/cvPdf';
 
 // ─── Types ───────────────────────────────────────────────
-
-type CvStage =
-  | 'intro'
-  | 'personal_details'
-  | 'career_goal'
-  | 'education'
-  | 'experience_discovery'
-  | 'skills'
-  | 'projects'
-  | 'certifications'
-  | 'achievements'
-  | 'references'
-  | 'review'
-  | 'generate_cv';
-
-interface CvMessage {
-  role: 'agent' | 'user' | 'system';
-  content: string;
-  stage: CvStage;
-  timestamp: string;
-}
 
 interface PersonalDetails {
   fullName: string;
@@ -70,6 +50,16 @@ interface CvData {
   achievements: string[];
   references: string;
   professionalSummary: string;
+  headline: string;
+}
+
+interface DebugInfo {
+  provider: string;
+  model: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  route: string;
+  fallback?: boolean;
 }
 
 const EMPTY_CV: CvData = {
@@ -83,21 +73,8 @@ const EMPTY_CV: CvData = {
   achievements: [],
   references: '',
   professionalSummary: '',
+  headline: '',
 };
-
-const STAGES: Array<{ key: CvStage; label: string; question: string }> = [
-  { key: 'intro', label: 'Welcome', question: 'Hi! I\'m your CV assistant. I\'ll help you build a professional CV step by step. What kind of job are you trying to get?' },
-  { key: 'personal_details', label: 'About You', question: 'Let\'s start with your details. What\'s your full name? (e.g., John Doe)' },
-  { key: 'career_goal', label: 'Goal', question: 'What kind of role are you looking for? (e.g., Software Developer, Sales Assistant, Teacher)' },
-  { key: 'education', label: 'Education', question: 'Have you completed any education? (school, college, university, training courses). If none, that\'s fine — type "skip".' },
-  { key: 'experience_discovery', label: 'Experience', question: 'Have you worked before — even informally? This includes: helping with sales, admin work, computer troubleshooting, teaching classmates, family business, church activities, community work, or any paid/volunteer work. What have you done?' },
-  { key: 'skills', label: 'Skills', question: 'What skills or tools do you have? (e.g., Microsoft Office, Excel, Python, driving, communication, teamwork, problem-solving). List as many as you can think of.' },
-  { key: 'projects', label: 'Projects', question: 'Have you completed any projects? (e.g., built a website, repaired computers, completed assignments, organized an event, created something). If none, type "skip".' },
-  { key: 'certifications', label: 'Certificates', question: 'Do you have any certificates, licenses, short courses, or training completion proof? (e.g., driver\'s license, IT certificate, first aid, online course). If none, type "skip".' },
-  { key: 'achievements', label: 'Achievements', question: 'What achievement are you proud of, even if it seems small? (e.g., "helped 10 classmates pass", "increased sales by 20%", "organized a community cleanup"). If none yet, type "skip".' },
-  { key: 'references', label: 'References', question: 'Would you like to add a references line? (e.g., "Available on request" or a specific referee). Type "skip" if you prefer "Available on request".' },
-  { key: 'review', label: 'Review', question: 'Great! Let\'s review what you\'ve told me. You can edit any section or continue to generate your CV.' },
-];
 
 // ─── Strength Score ──────────────────────────────────────
 
@@ -105,283 +82,255 @@ function computeStrengthScore(data: CvData): { score: number; missing: string[] 
   let score = 0;
   const missing: string[] = [];
 
-  if (data.personalDetails.fullName.trim().length > 2) score += 15;
+  // ─── Helper to detect common CV typos ──────────────────
+  const hasTypo = (s: string): boolean =>
+    /\b(pythob|phython|javascrit|javasript|typescrit|typscript|communcation|teamwrok|leardership|managemetn|organisational|analytial|probelm|solv(e|ing)|htlm|htmll?|csss?|bootstrap)\b/i.test(s);
+
+  const skills = (data.skills || []).filter(s => s.trim().length > 0);
+  const hasLowercaseFrags = skills.some(s => /^[a-z]/.test(s.trim()));
+  const hasTyposInSkills = skills.some(s => hasTypo(s.trim()));
+
+  // ─── 1. Contact info present (15 pts) ──────────────────
+  if (data.personalDetails.fullName.trim().length > 2) score += 5;
   else missing.push('Add your full name');
+
+  if (data.personalDetails.email.trim() || data.personalDetails.phone.trim()) score += 5;
+  else missing.push('Add an email or phone number');
 
   if (data.personalDetails.location.trim()) score += 5;
   else missing.push('Add your location');
 
-  if (data.careerGoal.trim()) score += 10;
-  else missing.push('Add a career goal');
+  // ─── 2. Role clarity (10 pts) ──────────────────────────
+  const goal = data.careerGoal.trim();
+  const genericGoal = /\b(anything|any\s*job|any\s*work|not\s*sure|i\s*don'?t\s*know|idk|undecided|no\s*preference|open\s*to\s*(anything|all|everything))\b/i;
+  if (goal) {
+    score += 4;
+    if (goal.length > 15) score += 3;
+    if (!genericGoal.test(goal)) score += 3;
+    else missing.push('Make your career goal more specific (e.g., "Software Developer" not "anything")');
+  } else {
+    missing.push('Add a career goal');
+  }
 
-  if (data.education.length > 0) score += 15;
-  else missing.push('Add education details');
+  // ─── 3. Skills quality (15 pts) ────────────────────────
+  if (skills.length >= 3) {
+    score += 5;
+    if (!hasLowercaseFrags) score += 5;
+    else missing.push('Capitalize your skills (e.g., "Python" not "python")');
+    if (!hasTyposInSkills) score += 5;
+    else missing.push('Fix typos in your skills (e.g., "Python" not "pythob")');
+  } else if (skills.length > 0) {
+    missing.push('Add more skills (aim for 3+)');
+  } else {
+    missing.push('Add at least 3 skills');
+  }
 
-  if (data.skills.length >= 3) score += 15;
-  else if (data.skills.length > 0) { score += 10; missing.push('Add more skills (aim for 3+)'); }
-  else missing.push('Add at least 3 skills');
+  // ─── 4. Experience strength (20 pts) ──────────────────
+  const exp = data.experience || [];
+  if (exp.length > 0) {
+    score += 8;
+    const withDesc = exp.filter(e => e.description && e.description.trim().length > 5);
+    if (withDesc.length > 0) {
+      score += 7;
+      const substantial = withDesc.filter(e => e.description.trim().length > 30);
+      if (substantial.length >= exp.length / 2) score += 5;
+      else missing.push('Add more detail to your experience descriptions');
+    } else {
+      missing.push('Add bullet points/descriptions to your experience');
+    }
+  } else {
+    missing.push('Add work/volunteer/informal experience');
+  }
 
-  if (data.experience.length > 0 || data.projects.length > 0) score += 20;
-  else missing.push('Add practical experience or a project');
+  // ─── 5. Project detail (10 pts) ────────────────────────
+  const projects = data.projects || [];
+  if (projects.length > 0) {
+    score += 5;
+    const withProjDesc = projects.filter(p => p.description && p.description.trim().length > 5);
+    if (withProjDesc.length > 0) score += 5;
+    else missing.push('Add descriptions to your projects');
+  } else {
+    missing.push('Add projects if available');
+  }
 
-  if (data.certifications.length > 0) score += 10;
+  // ─── 6. Education clarity (10 pts) ─────────────────────
+  const edu = data.education || [];
+  if (edu.length > 0) {
+    score += 5;
+    const structured = edu.filter(e => e.institution.trim() && e.qualification.trim());
+    if (structured.length === edu.length) score += 5;
+    else missing.push('Add institution and qualification for each education entry');
+  } else {
+    missing.push('Add education details');
+  }
+
+  // ─── 7. Certifications (5 pts) ─────────────────────────
+  if ((data.certifications || []).length > 0) score += 5;
   else missing.push('Add certifications if available');
 
-  if (data.achievements.length > 0) score += 5;
-  else missing.push('Add an achievement');
+  // ─── 8. Grammar / Professional polish (10 pts) ─────────
+  if (skills.length > 0) {
+    if (!hasLowercaseFrags) score += 4;
+    if (!hasTyposInSkills) score += 3;
+    const longFrags = skills.filter(s => s.trim().split(/\s+/).length > 4);
+    if (longFrags.length === 0) score += 3;
+  }
 
-  if (data.references.trim() || data.references === 'Available on request') score += 5;
-  else missing.push('Add a references statement');
+  // ─── 9. ATS friendliness (5 pts) ──────────────────────
+  const summary = data.professionalSummary.trim();
+  if (summary) {
+    score += 3;
+    if (summary.length > 40) score += 2;
+    else missing.push('Expand your professional summary for ATS optimization');
+  } else {
+    missing.push('Add a professional summary');
+  }
 
-  if (data.professionalSummary.trim()) score += 5;
-  else missing.push('Add a professional summary');
+  // ─── Penalties ────────────────────────────────────────
+  if (hasLowercaseFrags || hasTyposInSkills) score -= 10;
+  if (exp.length > 0 && !exp.some(e => e.description && e.description.trim().length > 5)) score -= 5;
+  if (!summary) score -= 5;
+  if (!data.references.trim()) score -= 3;
 
-  return { score: Math.min(100, score), missing };
+  // Clamp between 0 and 100
+  score = Math.max(0, Math.min(100, score));
+
+  return { score, missing };
 }
 
-// ─── ATS CV Generator ────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────
 
-function generateCvMarkdown(data: CvData): string {
-  const lines: string[] = [];
+/** Merge AI-extracted fields into CvData. Supports both flat keys and nested shapes. */
+function mergeExtractedData(cvData: CvData, extracted: Record<string, unknown>): CvData {
+  const next = { ...cvData };
 
-  // Header
-  lines.push(`# ${data.personalDetails.fullName || 'Your Name'}`);
-  const contactParts: string[] = [];
-  if (data.personalDetails.phone) contactParts.push(data.personalDetails.phone);
-  if (data.personalDetails.email) contactParts.push(data.personalDetails.email);
-  if (data.personalDetails.location) contactParts.push(data.personalDetails.location);
-  if (contactParts.length > 0) lines.push(contactParts.join(' | '));
-  lines.push('');
-
-  // Professional Summary
-  if (data.professionalSummary.trim()) {
-    lines.push('## Professional Summary');
-    lines.push(data.professionalSummary.trim());
-    lines.push('');
+  if (extracted.fullName && typeof extracted.fullName === 'string') {
+    next.personalDetails = { ...next.personalDetails, fullName: extracted.fullName };
+  }
+  if (extracted.email && typeof extracted.email === 'string') {
+    next.personalDetails = { ...next.personalDetails, email: extracted.email };
+  }
+  if (extracted.phone && typeof extracted.phone === 'string') {
+    next.personalDetails = { ...next.personalDetails, phone: extracted.phone };
+  }
+  if (extracted.location && typeof extracted.location === 'string') {
+    next.personalDetails = { ...next.personalDetails, location: extracted.location };
+  }
+  if (extracted.careerGoal && typeof extracted.careerGoal === 'string') {
+    next.careerGoal = extracted.careerGoal;
+  }
+  if (extracted.targetRole && typeof extracted.targetRole === 'string') {
+    next.careerGoal = extracted.targetRole;
+  }
+  if (extracted.headline && typeof extracted.headline === 'string') {
+    next.headline = extracted.headline;
+  }
+  if (extracted.professionalSummary && typeof extracted.professionalSummary === 'string') {
+    next.professionalSummary = extracted.professionalSummary;
+  }
+  if (Array.isArray(extracted.skills)) {
+    const merged = [...new Set([...next.skills, ...extracted.skills.map(String)])];
+    next.skills = merged;
+  }
+  if (Array.isArray(extracted.experience)) {
+    next.experience = extracted.experience.map((e: any) => ({
+      role: e.role || e.title || '',
+      company: e.company || '',
+      duration: e.duration || '',
+      description: e.description || e.bullets?.join('\n') || '',
+    }));
+  }
+  if (Array.isArray(extracted.education)) {
+    next.education = extracted.education.map((e: any) => ({
+      institution: e.institution || e.school || '',
+      qualification: e.qualification || e.degree || '',
+      year: e.year || e.endYear || '',
+    }));
+  }
+  if (Array.isArray(extracted.projects)) {
+    next.projects = extracted.projects.map((p: any) => ({
+      name: p.name || '',
+      description: p.description || '',
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || ''),
+    }));
+  }
+  if (Array.isArray(extracted.certifications)) {
+    next.certifications = extracted.certifications.map((c: any) => ({
+      name: c.name || '',
+      issuer: c.issuer || '',
+      year: c.year || '',
+    }));
+  }
+  if (Array.isArray(extracted.achievements)) {
+    next.achievements = [...next.achievements, ...extracted.achievements.map(String)];
+  }
+  if (extracted.references && typeof extracted.references === 'string') {
+    next.references = extracted.references;
   }
 
-  // Key Skills
-  if (data.skills.length > 0) {
-    lines.push('## Key Skills');
-    lines.push(data.skills.map(s => `• ${s}`).join('\n'));
-    lines.push('');
-  }
-
-  // Practical Experience / Work Experience
-  if (data.experience.length > 0) {
-    lines.push('## Practical Experience');
-    for (const exp of data.experience) {
-      lines.push(`**${exp.role}** — ${exp.company}${exp.duration ? ` (${exp.duration})` : ''}`);
-      if (exp.description) lines.push(`  ${exp.description}`);
-    }
-    lines.push('');
-  }
-
-  // Projects
-  if (data.projects.length > 0) {
-    lines.push('## Projects');
-    for (const proj of data.projects) {
-      lines.push(`**${proj.name}**`);
-      if (proj.description) lines.push(`  ${proj.description}`);
-      if (proj.technologies) lines.push(`  Tools: ${proj.technologies}`);
-    }
-    lines.push('');
-  }
-
-  // Education
-  if (data.education.length > 0) {
-    lines.push('## Education');
-    for (const edu of data.education) {
-      lines.push(`• **${edu.qualification}** — ${edu.institution}${edu.year ? ` (${edu.year})` : ''}`);
-    }
-    lines.push('');
-  }
-
-  // Certifications
-  if (data.certifications.length > 0) {
-    lines.push('## Certifications');
-    for (const cert of data.certifications) {
-      lines.push(`• ${cert.name}${cert.issuer ? ` — ${cert.issuer}` : ''}${cert.year ? ` (${cert.year})` : ''}`);
-    }
-    lines.push('');
-  }
-
-  // Achievements
-  if (data.achievements.length > 0) {
-    lines.push('## Achievements');
-    for (const a of data.achievements) {
-      lines.push(`• ${a}`);
-    }
-    lines.push('');
-  }
-
-  // References
-  lines.push('## References');
-  lines.push(data.references.trim() || 'Available on request');
-
-  return lines.join('\n');
+  return next;
 }
 
-function generateCvHtml(markdown: string, fullName: string): string {
-  // Convert markdown to clean HTML for PDF
-  let html = markdown
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/• /g, '<li>')
-    .replace(/<li>/g, '</li><li>')
-    .replace(/(<li>[^<]*<\/li>)/g, '<ul>$1</ul>')
-    .replace(/<\/li><li>/g, '')
-    .replace(/<\/ul>\n<ul>/g, '')
-    .replace(/\n\n/g, '<br/><br/>')
-    .replace(/\n/g, '<br/>');
+/** Map generated CV structure + CvData into CvPdfData for PDF generation. */
+function toCvPdfData(generatedCv: Record<string, unknown>, cvData: CvData): CvPdfData {
+  const g = generatedCv;
+  const skillsArray: string[] = Array.isArray(g.skills)
+    ? g.skills.map(String)
+    : [
+        ...(Array.isArray((g.skills as any)?.technical) ? (g.skills as any).technical : []),
+        ...(Array.isArray((g.skills as any)?.soft) ? (g.skills as any).soft : []),
+        ...(Array.isArray((g.skills as any)?.tools) ? (g.skills as any).tools : []),
+      ];
 
-  return `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>AetherLink CV — ${fullName}</title>
-<style>
-@page { size: A4; margin: 2cm; }
-body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a1a; max-width: 800px; margin: 0 auto; padding: 20px; }
-h1 { font-size: 22pt; margin: 0 0 8px 0; color: #1a1a1a; }
-h2 { font-size: 13pt; border-bottom: 2px solid #6366f1; padding-bottom: 4px; margin-top: 24px; color: #333; }
-ul { padding-left: 20px; }
-li { margin-bottom: 4px; }
-strong { color: #1a1a1a; }
-blockquote { border-left: 3px solid #6366f1; padding-left: 16px; color: #555; margin: 16px 0; }
-ol { padding-left: 20px; }
-</style>
-</head><body>${html}
-<p style="margin-top:40px;font-size:9pt;color:#999;border-top:1px solid #eee;padding-top:12px;">
-Generated by AetherLink — ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-</p>
-</body></html>`;
+  return {
+    fullName: cvData.personalDetails.fullName,
+    headline: (g.headline as string) || '',
+    email: cvData.personalDetails.email,
+    phone: cvData.personalDetails.phone,
+    location: cvData.personalDetails.location,
+    professionalSummary: (g.professionalSummary as string) || '',
+    skills: skillsArray,
+    experience: (Array.isArray(g.experience) ? g.experience : []).map((e: any) => ({
+      role: e.title || e.role || '',
+      company: e.company || '',
+      duration: e.startDate && e.endDate ? `${e.startDate} – ${e.endDate}` : (e.duration || ''),
+      bullets: Array.isArray(e.bullets) ? e.bullets : (e.description ? [e.description] : []),
+    })),
+    projects: (Array.isArray(g.projects) ? g.projects : []).map((p: any) => ({
+      name: p.name || '',
+      description: p.description || '',
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || ''),
+    })),
+    education: (Array.isArray(g.education) ? g.education : []).map((e: any) => ({
+      qualification: e.degree
+        ? `${e.degree}${e.field ? ` in ${e.field}` : ''}`
+        : (e.qualification || ''),
+      institution: e.institution || '',
+      year: e.year || e.endYear || '',
+    })),
+    certifications: (Array.isArray(g.certifications) ? g.certifications : []).map((c: any) => ({
+      name: c.name || '',
+      issuer: c.issuer || '',
+      year: c.year || '',
+    })),
+    references: (g.references as string) || 'Available on request',
+  };
 }
 
-// ─── Parse user response into structured data ────────────
-
-function parseStageResponse(stage: CvStage, input: string, currentData: CvData): CvData {
-  const trimmed = input.trim();
-  const data = JSON.parse(JSON.stringify(currentData)) as CvData;
-
-  switch (stage) {
-    case 'intro':
-    case 'career_goal':
-      data.careerGoal = trimmed;
-      break;
-
-    case 'personal_details': {
-      // Try to extract name from input
-      const nameMatch = trimmed.match(/(?:my name is|i am|i'm|call me)?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i);
-      if (nameMatch) data.personalDetails.fullName = nameMatch[1].trim();
-      // Check for phone
-      const phoneMatch = trimmed.match(/(\+?263|0)[\s-]?\d{2,3}[\s-]?\d{3,4}[\s-]?\d{3,4}/);
-      if (phoneMatch) data.personalDetails.phone = phoneMatch[0].trim();
-      // Check for email
-      const emailMatch = trimmed.match(/[\w.+-]+@[\w.-]+\.\w{2,}/);
-      if (emailMatch) data.personalDetails.email = emailMatch[0];
-      // Check for location
-      const locationMatch = trimmed.match(/(?:in|from|based in|located in|i'm in|i am in)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i);
-      if (locationMatch) data.personalDetails.location = locationMatch[1];
-      // If no pattern match, assume the whole input is the name
-      if (!nameMatch && !phoneMatch && !emailMatch && !locationMatch && trimmed.length > 0) {
-        data.personalDetails.fullName = trimmed.split(/[\n,]/)[0].trim();
-      }
-      break;
-    }
-
-    case 'education': {
-      if (trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none' || trimmed === '') break;
-      // Parse lines of education
-      const lines = trimmed.split('\n').filter(l => l.trim());
-      for (const line of lines) {
-        const parts = line.split(/[,|—\-–]/).map(p => p.trim()).filter(Boolean);
-        if (parts.length >= 1) {
-          data.education.push({
-            institution: parts[1] || '',
-            qualification: parts[0] || line.trim(),
-            year: parts[2] || '',
-          });
-        }
-      }
-      break;
-    }
-
-    case 'experience_discovery': {
-      if (trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none' || trimmed === '') break;
-      const lines = trimmed.split('\n').filter(l => l.trim());
-      for (const line of lines) {
-        // Try to parse: "Role at Company (duration): description"
-        const match = line.match(/^(.+?)(?:\s+(?:at|@)\s+(.+?))?(?:\s*\((.+?)\))?(?:\s*:\s*(.+))?$/i);
-        if (match) {
-          data.experience.push({
-            role: match[1]?.trim() || line.trim(),
-            company: match[2]?.trim() || '',
-            duration: match[3]?.trim() || '',
-            description: match[4]?.trim() || '',
-          });
-        } else {
-          data.experience.push({ role: line.trim(), company: '', duration: '', description: '' });
-        }
-      }
-      break;
-    }
-
-    case 'skills': {
-      const skills = trimmed.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
-      data.skills = [...new Set([...data.skills, ...skills])];
-      break;
-    }
-
-    case 'projects': {
-      if (trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none' || trimmed === '') break;
-      const lines = trimmed.split('\n').filter(l => l.trim());
-      for (const line of lines) {
-        const parts = line.split(/[:—\-–]/).map(p => p.trim());
-        data.projects.push({
-          name: parts[0] || line.trim(),
-          description: parts[1] || '',
-          technologies: parts[2] || '',
-        });
-      }
-      break;
-    }
-
-    case 'certifications': {
-      if (trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none' || trimmed === '') break;
-      const lines = trimmed.split('\n').filter(l => l.trim());
-      for (const line of lines) {
-        const parts = line.split(/[,—\-–]/).map(p => p.trim()).filter(Boolean);
-        data.certifications.push({
-          name: parts[0] || line.trim(),
-          issuer: parts[1] || '',
-          year: parts[2] || '',
-        });
-      }
-      break;
-    }
-
-    case 'achievements': {
-      if (trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none' || trimmed === '') break;
-      const items = trimmed.split('\n').filter(l => l.trim());
-      data.achievements = [...data.achievements, ...items];
-      break;
-    }
-
-    case 'references': {
-      data.references = trimmed.toLowerCase() === 'skip' || trimmed.toLowerCase() === 'none'
-        ? 'Available on request'
-        : trimmed;
-      break;
-    }
-
-    case 'review':
-      // No parsing needed — user reviews and edits
-      break;
-
-    default:
-      break;
-  }
-
-  return data;
+/** Check whether the AI's question suggests the interview is complete. */
+function isCompletionQuestion(question: string): boolean {
+  const lower = question.toLowerCase();
+  return (
+    lower.includes('generate your cv') ||
+    lower.includes('ready to generate') ||
+    lower.includes('shall i generate') ||
+    lower.includes('review your cv') ||
+    lower.includes('enough information') ||
+    lower.includes('would you like me to generate') ||
+    lower.includes('i have enough') ||
+    (lower.includes('generate') && lower.includes('cv')) ||
+    (lower.includes('create your') && lower.includes('cv'))
+  );
 }
 
 // ─── Main Page Component ──────────────────────────────────
@@ -389,27 +338,46 @@ function parseStageResponse(stage: CvStage, input: string, currentData: CvData):
 export default function CVJourneyPage() {
   const supabase = createClient();
   const router = useRouter();
-  const [stage, setStage] = useState<CvStage>('intro');
-  const [messages, setMessages] = useState<CvMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [cvData, setCvData] = useState<CvData>(EMPTY_CV);
-  const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [generatedMarkdown, setGeneratedMarkdown] = useState('');
-  const [editingSection, setEditingSection] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const stageIndex = STAGES.findIndex(s => s.key === stage);
+  // ── Core state ──
+  const [cvData, setCvData] = useState<CvData>(EMPTY_CV);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // ── Interview state ──
+  const [hasStarted, setHasStarted] = useState(false);
+  const [interviewMessages, setInterviewMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [currentQuestion, setCurrentQuestion] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [interviewComplete, setIsInterviewComplete] = useState(false);
+  const [input, setInput] = useState('');
+  const [extractedData, setExtractedData] = useState<Record<string, unknown>>({});
+
+  // ── Generation state ──
+  const [generatedCv, setGeneratedCv] = useState<Record<string, unknown> | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // ── Debug state ──
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
+
+  // ── Inline editing state (post-generation) ──
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  // Refs
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
   const { score, missing } = computeStrengthScore(cvData);
 
-  // Load existing data
+  // ─── Load existing data ──────────────────────────────────
   useEffect(() => {
     void (async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { router.push('/'); return; }
 
-        // Load from localStorage first (instant)
         const local = localStorage.getItem('aetherlink_cv_data');
         if (local) {
           try {
@@ -418,7 +386,6 @@ export default function CVJourneyPage() {
           } catch { /* ignore */ }
         }
 
-        // Load from Supabase cv_profiles (best-effort)
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/cv_profiles?user_id=eq.${user.id}&select=*`,
@@ -439,8 +406,8 @@ export default function CVJourneyPage() {
                 achievements: p.achievements || [],
                 references: p.references_text || '',
                 professionalSummary: p.professional_summary || '',
+                headline: p.headline || '',
               };
-              // Use Supabase data if it has more content
               const supStr = JSON.stringify(supabaseData).length;
               const localStr = JSON.stringify(cvData).length;
               if (supStr > localStr) {
@@ -450,14 +417,15 @@ export default function CVJourneyPage() {
           }
         } catch { /* table may not exist yet */ }
 
-        // Load conversation from localStorage
-        const conv = localStorage.getItem('aetherlink_cv_conversation');
+        const conv = localStorage.getItem('aetherlink_cv_interview');
         if (conv) {
           try {
             const parsed = JSON.parse(conv);
             if (parsed.messages && parsed.messages.length > 0) {
-              setMessages(parsed.messages);
-              if (parsed.currentStage) setStage(parsed.currentStage as CvStage);
+              setInterviewMessages(parsed.messages);
+              setHasStarted(true);
+              if (parsed.extractedData) setExtractedData(parsed.extractedData);
+              if (parsed.complete) setIsInterviewComplete(true);
             }
           } catch { /* ignore */ }
         }
@@ -469,15 +437,16 @@ export default function CVJourneyPage() {
     })();
   }, []);
 
-  // Auto-save conversation
+  // Auto-save interview state
   useEffect(() => {
-    if (!loading && messages.length > 0) {
-      localStorage.setItem('aetherlink_cv_conversation', JSON.stringify({
-        messages,
-        currentStage: stage,
+    if (!loading && interviewMessages.length > 0) {
+      localStorage.setItem('aetherlink_cv_interview', JSON.stringify({
+        messages: interviewMessages,
+        extractedData,
+        complete: interviewComplete,
       }));
     }
-  }, [messages, stage, loading]);
+  }, [interviewMessages, extractedData, interviewComplete, loading]);
 
   // Auto-save CV data
   useEffect(() => {
@@ -489,76 +458,185 @@ export default function CVJourneyPage() {
   // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [interviewMessages, currentQuestion]);
 
-  const handleSend = useCallback(() => {
-    if (!input.trim() && stage !== 'review') return;
+  // ─── Interview: start ────────────────────────────────────
+  const handleStart = useCallback(async () => {
+    setHasStarted(true);
+    setIsAsking(true);
 
-    const userMsg: CvMessage = {
-      role: 'user',
-      content: input.trim(),
-      stage,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const res = await fetch('/api/cv/interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [],
+          userProfile: {},
+          targetRole: '',
+          stage: 'intro',
+        }),
+      });
 
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+
+      const data = await res.json();
+      const question: string = data.question || 'Tell me about yourself and what kind of role you are looking for.';
+
+      setCurrentQuestion(question);
+      setInterviewMessages([{ role: 'assistant', content: question }]);
+      setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+    } catch {
+      // Fallback question
+      const fallbackQ = 'Tell me about yourself and what kind of role you are looking for.';
+      setCurrentQuestion(fallbackQ);
+      setInterviewMessages([{ role: 'assistant', content: fallbackQ }]);
+      setDebugInfo({
+        provider: 'fireworks',
+        model: 'deepseek-v4-flash',
+        route: 'api/cv/interview',
+        fallback: true,
+      });
+    } finally {
+      setIsAsking(false);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, []);
+
+  // ─── Interview: send answer ──────────────────────────────
+  const handleSend = useCallback(async () => {
+    const trimmed = input.trim();
+    if (!trimmed || isAsking) return;
+
     setInput('');
+    setIsAsking(true);
 
-    // Parse response into structured data
-    const newData = parseStageResponse(stage, input.trim(), cvData);
-    setCvData(newData);
+    const updatedMessages = [...interviewMessages, { role: 'user' as const, content: trimmed }];
+    setInterviewMessages(updatedMessages);
 
-    // Determine next stage
-    const nextStageIndex = stageIndex + 1;
-    if (nextStageIndex < STAGES.length) {
-      const nextStage = STAGES[nextStageIndex];
-      const agentMsg: CvMessage = {
-        role: 'agent',
-        content: nextStage.question,
-        stage: nextStage.key,
-        timestamp: new Date().toISOString(),
-      };
+    try {
+      const res = await fetch('/api/cv/interview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages,
+          userProfile: extractedData,
+          targetRole: cvData.careerGoal || '',
+          stage: 'continue',
+        }),
+      });
 
-      // Generate summary message for review stage
-      if (nextStage.key === 'review') {
-        const summaryParts: string[] = [];
-        if (newData.personalDetails.fullName) summaryParts.push(`Name: ${newData.personalDetails.fullName}`);
-        if (newData.careerGoal) summaryParts.push(`Goal: ${newData.careerGoal}`);
-        if (newData.skills.length > 0) summaryParts.push(`Skills: ${newData.skills.join(', ')}`);
-        if (newData.experience.length > 0) summaryParts.push(`Experience: ${newData.experience.length} entr(y/ies)`);
-        if (newData.education.length > 0) summaryParts.push(`Education: ${newData.education.length} entr(y/ies)`);
+      if (!res.ok) throw new Error(`API error ${res.status}`);
 
-        const summary: CvMessage = {
-          role: 'agent',
-          content: `Here's what I've collected:\n\n${summaryParts.map(p => `• ${p}`).join('\n')}\n\nYou can edit any section below, or click "Generate CV" when you're ready.`,
-          stage: 'review',
-          timestamp: new Date().toISOString(),
-        };
-        setMessages([...newMessages, summary, agentMsg]);
-      } else {
-        setMessages([...newMessages, agentMsg]);
+      const data = await res.json();
+      const question: string = data.question || 'Could you tell me more?';
+
+      // Merge extracted data
+      if (data.extractedData && typeof data.extractedData === 'object') {
+        const newExtracted = { ...extractedData, ...data.extractedData };
+        setExtractedData(newExtracted);
+        setCvData(prev => mergeExtractedData(prev, data.extractedData));
       }
 
-      setStage(nextStage.key);
-    }
-  }, [input, messages, stage, stageIndex, cvData]);
+      // Check if interview is complete
+      const complete = isCompletionQuestion(question);
 
-  const handleSkip = useCallback(() => {
-    const nextStageIndex = stageIndex + 1;
-    if (nextStageIndex < STAGES.length) {
-      const nextStage = STAGES[nextStageIndex];
-      const agentMsg: CvMessage = {
-        role: 'agent',
-        content: nextStage.question,
-        stage: nextStage.key,
-        timestamp: new Date().toISOString(),
+      setCurrentQuestion(question);
+      setInterviewMessages(prev => [...prev, { role: 'assistant', content: question }]);
+      setIsInterviewComplete(complete);
+      setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+    } catch {
+      const fallbackQ = 'Thanks for that. Could you elaborate a bit more on your background?';
+      setCurrentQuestion(fallbackQ);
+      setInterviewMessages(prev => [...prev, { role: 'assistant', content: fallbackQ }]);
+      setDebugInfo({
+        provider: 'fireworks',
+        model: 'deepseek-v4-flash',
+        route: 'api/cv/interview',
+        fallback: true,
+      });
+    } finally {
+      setIsAsking(false);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [input, interviewMessages, extractedData, cvData.careerGoal, isAsking]);
+
+  // ─── Generate CV ─────────────────────────────────────────
+  const handleGenerateCv = useCallback(async () => {
+    setIsGenerating(true);
+
+    try {
+      const res = await fetch('/api/cv/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: extractedData,
+          targetRole: cvData.careerGoal || '',
+          template: 'entry-level',
+        }),
+      });
+
+      if (!res.ok) throw new Error(`API error ${res.status}`);
+
+      const data = await res.json();
+      const cv = data.cv || {};
+      setGeneratedCv(cv);
+      setDebugInfo({ ...data.debug, fallback: data.fallback ?? false });
+
+      // Also merge generated data back into cvData for save
+      setCvData(prev => mergeExtractedData(prev, cv as Record<string, unknown>));
+    } catch {
+      // Create minimal fallback CV
+      const fallbackCv: Record<string, unknown> = {
+        headline: cvData.careerGoal ? `Professional targeting ${cvData.careerGoal}` : 'Professional CV',
+        professionalSummary: cvData.professionalSummary || '',
+        skills: cvData.skills,
+        experience: cvData.experience.map(e => ({
+          title: e.role,
+          company: e.company,
+          duration: e.duration,
+          bullets: e.description ? [e.description] : [],
+        })),
+        education: cvData.education.map(e => ({
+          qualification: e.qualification,
+          institution: e.institution,
+          year: e.year,
+        })),
+        projects: cvData.projects,
+        certifications: cvData.certifications,
+        references: cvData.references || 'Available on request',
       };
-      setMessages(prev => [...prev, agentMsg]);
-      setStage(nextStage.key);
+      setGeneratedCv(fallbackCv);
+      setDebugInfo({
+        provider: 'fireworks',
+        model: 'deepseek-v4-flash',
+        route: 'api/cv/generate',
+        fallback: true,
+      });
+    } finally {
+      setIsGenerating(false);
     }
-  }, [stageIndex]);
+  }, [extractedData, cvData]);
 
+  // ─── Download PDF ────────────────────────────────────────
+  const handleDownloadPdf = useCallback(async () => {
+    if (!generatedCv) return;
+    try {
+      const pdfData = toCvPdfData(generatedCv, cvData);
+      const blob = await generateCvPdf(pdfData, 'entry-level');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `AetherLink_CV_${cvData.personalDetails.fullName.replace(/\s+/g, '_') || 'draft'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('PDF generation error:', e);
+    }
+  }, [generatedCv, cvData]);
+
+  // ─── Save to Supabase ────────────────────────────────────
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
@@ -580,6 +658,7 @@ export default function CVJourneyPage() {
             location: cvData.personalDetails.location,
             career_goal: cvData.careerGoal,
             professional_summary: cvData.professionalSummary,
+            headline: cvData.headline,
             skills: cvData.skills,
             education: cvData.education,
             experience: cvData.experience,
@@ -597,120 +676,140 @@ export default function CVJourneyPage() {
     }
   }, [cvData, score]);
 
-  const handleGenerateCv = useCallback(() => {
-    const md = generateCvMarkdown(cvData);
-    setGeneratedMarkdown(md);
-    setStage('generate_cv');
-  }, [cvData]);
-
-  const handleDownloadPdf = useCallback(() => {
-    const html = generateCvHtml(generatedMarkdown, cvData.personalDetails.fullName);
-    const win = window.open('', '_blank');
-    if (!win) return;
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => win.print(), 500);
-  }, [generatedMarkdown, cvData.personalDetails.fullName]);
-
+  // ─── Inline editing (post-generation) ────────────────────
   const handleEditSection = useCallback((section: string) => {
     setEditingSection(section);
-    // Pre-fill input with current data
+    if (!generatedCv) return;
     switch (section) {
-      case 'personal':
-        setInput(`${cvData.personalDetails.fullName}`);
+      case 'headline':
+        setEditValue((generatedCv.headline as string) || '');
         break;
-      case 'goal':
-        setInput(cvData.careerGoal);
+      case 'professionalSummary':
+        setEditValue((generatedCv.professionalSummary as string) || '');
         break;
       case 'skills':
-        setInput(cvData.skills.join(', '));
+        setEditValue(
+          (Array.isArray(generatedCv.skills) ? generatedCv.skills : [])
+            .map(String).join(', ')
+        );
         break;
       case 'experience':
-        setInput(cvData.experience.map(e => `${e.role} at ${e.company} (${e.duration}): ${e.description}`).join('\n'));
+        setEditValue(
+          (Array.isArray(generatedCv.experience) ? generatedCv.experience : [])
+            .map((e: any) => `${e.title || e.role || ''} at ${e.company || ''}: ${(e.bullets || []).join('; ')}`)
+            .join('\n')
+        );
         break;
       case 'education':
-        setInput(cvData.education.map(e => `${e.qualification} — ${e.institution} ${e.year}`).join('\n'));
+        setEditValue(
+          (Array.isArray(generatedCv.education) ? generatedCv.education : [])
+            .map((e: any) => `${e.degree || e.qualification || ''} — ${e.institution || ''} ${e.year || ''}`)
+            .join('\n')
+        );
         break;
       case 'projects':
-        setInput(cvData.projects.map(p => `${p.name}: ${p.description}`).join('\n'));
+        setEditValue(
+          (Array.isArray(generatedCv.projects) ? generatedCv.projects : [])
+            .map((p: any) => `${p.name}: ${p.description}`)
+            .join('\n')
+        );
         break;
       case 'certifications':
-        setInput(cvData.certifications.map(c => `${c.name} — ${c.issuer} ${c.year}`).join('\n'));
-        break;
-      case 'achievements':
-        setInput(cvData.achievements.join('\n'));
+        setEditValue(
+          (Array.isArray(generatedCv.certifications) ? generatedCv.certifications : [])
+            .map((c: any) => `${c.name} — ${c.issuer || ''} ${c.year || ''}`)
+            .join('\n')
+        );
         break;
       case 'references':
-        setInput(cvData.references);
+        setEditValue((generatedCv.references as string) || '');
         break;
+      default:
+        setEditValue('');
     }
-  }, [cvData]);
+  }, [generatedCv]);
 
   const handleSaveEdit = useCallback(() => {
-    if (!editingSection) return;
-    const trimmed = input.trim();
-    const newData = JSON.parse(JSON.stringify(cvData)) as CvData;
+    if (!editingSection || !generatedCv) return;
+    const updated = { ...generatedCv };
 
     switch (editingSection) {
-      case 'personal':
-        newData.personalDetails.fullName = trimmed;
+      case 'headline':
+        updated.headline = editValue.trim();
         break;
-      case 'goal':
-        newData.careerGoal = trimmed;
+      case 'professionalSummary':
+        updated.professionalSummary = editValue.trim();
         break;
       case 'skills':
-        newData.skills = trimmed.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+        updated.skills = editValue.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
         break;
-      case 'experience': {
-        const lines = trimmed.split('\n').filter(l => l.trim());
-        newData.experience = lines.map(line => {
-          const match = line.match(/^(.+?)(?:\s+(?:at|@)\s+(.+?))?(?:\s*\((.+?)\))?(?:\s*:\s*(.+))?$/i);
+      case 'experience':
+        updated.experience = editValue.split('\n').filter(l => l.trim()).map(line => {
+          const parts = line.match(/^(.+?)\s+at\s+(.+?):\s*(.+)/);
+          if (parts) {
+            return {
+              title: parts[1].trim(),
+              company: parts[2].trim(),
+              bullets: parts[3].split(';').map((b: string) => b.trim()).filter(Boolean),
+            };
+          }
+          return { title: line.trim(), company: '', bullets: [] };
+        });
+        break;
+      case 'education':
+        updated.education = editValue.split('\n').filter(l => l.trim()).map(line => {
+          const parts = line.split(/[—\-–]/).map(p => p.trim());
           return {
-            role: match?.[1]?.trim() || line.trim(),
-            company: match?.[2]?.trim() || '',
-            duration: match?.[3]?.trim() || '',
-            description: match?.[4]?.trim() || '',
+            degree: parts[0] || line.trim(),
+            institution: parts[1] || '',
+            year: parts[2] || '',
           };
         });
         break;
-      }
-      case 'education': {
-        const lines = trimmed.split('\n').filter(l => l.trim());
-        newData.education = lines.map(line => {
-          const parts = line.split(/[,|—\-–]/).map(p => p.trim()).filter(Boolean);
-          return { qualification: parts[0] || line.trim(), institution: parts[1] || '', year: parts[2] || '' };
+      case 'projects':
+        updated.projects = editValue.split('\n').filter(l => l.trim()).map(line => {
+          const parts = line.split(/:\s*/);
+          return {
+            name: parts[0] || line.trim(),
+            description: parts[1] || '',
+            technologies: parts[2] || '',
+          };
         });
         break;
-      }
-      case 'projects': {
-        const lines = trimmed.split('\n').filter(l => l.trim());
-        newData.projects = lines.map(line => {
-          const parts = line.split(/[:—\-–]/).map(p => p.trim());
-          return { name: parts[0] || line.trim(), description: parts[1] || '', technologies: parts[2] || '' };
+      case 'certifications':
+        updated.certifications = editValue.split('\n').filter(l => l.trim()).map(line => {
+          const parts = line.split(/[—\-–]/).map(p => p.trim());
+          return {
+            name: parts[0] || line.trim(),
+            issuer: parts[1] || '',
+            year: parts[2] || '',
+          };
         });
-        break;
-      }
-      case 'certifications': {
-        const lines = trimmed.split('\n').filter(l => l.trim());
-        newData.certifications = lines.map(line => {
-          const parts = line.split(/[,—\-–]/).map(p => p.trim()).filter(Boolean);
-          return { name: parts[0] || line.trim(), issuer: parts[1] || '', year: parts[2] || '' };
-        });
-        break;
-      }
-      case 'achievements':
-        newData.achievements = trimmed.split('\n').filter(l => l.trim());
         break;
       case 'references':
-        newData.references = trimmed || 'Available on request';
+        updated.references = editValue.trim() || 'Available on request';
         break;
     }
 
-    setCvData(newData);
+    setGeneratedCv(updated);
+    setCvData(prev => mergeExtractedData(prev, updated as Record<string, unknown>));
     setEditingSection(null);
-    setInput('');
-  }, [editingSection, input, cvData]);
+    setEditValue('');
+  }, [editingSection, editValue, generatedCv]);
 
+  // ─── Key handler ─────────────────────────────────────────
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (editingSection) {
+        handleSaveEdit();
+      } else {
+        handleSend();
+      }
+    }
+  }, [editingSection, handleSend, handleSaveEdit]);
+
+  // ─── Loading state ──────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -722,6 +821,7 @@ export default function CVJourneyPage() {
     );
   }
 
+  // ─── Render ──────────────────────────────────────────────
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] page-enter">
       {/* Header */}
@@ -729,7 +829,13 @@ export default function CVJourneyPage() {
         <div>
           <h1 className="font-display text-lg font-bold text-[var(--text-primary)]">CV Journey</h1>
           <p className="text-xs text-[var(--text-muted)]">
-            {stage === 'generate_cv' ? 'CV Generated' : `Step ${stageIndex + 1} of ${STAGES.length}`}
+            {!hasStarted
+              ? 'AI-Assisted CV Builder'
+              : generatedCv
+                ? 'CV Generated'
+                : interviewComplete
+                  ? 'Interview Complete'
+                  : 'Interview in Progress'}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -755,145 +861,407 @@ export default function CVJourneyPage() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Chat area */}
+        {/* ─── Main chat / preview area ─── */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-            {messages.length === 0 && (
-              <div className="text-center py-12">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)]/10 mb-4">
-                  <svg className="h-8 w-8 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+
+          {/* ─── Welcome screen ─── */}
+          {!hasStarted && (
+            <div className="flex-1 flex items-center justify-center px-4">
+              <div className="text-center max-w-md">
+                <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-[var(--accent)]/10 mb-6">
+                  <svg className="h-10 w-10 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
                   </svg>
                 </div>
-                <p className="font-display text-lg font-bold text-[var(--text-primary)]">Let's build your CV together</p>
-                <p className="mt-2 text-sm text-[var(--text-secondary)] max-w-sm mx-auto">
-                  I'll ask you a few questions about your background. Answer in your own words — I'll organize everything into a professional CV.
+                <h2 className="font-display text-2xl font-bold text-[var(--text-primary)] mb-2">
+                  AI-Assisted CV Builder
+                </h2>
+                <p className="text-sm text-[var(--text-secondary)] mb-8 leading-relaxed">
+                  I&apos;ll interview you — one question at a time — to understand your background,
+                  skills, and goals. Then I&apos;ll generate a professional CV tailored to your target role.
                 </p>
                 <button
-                  onClick={() => {
-                    const firstMsg: CvMessage = {
-                      role: 'agent',
-                      content: STAGES[0].question,
-                      stage: 'intro',
-                      timestamp: new Date().toISOString(),
-                    };
-                    setMessages([firstMsg]);
-                  }}
-                  className="mt-6 premium-btn premium-btn-primary pointer-active"
+                  onClick={handleStart}
+                  className="premium-btn premium-btn-primary text-base px-8 py-3 pointer-active"
                 >
                   Start My CV →
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                  msg.role === 'user'
-                    ? 'bg-[var(--accent)] text-white'
-                    : 'bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-primary)]'
-                }`}>
-                  <p className="text-sm whitespace-pre-line">{msg.content}</p>
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input area */}
-          {stage !== 'review' && stage !== 'generate_cv' && messages.length > 0 && (
-            <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md">
-              {editingSection ? (
-                <div className="space-y-2">
-                  <textarea
-                    className="premium-input min-h-[80px] resize-none"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Enter your answer..."
-                    autoFocus
-                  />
-                  <div className="flex gap-2">
-                    <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-sm pointer-active">
-                      Save Changes
-                    </button>
-                    <button onClick={() => { setEditingSection(null); setInput(''); }} className="premium-btn premium-btn-ghost text-sm pointer-active">
-                      Cancel
-                    </button>
+          {/* ─── Interview mode ─── */}
+          {hasStarted && !generatedCv && (
+            <>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                {interviewMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                      msg.role === 'user'
+                        ? 'bg-[var(--accent)] text-white'
+                        : 'bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-primary)]'
+                    }`}>
+                      <p className="text-sm whitespace-pre-line">{msg.content}</p>
+                    </div>
                   </div>
-                </div>
-              ) : (
+                ))}
+                {isAsking && (
+                  <div className="flex justify-start">
+                    <div className="bg-[var(--glass-bg)] border border-[var(--border)] rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="h-2 w-2 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="h-2 w-2 rounded-full bg-[var(--accent)] animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Input area */}
+              <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md">
                 <div className="flex gap-2">
                   <textarea
+                    ref={inputRef}
                     className="premium-input flex-1 min-h-[44px] max-h-[120px] resize-none"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your answer..."
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSend();
-                      }
-                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder={isAsking ? 'Waiting for AI response…' : 'Type your answer...'}
+                    disabled={isAsking}
                     rows={1}
                   />
-                  <button onClick={handleSend} className="premium-btn premium-btn-primary self-end h-11 w-11 flex items-center justify-center pointer-active">
+                  <button
+                    onClick={handleSend}
+                    disabled={isAsking || !input.trim()}
+                    className="premium-btn premium-btn-primary self-end h-11 w-11 flex items-center justify-center pointer-active disabled:opacity-40"
+                  >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                     </svg>
                   </button>
                 </div>
-              )}
-              <div className="flex gap-2 mt-2">
-                <button onClick={handleSkip} className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
-                  Skip this question →
-                </button>
+
+                {/* Generate CV button (shown when interview is complete) */}
+                {interviewComplete && !isAsking && (
+                  <div className="mt-3">
+                    <button
+                      onClick={handleGenerateCv}
+                      className="w-full premium-btn premium-btn-primary py-3 pointer-active"
+                    >
+                      ✨ Generate My CV
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
+            </>
           )}
 
-          {/* Review / Generate buttons */}
-          {stage === 'review' && (
-            <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md space-y-3">
-              {/* Missing items */}
-              {missing.length > 0 && (
-                <div className="glass-card p-3">
-                  <p className="text-xs font-semibold text-[var(--text-primary)] mb-2">📋 To improve your score:</p>
-                  <ul className="space-y-1">
-                    {missing.slice(0, 4).map((m, i) => (
-                      <li key={i} className="text-xs text-[var(--text-muted)] flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
-                        {m}
-                      </li>
-                    ))}
-                  </ul>
+          {/* ─── Generated CV preview ─── */}
+          {generatedCv && (
+            <>
+              {/* CV Preview scrollable area */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                {/* Headline */}
+                <div className="glass-card p-4">
+                  {editingSection === 'headline' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Professional Headline</label>
+                      <input
+                        className="premium-input w-full"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-[var(--text-primary)]">{(generatedCv.headline as string) || 'Professional Headline'}</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-0.5">{cvData.personalDetails.fullName || 'Your Name'}</p>
+                      </div>
+                      <button onClick={() => handleEditSection('headline')} className="text-xs text-[var(--accent)] shrink-0">Edit</button>
+                    </div>
+                  )}
                 </div>
-              )}
-              <button onClick={handleGenerateCv} className="w-full premium-btn premium-btn-primary py-3 pointer-active">
-                ✨ Generate My CV
-              </button>
-            </div>
-          )}
 
-          {/* Generated CV view */}
-          {stage === 'generate_cv' && (
-            <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md space-y-2">
-              <div className="flex gap-2">
-                <button onClick={handleDownloadPdf} className="flex-1 premium-btn premium-btn-primary py-3 pointer-active">
-                  📄 Download PDF
-                </button>
-                <button onClick={handleSave} className="premium-btn premium-btn-secondary py-3 pointer-active">
-                  Save to Profile
+                {/* Professional Summary */}
+                <div className="glass-card p-4">
+                  {editingSection === 'professionalSummary' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Professional Summary</label>
+                      <textarea
+                        className="premium-input w-full min-h-[80px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">Professional Summary</p>
+                        <p className="text-sm text-[var(--text-primary)] whitespace-pre-line">{(generatedCv.professionalSummary as string) || 'No summary yet.'}</p>
+                      </div>
+                      <button onClick={() => handleEditSection('professionalSummary')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Skills */}
+                <div className="glass-card p-4">
+                  {editingSection === 'skills' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Skills (comma-separated)</label>
+                      <textarea
+                        className="premium-input w-full min-h-[60px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Skills</p>
+                        <div className="flex flex-wrap gap-1">
+                          {(Array.isArray(generatedCv.skills) ? generatedCv.skills : []).map((s: any, i: number) => (
+                            <span key={i} className="skill-tag">{String(s)}</span>
+                          ))}
+                          {(Array.isArray((generatedCv.skills as any)?.technical) || Array.isArray((generatedCv.skills as any)?.soft)) && (
+                            <>
+                              {[...((generatedCv.skills as any)?.technical || []), ...((generatedCv.skills as any)?.soft || []), ...((generatedCv.skills as any)?.tools || [])].map((s: string, i: number) => (
+                                <span key={`cat-${i}`} className="skill-tag">{s}</span>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <button onClick={() => handleEditSection('skills')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Experience */}
+                <div className="glass-card p-4">
+                  {editingSection === 'experience' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Experience (one per line: Role at Company: bullet1; bullet2)</label>
+                      <textarea
+                        className="premium-input w-full min-h-[120px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Experience</p>
+                        {(Array.isArray(generatedCv.experience) ? generatedCv.experience : []).map((exp: any, i: number) => (
+                          <div key={i} className="mb-3 last:mb-0">
+                            <p className="text-sm font-semibold text-[var(--text-primary)]">{exp.title || exp.role || 'Role'}{exp.company ? ` at ${exp.company}` : ''}</p>
+                            {(exp.startDate || exp.endDate || exp.duration) && (
+                              <p className="text-xs text-[var(--text-muted)]">{exp.duration || `${exp.startDate || ''} – ${exp.endDate || ''}`}</p>
+                            )}
+                            {Array.isArray(exp.bullets) && exp.bullets.map((b: string, j: number) => (
+                              <p key={j} className="text-xs text-[var(--text-secondary)] mt-0.5">• {b}</p>
+                            ))}
+                          </div>
+                        ))}
+                        {(!generatedCv.experience || (Array.isArray(generatedCv.experience) && generatedCv.experience.length === 0)) && (
+                          <p className="text-xs text-[var(--text-muted)]">No experience entries.</p>
+                        )}
+                      </div>
+                      <button onClick={() => handleEditSection('experience')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Education */}
+                <div className="glass-card p-4">
+                  {editingSection === 'education' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Education (one per line: Degree — Institution Year)</label>
+                      <textarea
+                        className="premium-input w-full min-h-[80px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Education</p>
+                        {(Array.isArray(generatedCv.education) ? generatedCv.education : []).map((edu: any, i: number) => (
+                          <p key={i} className="text-sm text-[var(--text-primary)]">
+                            {edu.degree || edu.qualification || ''}
+                            {edu.field ? ` in ${edu.field}` : ''}
+                            {edu.institution ? ` — ${edu.institution}` : ''}
+                            {edu.year ? ` (${edu.year})` : ''}
+                          </p>
+                        ))}
+                        {(!generatedCv.education || (Array.isArray(generatedCv.education) && generatedCv.education.length === 0)) && (
+                          <p className="text-xs text-[var(--text-muted)]">No education entries.</p>
+                        )}
+                      </div>
+                      <button onClick={() => handleEditSection('education')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Projects */}
+                <div className="glass-card p-4">
+                  {editingSection === 'projects' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Projects (one per line: Project Name: Description)</label>
+                      <textarea
+                        className="premium-input w-full min-h-[80px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Projects</p>
+                        {(Array.isArray(generatedCv.projects) ? generatedCv.projects : []).map((proj: any, i: number) => (
+                          <div key={i} className="mb-2 last:mb-0">
+                            <p className="text-sm font-semibold text-[var(--text-primary)]">{proj.name}</p>
+                            {proj.description && <p className="text-xs text-[var(--text-secondary)]">{proj.description}</p>}
+                            {proj.technologies && <p className="text-xs text-[var(--text-muted)]">Tools: {Array.isArray(proj.technologies) ? proj.technologies.join(', ') : proj.technologies}</p>}
+                          </div>
+                        ))}
+                        {(!generatedCv.projects || (Array.isArray(generatedCv.projects) && generatedCv.projects.length === 0)) && (
+                          <p className="text-xs text-[var(--text-muted)]">No projects.</p>
+                        )}
+                      </div>
+                      <button onClick={() => handleEditSection('projects')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Certifications */}
+                <div className="glass-card p-4">
+                  {editingSection === 'certifications' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">Certifications (one per line: Name — Issuer Year)</label>
+                      <textarea
+                        className="premium-input w-full min-h-[80px] resize-none"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">Certifications</p>
+                        {(Array.isArray(generatedCv.certifications) ? generatedCv.certifications : []).map((cert: any, i: number) => (
+                          <p key={i} className="text-sm text-[var(--text-primary)]">
+                            {cert.name}{cert.issuer ? ` — ${cert.issuer}` : ''}{cert.year ? ` (${cert.year})` : ''}
+                          </p>
+                        ))}
+                        {(!generatedCv.certifications || (Array.isArray(generatedCv.certifications) && generatedCv.certifications.length === 0)) && (
+                          <p className="text-xs text-[var(--text-muted)]">No certifications.</p>
+                        )}
+                      </div>
+                      <button onClick={() => handleEditSection('certifications')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* References */}
+                <div className="glass-card p-4">
+                  {editingSection === 'references' ? (
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-[var(--text-secondary)]">References</label>
+                      <input
+                        className="premium-input w-full"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={handleSaveEdit} className="premium-btn premium-btn-primary text-xs pointer-active">Save</button>
+                        <button onClick={() => { setEditingSection(null); setEditValue(''); }} className="premium-btn premium-btn-ghost text-xs pointer-active">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">References</p>
+                        <p className="text-sm text-[var(--text-primary)]">{(generatedCv.references as string) || 'Available on request'}</p>
+                      </div>
+                      <button onClick={() => handleEditSection('references')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="border-t border-[var(--border)] px-4 py-3 bg-[var(--bg-base)]/80 backdrop-blur-md space-y-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDownloadPdf}
+                    className="flex-1 premium-btn premium-btn-primary py-3 pointer-active"
+                  >
+                    📄 Download PDF
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    className="premium-btn premium-btn-secondary py-3 pointer-active"
+                  >
+                    Save to Profile
+                  </button>
+                </div>
+                <button
+                  onClick={() => {
+                    setGeneratedCv(null);
+                    setIsInterviewComplete(false);
+                  }}
+                  className="w-full text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                >
+                  ← Back to interview
                 </button>
               </div>
-              <button onClick={() => setStage('review')} className="w-full text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
-                ← Back to edit
-              </button>
-            </div>
+            </>
           )}
         </div>
 
-        {/* Sidebar — Profile summary */}
+        {/* ─── Sidebar — Profile summary ─── */}
         <div className="hidden lg:block w-72 border-l border-[var(--border)] overflow-y-auto p-4 space-y-3 bg-[var(--bg-surface)]">
           <h3 className="font-display text-sm font-bold text-[var(--text-primary)]">Your Profile</h3>
 
@@ -910,33 +1278,37 @@ export default function CVJourneyPage() {
             </div>
           </div>
 
-          {/* Profile sections */}
+          {/* AI-extracted data sections */}
           {cvData.personalDetails.fullName && (
             <div className="glass-card p-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Name</span>
-                <button onClick={() => handleEditSection('personal')} className="text-xs text-[var(--accent)]">Edit</button>
               </div>
               <p className="text-sm text-[var(--text-primary)] mt-1">{cvData.personalDetails.fullName}</p>
+              {cvData.personalDetails.email && <p className="text-xs text-[var(--text-muted)]">{cvData.personalDetails.email}</p>}
+              {cvData.personalDetails.phone && <p className="text-xs text-[var(--text-muted)]">{cvData.personalDetails.phone}</p>}
+              {cvData.personalDetails.location && <p className="text-xs text-[var(--text-muted)]">{cvData.personalDetails.location}</p>}
+            </div>
+          )}
+
+          {/* Headline */}
+          {cvData.headline && (
+            <div className="glass-card p-3">
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Headline</span>
+              <p className="text-sm text-[var(--text-primary)] mt-1">{cvData.headline}</p>
             </div>
           )}
 
           {cvData.careerGoal && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Career Goal</span>
-                <button onClick={() => handleEditSection('goal')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Target Role</span>
               <p className="text-sm text-[var(--text-primary)] mt-1">{cvData.careerGoal}</p>
             </div>
           )}
 
           {cvData.skills.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Skills ({cvData.skills.length})</span>
-                <button onClick={() => handleEditSection('skills')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Skills ({cvData.skills.length})</span>
               <div className="flex flex-wrap gap-1 mt-2">
                 {cvData.skills.slice(0, 8).map((s, i) => (
                   <span key={i} className="skill-tag">{s}</span>
@@ -948,10 +1320,7 @@ export default function CVJourneyPage() {
 
           {cvData.experience.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Experience ({cvData.experience.length})</span>
-                <button onClick={() => handleEditSection('experience')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Experience ({cvData.experience.length})</span>
               {cvData.experience.slice(0, 2).map((e, i) => (
                 <p key={i} className="text-xs text-[var(--text-primary)] mt-1">{e.role}{e.company ? ` at ${e.company}` : ''}</p>
               ))}
@@ -960,10 +1329,7 @@ export default function CVJourneyPage() {
 
           {cvData.education.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Education ({cvData.education.length})</span>
-                <button onClick={() => handleEditSection('education')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Education ({cvData.education.length})</span>
               {cvData.education.slice(0, 2).map((e, i) => (
                 <p key={i} className="text-xs text-[var(--text-primary)] mt-1">{e.qualification}</p>
               ))}
@@ -972,10 +1338,7 @@ export default function CVJourneyPage() {
 
           {cvData.projects.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Projects ({cvData.projects.length})</span>
-                <button onClick={() => handleEditSection('projects')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Projects ({cvData.projects.length})</span>
               {cvData.projects.slice(0, 2).map((p, i) => (
                 <p key={i} className="text-xs text-[var(--text-primary)] mt-1">{p.name}</p>
               ))}
@@ -984,10 +1347,7 @@ export default function CVJourneyPage() {
 
           {cvData.certifications.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Certifications ({cvData.certifications.length})</span>
-                <button onClick={() => handleEditSection('certifications')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Certifications ({cvData.certifications.length})</span>
               {cvData.certifications.slice(0, 2).map((c, i) => (
                 <p key={i} className="text-xs text-[var(--text-primary)] mt-1">{c.name}</p>
               ))}
@@ -996,26 +1356,70 @@ export default function CVJourneyPage() {
 
           {cvData.achievements.length > 0 && (
             <div className="glass-card p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">Achievements ({cvData.achievements.length})</span>
-                <button onClick={() => handleEditSection('achievements')} className="text-xs text-[var(--accent)]">Edit</button>
-              </div>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Achievements ({cvData.achievements.length})</span>
               {cvData.achievements.slice(0, 2).map((a, i) => (
                 <p key={i} className="text-xs text-[var(--text-primary)] mt-1">• {a}</p>
               ))}
             </div>
           )}
 
-          {/* Generated CV preview */}
-          {generatedMarkdown && (
+          {cvData.professionalSummary && (
             <div className="glass-card p-3">
-              <span className="text-xs font-medium text-[var(--text-secondary)]">Generated CV</span>
-              <pre className="mt-2 text-[0.625rem] text-[var(--text-muted)] whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed">
-                {generatedMarkdown.slice(0, 500)}...
-              </pre>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">Summary</span>
+              <p className="text-xs text-[var(--text-primary)] mt-1 line-clamp-3">{cvData.professionalSummary}</p>
+            </div>
+          )}
+
+          {/* Missing items */}
+          {missing.length > 0 && hasStarted && (
+            <div className="glass-card p-3">
+              <p className="text-xs font-semibold text-[var(--text-primary)] mb-2">📋 To improve:</p>
+              <ul className="space-y-1">
+                {missing.slice(0, 4).map((m, i) => (
+                  <li key={i} className="text-xs text-[var(--text-muted)] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)] shrink-0" />
+                    {m}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
+      </div>
+
+      {/* ─── Debug Panel ─── */}
+      <div className="border-t border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
+        <button
+          onClick={() => setShowDebug(!showDebug)}
+          className="w-full px-4 py-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] flex items-center justify-center gap-1.5"
+        >
+          <svg className={`w-3 h-3 transition-transform ${showDebug ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+          Debug Info
+        </button>
+        {showDebug && (
+          <div className="px-4 py-2 text-[0.65rem] text-[var(--text-muted)] font-mono space-y-1 border-t border-[var(--border)]">
+            {debugInfo ? (
+              <>
+                <div className="flex gap-4 flex-wrap">
+                  <span>Provider: <span className="text-[var(--text-secondary)]">{debugInfo.provider}</span></span>
+                  <span>Model: <span className="text-[var(--text-secondary)]">{debugInfo.model}</span></span>
+                  <span>Route: <span className="text-[var(--text-secondary)]">{debugInfo.route}</span></span>
+                </div>
+                <div className="flex gap-4 flex-wrap">
+                  <span>Input tokens: <span className="text-[var(--text-secondary)]">{debugInfo.inputTokens ?? '—'}</span></span>
+                  <span>Output tokens: <span className="text-[var(--text-secondary)]">{debugInfo.outputTokens ?? '—'}</span></span>
+                  <span>Status: <span className={debugInfo.fallback ? 'text-[var(--warning)]' : 'text-[var(--success)]'}>
+                    {debugInfo.fallback ? '⚠ Fallback used' : '✓ AI generated'}
+                  </span></span>
+                </div>
+              </>
+            ) : (
+              <span>No API calls yet.</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

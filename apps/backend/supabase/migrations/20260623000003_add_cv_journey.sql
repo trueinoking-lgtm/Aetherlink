@@ -135,6 +135,17 @@ BEGIN
   END IF;
 END $$;
 
+-- ─── Fix existing cv_profiles RLS to allow service_role bypass ───
+-- The original policy from 002_cv_profiles.sql only allows auth.uid() = user_id
+-- which blocks service_role (auth.uid() returns NULL for service_role).
+-- Add a service_role bypass policy.
+CREATE POLICY "Service role can access all cv_profiles"
+  ON public.cv_profiles
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
 -- ─── RPC: Save generated CV ───
 CREATE OR REPLACE FUNCTION public.save_generated_cv(
   p_cv_profile_id uuid,
