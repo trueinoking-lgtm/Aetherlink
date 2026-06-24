@@ -766,7 +766,7 @@ export default function FeedPage() {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="shrink-0 text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors px-2 py-1"
+                className="shrink-0 text-xs font-medium text-[var(--accent-hover)] hover:text-[var(--accent-active)] transition-colors px-2 py-1"
               >
                 Clear ({activeFilterCount})
               </button>
@@ -787,7 +787,7 @@ export default function FeedPage() {
                 onClick={() => setTrustFilter((prev) => prev === key ? '' : key)}
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all pointer-active ${
                   trustFilter === key
-                    ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent)]'
+                    ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent-hover)]'
                     : 'border-[var(--border)] bg-[var(--glass-bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]'
                 }`}
               >

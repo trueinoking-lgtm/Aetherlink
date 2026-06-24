@@ -57,7 +57,7 @@ function ProgressDots({ step }: { step: number }) {
                   i === step
                     ? 'bg-[var(--accent)] text-[var(--text-primary)] scale-110 shadow-[var(--shadow-glow)]'
                     : i < step
-                    ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                    ? 'bg-[var(--accent)]/20 text-[var(--accent-active)]'
                     : 'bg-[var(--bg-raised)] text-[var(--text-muted)] border border-[var(--border)]'
                 }`}
               >
@@ -575,7 +575,7 @@ export default function OnboardingPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
                   {step2.uploadedFileName ? (
-                    <p className="text-sm text-[var(--accent)]">{step2.uploadedFileName}</p>
+                    <p className="text-sm text-[var(--accent-active)]">{step2.uploadedFileName}</p>
                   ) : (
                     <>
                       <p className="text-sm text-[var(--text-secondary)]">Drop your PDF here or click to browse</p>
@@ -618,7 +618,7 @@ export default function OnboardingPage() {
             <div className="space-y-5">
               <div>
                 <label htmlFor="onboarding-salary" className="form-label">
-                  Salary floor: <span className="text-[var(--accent)] font-semibold">${step3.salaryFloor}</span> USD
+                  Salary floor: <span className="text-[var(--accent-active)] font-semibold">${step3.salaryFloor}</span> USD
                 </label>
                 <input
                   id="onboarding-salary"

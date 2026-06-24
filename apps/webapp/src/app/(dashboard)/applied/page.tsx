@@ -107,7 +107,7 @@ export default function AppliedPage() {
             onClick={() => setFilter(f)}
             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all pointer-active \${
               filter === f
-                ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent)]'
+                ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent-hover)]'
                 : 'border-[var(--border)] bg-[var(--glass-bg-subtle)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]'
             }`}
           >
@@ -175,7 +175,7 @@ export default function AppliedPage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/feed/\${job.job_id}`}
-                    className="text-xs text-[var(--accent)] hover:underline"
+                    className="text-xs text-[var(--accent-hover)] hover:underline"
                   >
                     View
                   </Link>

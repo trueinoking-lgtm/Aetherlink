@@ -121,7 +121,7 @@ export default function LoginPage() {
                   <div className="grid grid-cols-3 gap-2 mb-4">
                     <div className="rounded-lg bg-[var(--surface)] p-2 text-center">
                       <p className="text-[10px] text-[var(--text-muted)]">Jobs Found</p>
-                      <p className="text-sm font-bold text-[var(--accent)]">12</p>
+                      <p className="text-sm font-bold text-[var(--accent-active)]">12</p>
                     </div>
                     <div className="rounded-lg bg-[var(--surface)] p-2 text-center">
                       <p className="text-[10px] text-[var(--text-muted)]">Applied</p>
@@ -386,7 +386,7 @@ export default function LoginPage() {
                       </div>
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
                         app.status === 'offer' ? 'bg-[var(--success)]/15 text-[var(--success)]' :
-                        app.status === 'interview' ? 'bg-[var(--accent)]/15 text-[var(--accent)]' :
+                        app.status === 'interview' ? 'bg-[var(--accent)]/15 text-[var(--accent-active)]' :
                         'bg-[var(--text-muted)]/15 text-[var(--text-muted)]'
                       }`}>
                         {app.status === 'offer' ? 'Got an offer' : app.status === 'interview' ? 'Interview' : 'No response'}

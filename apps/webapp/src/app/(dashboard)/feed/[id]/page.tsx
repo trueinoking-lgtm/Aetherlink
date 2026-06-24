@@ -603,7 +603,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
             <div className="mt-3 pt-3 border-t border-[var(--border)]">
               <a
                 href={`/cv-builder/tailor/${jobId}`}
-                className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-2.5 text-sm font-medium text-[var(--accent)] transition-all hover:bg-[var(--accent)]/20 pointer-active"
+                className="w-full flex items-center justify-center gap-2 rounded-md border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-4 py-2.5 text-sm font-medium text-[var(--accent-hover)] transition-all hover:bg-[var(--accent)]/20 pointer-active"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -628,7 +628,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   <p className="text-xs font-medium text-[var(--text-muted)]">Email</p>
                   <a 
                     href={`mailto:${job.application_email}`}
-                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent)]"
+                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent-hover)]"
                   >
                     {job.application_email}
                   </a>
@@ -640,7 +640,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                   <p className="text-xs font-medium text-[var(--text-muted)]">Phone</p>
                   <a 
                     href={`tel:${job.application_phone.replace(/[^\d+]/g, '')}`}
-                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent)]"
+                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent-hover)]"
                   >
                     {job.application_phone}
                   </a>
@@ -654,7 +654,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
                     href={job.externalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent)]"
+                    className="text-sm text-[var(--text-primary)] hover:text-[var(--accent-hover)]"
                   >
                     View original listing
                   </a>

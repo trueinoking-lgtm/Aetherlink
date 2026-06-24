@@ -146,7 +146,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="section-heading mb-0">Latest jobs</h2>
           {jobs.length > 5 && (
-            <Link href="/feed" className="group inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]">
+            <Link href="/feed" className="group inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-hover)] transition hover:text-[var(--accent-active)]">
               View all
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             </div>
             <p className="font-display text-lg font-bold text-[var(--text-primary)]">No jobs yet</p>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">Set up your profile to start seeing matched jobs.</p>
-            <Link href="/feed" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)] group">
+            <Link href="/feed" className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-hover)] transition hover:text-[var(--accent-active)] group">
               Browse all jobs
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

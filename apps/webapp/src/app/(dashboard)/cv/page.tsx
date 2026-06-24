@@ -1342,7 +1342,7 @@ export default function CVJourneyPage() {
                 <div className="px-4 pt-4">
                   <div className="glass-card p-4 border border-[var(--accent)]/30 bg-[var(--accent)]/5">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-[var(--accent)] uppercase tracking-wider">✨ AI drafted this</span>
+                      <span className="text-xs font-semibold text-[var(--accent-active)] uppercase tracking-wider">✨ AI drafted this</span>
                     </div>
 
                     {isEditingDraft ? (
@@ -1356,7 +1356,7 @@ export default function CVJourneyPage() {
                       <div className="space-y-1 mb-3">
                         {draftBullets.map((bullet, i) => (
                           <p key={i} className="text-sm text-[var(--text-primary)] flex items-start gap-2">
-                            <span className="text-[var(--accent)] mt-0.5">•</span>
+                            <span className="text-[var(--accent-active)] mt-0.5">•</span>
                             <span>{bullet}</span>
                           </p>
                         ))}
@@ -1583,7 +1583,7 @@ export default function CVJourneyPage() {
                         <p className="text-sm font-bold text-[var(--text-primary)]">{(generatedCv.headline as string) || 'Professional Headline'}</p>
                         <p className="text-xs text-[var(--text-muted)] mt-0.5">{cvData.personalDetails.fullName || 'Your Name'}</p>
                       </div>
-                      <button onClick={() => handleEditSection('headline')} className="text-xs text-[var(--accent)] shrink-0">Edit</button>
+                      <button onClick={() => handleEditSection('headline')} className="text-xs text-[var(--accent-hover)] shrink-0">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1610,7 +1610,7 @@ export default function CVJourneyPage() {
                         <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">Professional Summary</p>
                         <p className="text-sm text-[var(--text-primary)] whitespace-pre-line">{(generatedCv.professionalSummary as string) || 'No summary yet.'}</p>
                       </div>
-                      <button onClick={() => handleEditSection('professionalSummary')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('professionalSummary')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1641,7 +1641,7 @@ export default function CVJourneyPage() {
                           ))}
                         </div>
                       </div>
-                      <button onClick={() => handleEditSection('skills')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('skills')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1681,7 +1681,7 @@ export default function CVJourneyPage() {
                           <p className="text-xs text-[var(--text-muted)]">No experience entries.</p>
                         )}
                       </div>
-                      <button onClick={() => handleEditSection('experience')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('experience')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1718,7 +1718,7 @@ export default function CVJourneyPage() {
                           <p className="text-xs text-[var(--text-muted)]">No education entries.</p>
                         )}
                       </div>
-                      <button onClick={() => handleEditSection('education')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('education')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1754,7 +1754,7 @@ export default function CVJourneyPage() {
                           <p className="text-xs text-[var(--text-muted)]">No projects.</p>
                         )}
                       </div>
-                      <button onClick={() => handleEditSection('projects')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('projects')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1788,7 +1788,7 @@ export default function CVJourneyPage() {
                           <p className="text-xs text-[var(--text-muted)]">No certifications.</p>
                         )}
                       </div>
-                      <button onClick={() => handleEditSection('certifications')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('certifications')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>
@@ -1815,7 +1815,7 @@ export default function CVJourneyPage() {
                         <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">References</p>
                         <p className="text-sm text-[var(--text-primary)]">{(generatedCv.references as string) || 'Available on request'}</p>
                       </div>
-                      <button onClick={() => handleEditSection('references')} className="text-xs text-[var(--accent)] shrink-0 ml-2">Edit</button>
+                      <button onClick={() => handleEditSection('references')} className="text-xs text-[var(--accent-hover)] shrink-0 ml-2">Edit</button>
                     </div>
                   )}
                 </div>

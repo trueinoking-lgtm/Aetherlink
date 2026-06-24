@@ -312,7 +312,7 @@ export default function PricingPage() {
                         onClick={() => setSelectedMethod('ecocash')}
                         className={`rounded-xl border p-3 text-center text-sm font-medium transition-all ${
                           selectedMethod === 'ecocash'
-                            ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]'
+                            ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent-active)]'
                             : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50'
                         }`}
                       >
@@ -322,7 +322,7 @@ export default function PricingPage() {
                         onClick={() => setSelectedMethod('onemoney')}
                         className={`rounded-xl border p-3 text-center text-sm font-medium transition-all ${
                           selectedMethod === 'onemoney'
-                            ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]'
+                            ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent-active)]'
                             : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)]/50'
                         }`}
                       >

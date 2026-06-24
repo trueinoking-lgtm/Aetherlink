@@ -485,7 +485,7 @@ function EducationStep({ data, update }: { data: EducationEntry[]; update: (v: E
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent)] hover:underline">+ Add education</button>
+        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent-hover)] hover:underline">+ Add education</button>
       )}
     </div>
   );
@@ -529,7 +529,7 @@ function CertificationStep({ data, update }: { data: CertificationEntry[]; updat
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent)] hover:underline">+ Add certification</button>
+        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent-hover)] hover:underline">+ Add certification</button>
       )}
     </div>
   );
@@ -573,7 +573,7 @@ function ExperienceStep({ data, update }: { data: ExperienceEntry[]; update: (v:
                 <ul className="mt-2 space-y-1">
                   {exp.achievements.map((a, i) => (
                     <li key={i} className="text-xs text-[var(--text-muted)] flex items-start gap-1.5">
-                      <span className="text-[var(--accent)] mt-0.5">•</span> {a}
+                      <span className="text-[var(--accent-active)] mt-0.5">•</span> {a}
                     </li>
                   ))}
                 </ul>
@@ -600,7 +600,7 @@ function ExperienceStep({ data, update }: { data: ExperienceEntry[]; update: (v:
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent)] hover:underline">+ Add experience</button>
+        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent-hover)] hover:underline">+ Add experience</button>
       )}
     </div>
   );
@@ -694,7 +694,7 @@ function AchievementStep({ data, update }: { data: AchievementEntry[]; update: (
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent)] hover:underline">+ Add achievement</button>
+        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent-hover)] hover:underline">+ Add achievement</button>
       )}
     </div>
   );
@@ -739,7 +739,7 @@ function ReferenceStep({ data, update }: { data: ReferenceEntry[]; update: (v: R
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent)] hover:underline">+ Add reference</button>
+        <button onClick={() => setShowForm(true)} className="mt-2 text-sm font-medium text-[var(--accent-hover)] hover:underline">+ Add reference</button>
       )}
     </div>
   );
