@@ -428,7 +428,7 @@ function generatePdfHtml(
        ${tailored.education.map((e) => `
          <div class="entry">
            <div class="entry-title">${e.qualification}</div>
-           <div class="entry-sub">${e.institution}${e.honors ? ` — ${e.honors}` : ''}</div>
+           <div class="entry-sub">${e.institution}${e.honors ? ` - ${e.honors}` : ''}</div>
            <div class="entry-dates">${e.year}</div>
          </div>
        `).join('')}`
@@ -439,7 +439,7 @@ function generatePdfHtml(
        ${tailored.certifications.map((c) => `
          <div class="entry">
            <div class="entry-title">${c.name}</div>
-           <div class="entry-sub">${c.issuingBody ? `${c.issuingBody}${c.year ? ` — ${c.year}` : ''}` : c.year || ''}</div>
+           <div class="entry-sub">${c.issuingBody ? `${c.issuingBody}${c.year ? ` - ${c.year}` : ''}` : c.year || ''}</div>
          </div>
        `).join('')}`
     : '';
@@ -462,7 +462,7 @@ function generatePdfHtml(
   ${eduHtml}
   ${certHtml}
 
-  <div class="ats-note">ATS-friendly CV — Tailored for ${job.title} at ${job.companyName || 'Employer'}.</div>
+  <div class="ats-note">ATS-friendly CV - Tailored for ${job.title} at ${job.companyName || 'Employer'}.</div>
 </body>
 </html>`;
 }
