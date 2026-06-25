@@ -1131,7 +1131,7 @@ export default function CVJourneyPage() {
       case 'education':
         setEditValue(
           (Array.isArray(generatedCv.education) ? generatedCv.education : [])
-            .map((e: any) => `${e.degree || e.qualification || ''} — ${e.institution || ''} ${e.year || ''}`)
+            .map((e: any) => `${e.degree || e.qualification || ''} - ${e.institution || ''} ${e.year || ''}`)
             .join('\n')
         );
         break;
@@ -1145,7 +1145,7 @@ export default function CVJourneyPage() {
       case 'certifications':
         setEditValue(
           (Array.isArray(generatedCv.certifications) ? generatedCv.certifications : [])
-            .map((c: any) => `${c.name} — ${c.issuer || ''} ${c.year || ''}`)
+            .map((c: any) => `${c.name} - ${c.issuer || ''} ${c.year || ''}`)
             .join('\n')
         );
         break;
