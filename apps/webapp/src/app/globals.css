@@ -934,8 +934,8 @@ body.onboarding-active main {
   transform: translateX(-50%);
   z-index: 9999;
   padding: 0.75rem 1.5rem;
-  background: var(--accent);
-  color: var(--text-primary);
+  background: var(--accent-btn);
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.875rem;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
