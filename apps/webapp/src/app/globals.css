@@ -62,6 +62,7 @@
   --surface: var(--bg-surface);
   --surface-raised: var(--bg-raised);
   --surface-elevated: var(--bg-raised);
+  --bg-elevated: var(--bg-raised);
 
   /* ── Glass surfaces ── */
   --glass-bg: rgba(255, 255, 255, 0.025);
