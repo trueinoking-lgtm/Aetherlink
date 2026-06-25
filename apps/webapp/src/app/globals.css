@@ -1736,7 +1736,7 @@ aside::-webkit-scrollbar-thumb {
 
 .sidebar-nav-link.active {
   background: var(--accent-glow);
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 .sidebar-nav-link.active::before {
@@ -1778,7 +1778,7 @@ aside::-webkit-scrollbar-thumb {
 }
 
 .bottom-nav-link.active {
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 .bottom-nav-link.active::before {
@@ -1825,8 +1825,8 @@ aside::-webkit-scrollbar-thumb {
 }
 
 .toggle-btn.active {
-  background: var(--accent);
-  color: var(--text-primary);
+  background: var(--accent-btn);
+  color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
